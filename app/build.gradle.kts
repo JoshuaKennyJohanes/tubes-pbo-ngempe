@@ -49,3 +49,7 @@ tasks.named<Test>("test") {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
 }
+
+dependencies {
+    implementation("org.mindrot:jbcrypt:0.4")
+}
