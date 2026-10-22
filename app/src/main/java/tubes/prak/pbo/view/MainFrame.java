@@ -1,4 +1,3 @@
-
 package tubes.prak.pbo.view;
 
 import java.awt.BorderLayout;
@@ -13,57 +12,91 @@ import tubes.prak.pbo.models.User;
 
 public class MainFrame extends JFrame {
 
-    private final CardLayout cardLayout = new CardLayout();
-    private final JPanel cards = new JPanel(cardLayout);
+    // CardLayout Utama (Memisahkan layar LOGIN dan APP utama)
+    private final CardLayout mainCardLayout = new CardLayout();
+    private final JPanel mainCards = new JPanel(mainCardLayout);
+
+    // CardLayout Khusus Konten Aplikasi (Di dalam Navbar)
+    private final CardLayout contentCardLayout = new CardLayout();
+    private final JPanel contentCards = new JPanel(contentCardLayout);
+
+    private User currentUser;
 
     public MainFrame() {
         setTitle("ERP & E-Commerce");
-        setSize(800, 500);
+        setSize(900, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        add(cards);
+        // 1. Buat Panel Utama untuk Area yang Memakai Navbar
+        JPanel authenticatedAppPanel = new JPanel(new BorderLayout());
+        authenticatedAppPanel.add(new NavbarPanelBuyer(this), BorderLayout.WEST);
+        authenticatedAppPanel.add(contentCards, BorderLayout.CENTER);
+
+        // 2. Registrasikan ke CardLayout Utama
+        mainCards.add(authenticatedAppPanel, "APP");
+
+        // Masukkan ke Window Utama
+        add(mainCards);
     }
 
     public void setLoginView(LoginView view) {
-        cards.add(view, "LOGIN");
+        mainCards.add(view, "LOGIN");
         showLogin();
     }
 
     public void showLogin() {
-        cardLayout.show(cards, "LOGIN");
+        this.currentUser = null;
+        mainCardLayout.show(mainCards, "LOGIN");
     }
 
     public void showBuyerDashboard(User user) {
-        JPanel panel = createDashboard(
-            "Buyer Dashboard",
-            user
-        );
+        this.currentUser = user;
 
-        cards.add(panel, "BUYER");
-        cardLayout.show(cards, "BUYER");
+        // Tambahkan halaman-halaman khusus buyer ke contentCards
+        contentCards.add(createDashboard("Buyer Dashboard", user), "BUYER_DASHBOARD");
+        contentCards.add(createDummyPage("Halaman Etalase Produk"), "ETALASE");
+        contentCards.add(createDummyPage("Halaman Riwayat Transaksi"), "RIWAYAT");
+
+        // Pindah layar utama ke area berpapan "APP" (yang ada Navbarnya)
+        mainCardLayout.show(mainCards, "APP");
+        contentCardLayout.show(contentCards, "BUYER_DASHBOARD");
     }
 
     public void showManagerDashboard(User user) {
-        JPanel panel = createDashboard(
-            "Manager Dashboard",
-            user
-        );
+        this.currentUser = user;
 
-        cards.add(panel, "MANAGER");
-        cardLayout.show(cards, "MANAGER");
+        contentCards.add(createDashboard("Manager Dashboard", user), "MANAGER_DASHBOARD");
+        
+        mainCardLayout.show(mainCards, "APP");
+        contentCardLayout.show(contentCards, "MANAGER_DASHBOARD");
     }
+
+    // --- Method yang Dipanggil dari NavbarPanel ---
+
+    public void showEtalase() {
+        contentCardLayout.show(contentCards, "ETALASE");
+    }
+
+    public void showRiwayat() {
+        contentCardLayout.show(contentCards, "RIWAYAT");
+    }
+
+    // --- Helper Methods ---
 
     private JPanel createDashboard(String title, User user) {
         JPanel panel = new JPanel(new BorderLayout());
-
         JLabel heading = new JLabel(
             title + " — Selamat datang, " + user.getNama(),
             SwingConstants.CENTER
         );
-
         panel.add(heading, BorderLayout.CENTER);
+        return panel;
+    }
 
+    private JPanel createDummyPage(String title) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(new JLabel(title, SwingConstants.CENTER), BorderLayout.CENTER);
         return panel;
     }
 }

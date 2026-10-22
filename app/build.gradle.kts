@@ -30,7 +30,7 @@ dependencies {
     implementation ("org.postgresql:postgresql:42.7.2")
 
     // (Opsional tapi disarankan) Connection Pooler seperti HikariCP
-    implementation ("com.zaxxer:HikariCP:5.1.0");
+    implementation ("com.zaxxer:HikariCP:5.1.0")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

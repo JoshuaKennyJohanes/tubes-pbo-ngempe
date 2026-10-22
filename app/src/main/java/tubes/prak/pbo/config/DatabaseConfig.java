@@ -6,14 +6,15 @@ import java.sql.SQLException;
 
 public final class DatabaseConfig {
 
-    private static final String URL =
-        System.getenv("DB_URL");
+    // DB_URL=jdbc:postgresql://aws-0-ap-northeast-2.pooler.supabase.com:6543/postgres
+    // DB_USER=postgres.rbfzvkkiterzowlwsbsg
+    // DB_PASSWORD=prakpbodatabase
 
-    private static final String USER =
-        System.getenv("DB_USER");
+    private static final String URL = "jdbc:postgresql://localhost:5432/tubes_prak_pbo";
 
-    private static final String PASSWORD =
-        System.getenv("DB_PASSWORD");
+    private static final String USER = "postgres";
+
+    private static final String PASSWORD = "12345";
 
     private DatabaseConfig() {
         // Mencegah class ini dibuat sebagai objek.
