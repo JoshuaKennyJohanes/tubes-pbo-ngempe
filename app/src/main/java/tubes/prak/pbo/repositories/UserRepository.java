@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import tubes.prak.pbo.ENUM.Role;
 import tubes.prak.pbo.config.DatabaseConfig;
 import tubes.prak.pbo.models.User;
@@ -13,40 +15,43 @@ import tubes.prak.pbo.models.User;
 public class UserRepository {
 
     
-public Optional<User> findByLoginIdentifier(String identifier)
-        throws SQLException {
+public User findUser(String username, String password) throws SQLException {
 
+    // 1. Ambil data user berdasarkan username saja (sertakan kolom password_hash)
     String sql = """
         SELECT id_user, nama, email, role, username, password_hash
         FROM public.users
-        WHERE LOWER(username) = LOWER(?)
-           OR LOWER(email) = LOWER(?)
-        LIMIT 1
+        WHERE username = ?
         """;
 
     try (Connection conn = DatabaseConfig.getConnection();
          PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-        String loginIdentifier = identifier.trim();
-
-        stmt.setString(1, loginIdentifier);
-        stmt.setString(2, loginIdentifier);
+        stmt.setString(1, username.trim());
 
         try (ResultSet rs = stmt.executeQuery()) {
+            // Jika username tidak ditemukan
             if (!rs.next()) {
-                return Optional.empty();
+                return null; 
             }
 
-            User user = new User(
-                rs.getInt("id_user"),
-                rs.getString("nama"),
-                rs.getString("email"),
-                Role.valueOf(rs.getString("role")),
-                rs.getString("username"),
-                rs.getString("password_hash")
-            );
+            // 2. Ambil hash password yang tersimpan di DB
+            String storedHash = rs.getString("password_hash");
 
-            return Optional.of(user);
+            // 3. Verifikasi password mentah dari input dengan hash di DB
+            if (BCrypt.checkpw(password, storedHash)) {
+                return new User(
+                    rs.getInt("id_user"),
+                    rs.getString("nama"),
+                    rs.getString("email"),
+                    Role.valueOf(rs.getString("role")),
+                    rs.getString("username"),
+                    storedHash
+                );
+            } else {
+                // Password tidak cocok
+                return null; 
+            }
         }
     }
 }
