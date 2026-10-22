@@ -9,11 +9,13 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import tubes.prak.pbo.components.DefaultButtonOrange;
+
 public class LoginView extends JPanel {
 
     private final JTextField identifierField = new JTextField(20);
     private final JPasswordField passwordField = new JPasswordField(20);
-    private final JButton loginButton = new JButton("Login");
+    private final JButton loginButton = new DefaultButtonOrange("Login");
     private final JLabel messageLabel = new JLabel(" ");
 
     public LoginView() {

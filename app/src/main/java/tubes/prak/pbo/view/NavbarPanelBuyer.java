@@ -27,7 +27,7 @@ public class NavbarPanelBuyer extends JPanel {
     private static final Color TEXT_COLOR = new Color(248, 249, 250);     // Putih bersih
     private static final Color DANGER_COLOR = new Color(220, 53, 69);     // Merah untuk tombol Logout
 
-    public NavbarPanelBuyer(MainFrame mainFrame) {
+    public NavbarPanelBuyer() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setPreferredSize(new Dimension(200, 0)); // Lebar navbar 200px
         setBackground(NAV_BG_COLOR); // 1. Mengubah background Navbar
@@ -50,9 +50,9 @@ public class NavbarPanelBuyer extends JPanel {
         btnLogout.setBackground(DANGER_COLOR);
 
         // --- Event Listener ---
-        btnEtalase.addActionListener(e -> mainFrame.showEtalase());
-        btnRiwayat.addActionListener(e -> mainFrame.showRiwayat());
-        btnLogout.addActionListener(e -> mainFrame.showLogin());
+        // btnEtalase.addActionListener(e -> mainFrame.showEtalase());
+        // btnRiwayat.addActionListener(e -> mainFrame.showRiwayat());
+        // btnLogout.addActionListener(e -> mainFrame.showLogin());
 
         // --- Menyusun Komponen ke Dalam Panel ---
         add(brandLabel);

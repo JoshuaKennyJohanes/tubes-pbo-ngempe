@@ -1,5 +1,7 @@
 package tubes.prak.pbo.models;
 
+import tubes.prak.pbo.ENUM.Satuan;
+
 public class Produk {
     private int id_produk;
     private String nama_produk;

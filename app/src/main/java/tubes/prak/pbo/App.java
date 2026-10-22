@@ -1,37 +1,34 @@
 package tubes.prak.pbo;
 
+import java.awt.Color;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import tubes.prak.pbo.controller.AuthController;
-import tubes.prak.pbo.navigation.AppRouter;
-import tubes.prak.pbo.navigation.AppSession;
-import tubes.prak.pbo.repositories.UserRepository;
-import tubes.prak.pbo.service.AuthService;
 import tubes.prak.pbo.view.LoginView;
-import tubes.prak.pbo.view.MainFrame;
 
-public class App {
+public class App extends JFrame {
+        
+    public App(){
+        setTitle("Ngempe Commerce & MRP");
+        setSize(1000,700);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setBackground(Color.lightGray);
+
+        JPanel mainPanel = new JPanel();
+        
+        LoginView loginPanel = new LoginView();
+        mainPanel.add(loginPanel);
+
+        add(mainPanel);
+    }
+
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            MainFrame mainFrame = new MainFrame();
-            LoginView loginView = new LoginView();
-
-            UserRepository userRepository = new UserRepository();
-            AuthService authService = new AuthService(userRepository);
-
-            AppSession session = new AppSession();
-            AppRouter router =new AppRouter(session, mainFrame);
-
-            mainFrame.setLoginView(loginView);
-
-            new AuthController(
-                loginView,
-                authService,
-                router
-            );
-
-            mainFrame.setVisible(true);
+        SwingUtilities.invokeLater(()->{
+            new App().setVisible(true);
         });
     }
 }

@@ -37,8 +37,7 @@ public class ProdukRepository {
 
                 allList.add(produk);
             }
-                
-        
+                    
         
             } catch (Exception e) {
                 e.printStackTrace();
