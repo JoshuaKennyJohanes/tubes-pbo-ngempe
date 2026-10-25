@@ -1,0 +1,14 @@
+[
+  {
+    "adapter": "Java",
+    "request": "launch",
+    "label": "mainApp",
+    "mainClass": "app.main.src.tubes.prak.pbo.App",
+  },
+  {
+    "adapter": "Java",
+    "request": "launch",
+    "label": "Database Test",
+    "mainClass": "DatabaseConfig",
+  }
+]
