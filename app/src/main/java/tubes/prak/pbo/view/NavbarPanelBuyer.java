@@ -1,7 +1,5 @@
 package tubes.prak.pbo.view;
 
-import javax.swing.JPanel;
-
 import tubes.prak.pbo.components.DefaultButtonOrange;
 import tubes.prak.pbo.util.Router;
 import tubes.prak.pbo.util.Session;
@@ -12,17 +10,32 @@ import java.awt.event.ActionListener;
 
 public class NavbarPanelBuyer extends JPanel {
 
-    // Konstruktor menerima ActionListener untuk masing-masing tombol
     public NavbarPanelBuyer(JPanel mainContentPanel,CardLayout cardLayoutMainContent, JPanel mainPanel, CardLayout cardLayout) {
+        
         // Atur layout dan warna background navbar (sebelah kiri)
-        setLayout(new GridLayout(5, 1, 5, 5)); // Contoh susunan tombol ke bawah
+        setLayout(new BoxLayout(this,BoxLayout.Y_AXIS)); 
         setBackground(Color.DARK_GRAY);
-        setPreferredSize(new Dimension(180, 0)); // Lebar 180px, tinggi mengikuti parent
+        setPreferredSize(new Dimension(180, 0)); 
+
 
         // Membuat tombol-tombol
         DefaultButtonOrange btnEtalase = new DefaultButtonOrange("Etalase");
         DefaultButtonOrange btnRiwayat = new DefaultButtonOrange("Riwayat Transaksi");
         DefaultButtonOrange btnLogout = new DefaultButtonOrange("Log Out");
+
+        JButton[] menuButtons = {
+            btnEtalase, btnRiwayat, btnLogout
+        };
+
+        Dimension buttonSize = new Dimension(170,38);
+
+        for(JButton btn : menuButtons){
+            btn.setMaximumSize(buttonSize);
+            btn.setPreferredSize(buttonSize);
+            btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+            
+        }
+
 
         // Menambahkan listener/fungsi ke tombol
         btnEtalase.addActionListener(e->{
@@ -40,7 +53,12 @@ public class NavbarPanelBuyer extends JPanel {
 
         // Menambahkan tombol ke panel navbar
         add(btnEtalase);
+        add(Box.createRigidArea(new Dimension(0,8)));
         add(btnRiwayat);
+        add(Box.createRigidArea(new Dimension(0,8)));
+
+
+        add(Box.createVerticalGlue());
         add(btnLogout);
     }
 }

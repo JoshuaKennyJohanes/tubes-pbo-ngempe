@@ -11,7 +11,7 @@ import tubes.prak.pbo.util.Router;
 import tubes.prak.pbo.view.LoginView;
 import tubes.prak.pbo.view.ViewManager.DashboardManager;
 import tubes.prak.pbo.view.ViewPembeli.DashboardPembeli;
-import tubes.prak.pbo.view.ViewPembeli.EtalaseView;
+
 
 public class App extends JFrame {
 
@@ -30,7 +30,7 @@ public class App extends JFrame {
 
         LoginView loginPanel = new LoginView(mainPanel,cardLayout);
         DashboardPembeli panelUtamaPembeli = new DashboardPembeli(mainPanel, cardLayout);
-        DashboardManager panelUtamaManager = new DashboardManager();
+        DashboardManager panelUtamaManager = new DashboardManager(mainPanel, cardLayout);
 
 
 
