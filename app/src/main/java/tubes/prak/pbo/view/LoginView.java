@@ -11,20 +11,21 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import tubes.prak.pbo.ENUM.Role;
 import tubes.prak.pbo.components.DefaultButtonOrange;
 import tubes.prak.pbo.controller.LoginController;
 import tubes.prak.pbo.exception.InvalidCredentialsException;
 import tubes.prak.pbo.util.Router;
 import tubes.prak.pbo.util.Session;
-import tubes.prak.pbo.ENUM.Role;
 
 public class LoginView extends JPanel {
     private final LoginController loginController = new LoginController();
 
-    
+
     private final JTextField txtusername = new JTextField(20);
     private final JPasswordField txtpassword = new JPasswordField(20);
     private final JButton loginButton = new DefaultButtonOrange("Login");
+    private final JButton signUpButton = new DefaultButtonOrange("Sign Up");
     private final JLabel messageLabel = new JLabel(" ");
 
     public LoginView(JPanel mainPanel, CardLayout cardLayout) {
@@ -36,10 +37,14 @@ public class LoginView extends JPanel {
         form.add(new JLabel("Password"));
         form.add(txtpassword);
         form.add(loginButton);
+        form.add(signUpButton);
         form.add(messageLabel);
         add(form);
 
         handleLoginButton(loginButton, mainPanel, cardLayout);
+        signUpButton.addActionListener(e->{
+            cardLayout.show(mainPanel, Router.REGISTER_PAGE);
+        });
     }
 
     public void handleLoginButton(JButton loginButton, JPanel mainPanel, CardLayout cardLayout){
