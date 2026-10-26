@@ -29,7 +29,7 @@ public class App extends JFrame {
         LoginView loginPanel = new LoginView(mainPanel,cardLayout);
         EtalaseView etalasePanel = new EtalaseView(mainPanel, cardLayout);
 
-
+        
 
         //masukin semua page ke dalam cardyoutnya
         mainPanel.add(loginPanel, Router.LOGIN_PAGE);
