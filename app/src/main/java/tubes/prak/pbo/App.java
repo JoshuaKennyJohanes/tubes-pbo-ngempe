@@ -33,7 +33,7 @@ public class App extends JFrame {
         DashboardPembeli panelUtamaPembeli = new DashboardPembeli(mainPanel, cardLayout);
         DashboardManager panelUtamaManager = new DashboardManager(mainPanel, cardLayout);
 
-
+        
 
         //masukin semua page utama ke dalam cardyoutnya
         mainPanel.add(loginPanel, Router.LOGIN_PAGE);

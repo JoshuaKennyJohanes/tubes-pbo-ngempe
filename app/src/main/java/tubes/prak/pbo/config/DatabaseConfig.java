@@ -10,11 +10,11 @@ public final class DatabaseConfig {
     // DB_USER=postgres.rbfzvkkiterzowlwsbsg
     // DB_PASSWORD=prakpbodatabase
 
-    private static final String URL = "jdbc:postgresql://localhost:5432/tubes_prak_pbo";
+    private static final String URL = "tubes_prak_pbo";
 
     private static final String USER = "postgres";
 
-    private static final String PASSWORD = "12345";
+    private static final String PASSWORD = "eka@123";
 
     private DatabaseConfig() {
         // Mencegah class ini dibuat sebagai objek.
