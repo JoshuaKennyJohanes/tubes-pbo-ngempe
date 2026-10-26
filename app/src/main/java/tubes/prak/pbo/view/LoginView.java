@@ -59,10 +59,10 @@ public class LoginView extends JPanel {
 
                 switch (userRole) {
                     case PEMBELI :
-                        cardLayout.show(mainPanel, Router.ETALASE_PAGE);
+                        cardLayout.show(mainPanel, Router.BUYER_DASHBOARD);
                         break;
                         case MANAGER :
-                        cardLayout.show(mainPanel, Router.ETALASE_PAGE);
+                        cardLayout.show(mainPanel, Router.MANAGER_DASHBOARD);
                         break;
                     default :
                     JOptionPane.showMessageDialog(LoginView.this, "role tidak dikenal");

@@ -12,6 +12,8 @@ public class Produk {
     public Produk(int id_produk, String nama_produk, String satuan_produk, double harga_rata2_produk, double harga_jual){
         this.id_produk = id_produk;
         this.nama_produk = nama_produk;
+        
+        
         this.satuan_produk = satuan_produk;
         this.harga_rata2_produk = harga_rata2_produk;
         this.harga_jual = harga_jual;

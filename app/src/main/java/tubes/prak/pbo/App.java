@@ -9,12 +9,14 @@ import javax.swing.SwingUtilities;
 
 import tubes.prak.pbo.util.Router;
 import tubes.prak.pbo.view.LoginView;
-import tubes.prak.pbo.view.ViewPembeli.EtalaseView;
+import tubes.prak.pbo.view.ViewManager.DashboardManager;
+import tubes.prak.pbo.view.ViewPembeli.DashboardPembeli;
+
 
 public class App extends JFrame {
-        
+
     public App(){
-        
+
         setTitle("Ngempe Commerce & MRP");
         setSize(1000,700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -25,18 +27,19 @@ public class App extends JFrame {
         setLayout(cardLayout);
 
         JPanel mainPanel = new JPanel(cardLayout);
-        
+
         LoginView loginPanel = new LoginView(mainPanel,cardLayout);
-        EtalaseView etalasePanel = new EtalaseView(mainPanel, cardLayout);
+        DashboardPembeli panelUtamaPembeli = new DashboardPembeli(mainPanel, cardLayout);
+        DashboardManager panelUtamaManager = new DashboardManager(mainPanel, cardLayout);
 
         
 
-        //masukin semua page ke dalam cardyoutnya
+        //masukin semua page utama ke dalam cardyoutnya
         mainPanel.add(loginPanel, Router.LOGIN_PAGE);
-        mainPanel.add(etalasePanel, Router.ETALASE_PAGE);
+        mainPanel.add(panelUtamaPembeli, Router.BUYER_DASHBOARD);
+        mainPanel.add(panelUtamaManager,Router.MANAGER_DASHBOARD);
 
         add(mainPanel);
-
         cardLayout.show(mainPanel, Router.LOGIN_PAGE);
     }
 
