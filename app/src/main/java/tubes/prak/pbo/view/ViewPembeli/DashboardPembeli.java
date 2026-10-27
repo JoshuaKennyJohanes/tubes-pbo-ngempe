@@ -1,22 +1,22 @@
 package tubes.prak.pbo.view.ViewPembeli;
 
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
+import java.sql.SQLException;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import tubes.prak.pbo.util.Router;
 import tubes.prak.pbo.view.NavbarPanelBuyer;
-
-
-import javax.swing.*;
-import java.awt.*;
 
 public class DashboardPembeli extends JPanel {
 
     private JPanel mainContentPanel;
     private CardLayout cardLayout;
 
-    public DashboardPembeli(JPanel mainPanel, CardLayout cardLayoutInput) {
+    public DashboardPembeli(JPanel mainPanel, CardLayout cardLayoutInput) throws SQLException {
 
 
         // 1. Inisialisasi Panel Utama dengan BorderLayout

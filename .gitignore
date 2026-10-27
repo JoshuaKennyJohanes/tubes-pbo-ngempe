@@ -9,7 +9,7 @@ build
 
 .env
 
-config/DatabaseConfig.java
+app\src\main\java\tubes\prak\pbo\config\DatabaseConfig.java
 
 
 TestApp.java

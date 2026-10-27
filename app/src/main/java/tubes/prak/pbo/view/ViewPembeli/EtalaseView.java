@@ -1,5 +1,6 @@
 package tubes.prak.pbo.view.ViewPembeli;
 
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -18,18 +19,12 @@ import tubes.prak.pbo.repositories.ProdukRepository;
 
 public class EtalaseView extends JPanel {
 
-    // public EtalaseView(JPanel mainPanel, CardLayout cardLayout) {
-    //     add(new JLabel("Ini panel etalase"));
-
-    // }
-
-    public static void main(String[] args) throws SQLException {
+    public EtalaseView(JPanel mainPanel, CardLayout cardLayout) throws SQLException {
         JFrame frame = new JFrame("Single Product Card - 1000x700");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 700);
         frame.setLocationRelativeTo(null);
 
-        JPanel mainPanel = new JPanel();
         mainPanel.setBackground(new Color(245, 247, 250));
         mainPanel.setLayout(new GridLayout(0, 3, 20, 20));
 
@@ -43,6 +38,10 @@ public class EtalaseView extends JPanel {
 
             ProductCard card = new ProductCard(img, pk.getNamaProduk(), String.valueOf(pk.getHargaJualProduk()));
             card.setPreferredSize(new Dimension(310, 360));
+            card.getDetailButton().addActionListener(e -> {
+                DetailProduk detailFrame = new DetailProduk(ProdukRepository.getProdukById(pk.getIdProduk()));
+                detailFrame.setVisible(true);
+            });
             mainPanel.add(card);
         }
 

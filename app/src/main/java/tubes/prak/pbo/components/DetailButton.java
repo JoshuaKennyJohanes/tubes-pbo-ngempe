@@ -9,11 +9,8 @@ import java.awt.RenderingHints;
 
 import javax.swing.JButton;
 
-// Kelas Reusable RoundedButton
 public class DetailButton extends JButton {
     private Color normalBg = ColorPalette.whiteMatte;
-    private Color hoverBg = new Color(240, 243, 246);
-    private Color pressedBg = new Color(220, 225, 230);
     private Color borderColor = new Color(200, 205, 215);
     private Color textColor = new Color(45, 55, 72);
 
@@ -34,14 +31,7 @@ public class DetailButton extends JButton {
         int width = getWidth();
         int height = getHeight();
         int arc = height;
-
-        if (getModel().isPressed()) {
-            g2.setColor(pressedBg);
-        } else if (getModel().isRollover()) {
-            g2.setColor(hoverBg);
-        } else {
-            g2.setColor(normalBg);
-        }
+        g2.setColor(normalBg);
         g2.fillRoundRect(0, 0, width, height, arc, arc);
 
         g2.setColor(borderColor);

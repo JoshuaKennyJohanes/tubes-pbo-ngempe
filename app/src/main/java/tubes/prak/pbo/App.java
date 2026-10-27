@@ -2,6 +2,7 @@ package tubes.prak.pbo;
 
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.sql.SQLException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -13,34 +14,38 @@ import tubes.prak.pbo.view.ViewManager.DashboardManager;
 import tubes.prak.pbo.view.ViewPembeli.DashboardPembeli;
 
 
-public class App extends JFrame {
+public class App extends JFrame  {
 
-    public App(){
+    public App() {
 
-        setTitle("Ngempe Commerce & MRP");
-        setSize(1000,700);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setBackground(Color.lightGray);
-
-        CardLayout cardLayout = new CardLayout();
-        setLayout(cardLayout);
-
-        JPanel mainPanel = new JPanel(cardLayout);
-
-        LoginView loginPanel = new LoginView(mainPanel,cardLayout);
-        DashboardPembeli panelUtamaPembeli = new DashboardPembeli(mainPanel, cardLayout);
-        DashboardManager panelUtamaManager = new DashboardManager(mainPanel, cardLayout);
-
-        
-
-        //masukin semua page utama ke dalam cardyoutnya
-        mainPanel.add(loginPanel, Router.LOGIN_PAGE);
-        mainPanel.add(panelUtamaPembeli, Router.BUYER_DASHBOARD);
-        mainPanel.add(panelUtamaManager,Router.MANAGER_DASHBOARD);
-
-        add(mainPanel);
-        cardLayout.show(mainPanel, Router.LOGIN_PAGE);
+        try {
+            setTitle("Ngempe Commerce & MRP");
+            setSize(1000,700);
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setLocationRelativeTo(null);
+            setBackground(Color.lightGray);
+            
+            CardLayout cardLayout = new CardLayout();
+            setLayout(cardLayout);
+            
+            JPanel mainPanel = new JPanel(cardLayout);
+            
+            LoginView loginPanel = new LoginView(mainPanel,cardLayout);
+            DashboardPembeli panelUtamaPembeli = new DashboardPembeli(mainPanel, cardLayout);
+            DashboardManager panelUtamaManager = new DashboardManager(mainPanel, cardLayout);
+            
+            
+            
+            //masukin semua page utama ke dalam cardyoutnya
+            mainPanel.add(loginPanel, Router.LOGIN_PAGE);
+            mainPanel.add(panelUtamaPembeli, Router.BUYER_DASHBOARD);
+            mainPanel.add(panelUtamaManager,Router.MANAGER_DASHBOARD);
+            
+            add(mainPanel);
+            cardLayout.show(mainPanel, Router.LOGIN_PAGE);
+        } catch (SQLException ex) {
+            System.getLogger(App.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }
 
 
