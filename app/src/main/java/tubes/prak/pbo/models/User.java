@@ -1,8 +1,5 @@
 package tubes.prak.pbo.models;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import tubes.prak.pbo.ENUM.Role;
 
 public class User {
@@ -12,7 +9,6 @@ public class User {
     private Role role;
     private String userName;
     private String password;
-    private List<Produk> keranjangUser = new ArrayList<>();
 
 
 

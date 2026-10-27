@@ -3,16 +3,6 @@ package tubes.prak.pbo.util;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class HashingPassword {
-    private static String hashedPass;
-
-    public static String getHashedPass(String password){
-        String salt = BCrypt.gensalt(12);
-        String hashedPassword = BCrypt.hashpw(password, salt);
-        hashedPass = hashedPassword;
-        return hashedPass;
-        }
-
-
     public static void main(String[]args){
         String password = "12345";
         

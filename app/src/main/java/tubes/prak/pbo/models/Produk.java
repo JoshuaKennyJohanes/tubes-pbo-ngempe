@@ -1,22 +1,20 @@
 package tubes.prak.pbo.models;
 
-import tubes.prak.pbo.ENUM.Satuan;
-
 public class Produk {
     private int id_produk;
     private String nama_produk;
     private String satuan_produk;
     private double harga_rata2_produk;
     private double harga_jual;
+    private String imgUrl;
 
-    public Produk(int id_produk, String nama_produk, String satuan_produk, double harga_rata2_produk, double harga_jual){
+    public Produk(int id_produk, String nama_produk, String satuan_produk, double harga_rata2_produk, double harga_jual, String url){
         this.id_produk = id_produk;
         this.nama_produk = nama_produk;
-        
-        
         this.satuan_produk = satuan_produk;
         this.harga_rata2_produk = harga_rata2_produk;
         this.harga_jual = harga_jual;
+        this.imgUrl = url;
     }
 
 
@@ -42,5 +40,9 @@ public class Produk {
 
     public double getHargaJualProduk(){
         return this.harga_jual;
+    }
+
+    public String getImageUrl(){
+        return this.imgUrl;
     }
 }
