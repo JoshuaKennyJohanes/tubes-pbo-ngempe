@@ -2,7 +2,6 @@ package tubes.prak.pbo.view.ViewPembeli;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.sql.SQLException;
 
 import javax.swing.JPanel;
 
@@ -21,7 +20,7 @@ public class DashboardPembeli extends JPanel {
         cardLayout = new CardLayout();
         mainContentPanel = new JPanel(cardLayout);
         try {
-            EtalaseView panelEtalase = new EtalaseView();
+            EtalaseView panelEtalase = new EtalaseView(mainPanel, cardLayoutInput);
             RiwayatTransaksiView panelRiwayat = new RiwayatTransaksiView();
 
             mainContentPanel.add(panelEtalase, Router.ETALASE_PAGE);

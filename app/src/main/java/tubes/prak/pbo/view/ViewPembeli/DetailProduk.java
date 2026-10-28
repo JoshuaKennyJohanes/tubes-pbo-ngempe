@@ -1,5 +1,7 @@
 package tubes.prak.pbo.view.ViewPembeli;
+
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -14,25 +16,29 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
 import tubes.prak.pbo.models.Produk;
+import tubes.prak.pbo.util.Router;
 
-public class DetailProduk extends JFrame {
-    public DetailProduk(Produk produk) {
-        setTitle("Detail Produk - " + produk.getNamaProduk());
-        setSize(850, 600);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+public class DetailProduk extends JPanel {
 
-        JPanel mainPanel = new JPanel(new BorderLayout(20, 20));
-        mainPanel.setBackground(new Color(245, 247, 250));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+    // Konstruktor menerima produk, mainContentPanel, dan cardLayout
+    public DetailProduk(Produk produk, JPanel mainContentPanel, CardLayout cardLayout) {
 
-        //Judul
+        // 1. Atur layout untuk Panel utama kelas ini (DetailProduk extends JPanel)
+        setLayout(new BorderLayout());
+        setBackground(new Color(245, 247, 250));
+
+        // 2. Buat panel lokal khusus untuk halaman detail ini (JANGAN pakai parameter
+        // mainPanel luar)
+        JPanel panelUtamaDetail = new JPanel(new BorderLayout(20, 20));
+        panelUtamaDetail.setBackground(new Color(245, 247, 250));
+        panelUtamaDetail.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+
+        // Judul Header
         JPanel headerPanel = new JPanel();
         headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
         headerPanel.setBackground(new Color(245, 247, 250));
@@ -48,7 +54,7 @@ public class DetailProduk extends JFrame {
         headerPanel.add(judulProduk);
         headerPanel.add(Box.createVerticalStrut(3));
         headerPanel.add(lblSubtitle);
-        mainPanel.add(headerPanel, BorderLayout.NORTH);
+        panelUtamaDetail.add(headerPanel, BorderLayout.NORTH);
 
         JPanel contentPanel = new JPanel(new GridLayout(1, 2, 30, 0));
         contentPanel.setBackground(new Color(245, 247, 250));
@@ -56,9 +62,8 @@ public class DetailProduk extends JFrame {
         JPanel imageContainer = new JPanel(new GridBagLayout());
         imageContainer.setBackground(Color.WHITE);
         imageContainer.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(220, 224, 230), 1),
-            BorderFactory.createEmptyBorder(15, 15, 15, 15)
-        ));
+                BorderFactory.createLineBorder(new Color(220, 224, 230), 1),
+                BorderFactory.createEmptyBorder(15, 15, 15, 15)));
 
         ImageIcon rawIcon = new ImageIcon(produk.getImageUrl());
         Image scaledImage = rawIcon.getImage().getScaledInstance(260, 260, Image.SCALE_SMOOTH);
@@ -74,8 +79,8 @@ public class DetailProduk extends JFrame {
         lblNamaProduk.setFont(new Font("SansSerif", Font.BOLD, 20));
         lblNamaProduk.setForeground(new Color(30, 30, 30));
 
-        
-        JLabel lblDesc = new JLabel("Keripik tempe renyah dengan rasa bawang yang gurih. Cocok untuk camilan sehari-hari.");
+        JLabel lblDesc = new JLabel(
+                "Keripik tempe renyah dengan rasa bawang yang gurih. Cocok untuk camilan sehari-hari.");
         lblDesc.setFont(new Font("SansSerif", Font.PLAIN, 13));
         lblDesc.setForeground(new Color(90, 90, 90));
         lblDesc.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
@@ -83,10 +88,9 @@ public class DetailProduk extends JFrame {
         JSeparator separator = new JSeparator();
         separator.setMaximumSize(new Dimension(Integer.MAX_VALUE, 10));
 
-        
-        JPanel hargaPanel = createRowPanel("Harga:", "Rp " + String.format("%,.0f", produk.getHargaJualProduk()) + " / pouch");
+        JPanel hargaPanel = createRowPanel("Harga:",
+                "Rp " + String.format("%,.0f", produk.getHargaJualProduk()) + " / pouch");
 
-        
         JPanel jumlahPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         jumlahPanel.setBackground(new Color(245, 247, 250));
         JLabel lblJumlahLabel = new JLabel("Jumlah:");
@@ -107,7 +111,6 @@ public class DetailProduk extends JFrame {
         jumlahPanel.add(lblJumlahValue);
         jumlahPanel.add(lblSatuan);
 
-    
         double totalSubtotal = produk.getHargaJualProduk() * 2;
         JPanel subtotalPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         subtotalPanel.setBackground(new Color(245, 247, 250));
@@ -156,7 +159,7 @@ public class DetailProduk extends JFrame {
         rightPanel.add(buttonActionPanel);
 
         contentPanel.add(rightPanel);
-        mainPanel.add(contentPanel, BorderLayout.CENTER);
+        panelUtamaDetail.add(contentPanel, BorderLayout.CENTER);
 
         JPanel footerPanel = new JPanel(new BorderLayout());
         footerPanel.setBackground(new Color(245, 247, 250));
@@ -170,7 +173,16 @@ public class DetailProduk extends JFrame {
         btnKembali.setForeground(new Color(60, 60, 60));
         btnKembali.setFocusPainted(false);
         btnKembali.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnKembali.addActionListener(e -> dispose());
+        btnKembali.addActionListener(e -> {
+            DashboardPembeli pembeliUI = new DashboardPembeli(mainContentPanel, cardLayout);
+                mainContentPanel.add(pembeliUI, Router.ETALASE_PAGE);
+                cardLayout.show(mainContentPanel, Router.ETALASE_PAGE);
+            // try {
+                
+            // } catch (SQLException e) {
+            //     e.printStackTrace();
+            // }
+        });
 
         JPanel backButtonWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 10));
         backButtonWrapper.setBackground(new Color(245, 247, 250));
@@ -179,15 +191,16 @@ public class DetailProduk extends JFrame {
         footerPanel.add(lblFooterNote, BorderLayout.NORTH);
         footerPanel.add(backButtonWrapper, BorderLayout.CENTER);
 
-        mainPanel.add(footerPanel, BorderLayout.SOUTH);
+        panelUtamaDetail.add(footerPanel, BorderLayout.SOUTH);
 
-        add(mainPanel);
+        // 3. Masukkan panelUtamaDetail ke dalam `this`
+        add(panelUtamaDetail, BorderLayout.CENTER);
     }
 
     private JPanel createRowPanel(String labelText, String valueText) {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         panel.setBackground(new Color(245, 247, 250));
-        
+
         JLabel lbl = new JLabel(labelText);
         lbl.setFont(new Font("SansSerif", Font.PLAIN, 14));
         lbl.setPreferredSize(new Dimension(80, 25));
