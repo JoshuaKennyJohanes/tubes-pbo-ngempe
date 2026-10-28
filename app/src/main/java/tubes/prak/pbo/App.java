@@ -30,10 +30,10 @@ public class App extends JFrame {
 
         LoginView loginPanel = new LoginView(mainPanel,cardLayout);
         RegisterView registerPanel = new RegisterView(mainPanel, cardLayout);
-        try {
+        // try {
             
-        } catch (Exception e) {
-        }
+        // } catch (Exception e) {
+        // }
         DashboardPembeli panelUtamaPembeli = new DashboardPembeli(mainPanel, cardLayout);
         DashboardManager panelUtamaManager = new DashboardManager(mainPanel, cardLayout);
 
