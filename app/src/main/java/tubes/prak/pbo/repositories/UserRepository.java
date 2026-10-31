@@ -29,6 +29,7 @@ public class UserRepository {
             stmt.setString(1, username.trim());
 
             try (ResultSet rs = stmt.executeQuery()) {
+                
                 // Jika username tidak ditemukan
                 if (!rs.next()) {
                     return null;

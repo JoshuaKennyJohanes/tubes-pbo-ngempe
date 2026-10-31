@@ -1,6 +1,7 @@
 package tubes.prak.pbo.view.ViewPembeli;
 
-import javax.swing.*;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 public class RiwayatTransaksiView extends JPanel {
 

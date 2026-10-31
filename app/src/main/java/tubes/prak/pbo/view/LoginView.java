@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 import tubes.prak.pbo.ENUM.Role;
 import tubes.prak.pbo.components.DefaultButtonOrange;
 import tubes.prak.pbo.controller.LoginController;
+import tubes.prak.pbo.controller.NavigationController;
 import tubes.prak.pbo.exception.InvalidCredentialsException;
 import tubes.prak.pbo.util.Router;
 import tubes.prak.pbo.util.Session;
@@ -42,6 +43,7 @@ public class LoginView extends JPanel {
         add(form);
 
         handleLoginButton(loginButton, mainPanel, cardLayout);
+
         signUpButton.addActionListener(e->{
             cardLayout.show(mainPanel, Router.REGISTER_PAGE);
         });
@@ -53,7 +55,6 @@ public class LoginView extends JPanel {
             String password = new String(txtpassword.getPassword());
 
             
-            
             try {
                 loginController.login(username, password);
 
@@ -61,17 +62,14 @@ public class LoginView extends JPanel {
                 txtpassword.setText("");
 
                 Role userRole = Session.getSession().getRole();
+                System.out.print("Role: "+Session.getSession().getRole());
 
-                switch (userRole) {
-                    case PEMBELI :
-                        cardLayout.show(mainPanel, Router.BUYER_DASHBOARD);
-                        break;
-                        case MANAGER :
-                        cardLayout.show(mainPanel, Router.MANAGER_DASHBOARD);
-                        break;
-                    default :
-                    JOptionPane.showMessageDialog(LoginView.this, "role tidak dikenal");
-                }
+                //baru buat mainshell panel di action listener login dan tunjukan mainshell.
+                MainShell newMainShell = new MainShell();
+                mainPanel.add(newMainShell,Router.MAIN_SHELL);
+                newMainShell.buildNavbarAndDefaultPanel();
+                NavigationController.showRootPage(Router.MAIN_SHELL);
+                
             }
             catch (IllegalArgumentException ex) {
                 JOptionPane.showMessageDialog(LoginView.this, ex.getMessage(), "Input Tidak Valid", JOptionPane.WARNING_MESSAGE);
