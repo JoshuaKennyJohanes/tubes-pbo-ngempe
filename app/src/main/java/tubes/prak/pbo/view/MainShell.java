@@ -42,8 +42,6 @@ public class MainShell extends JPanel {
         mainContentPanel.add(new ProduksiView(), Router.PRODUKSI_PAGE);
 
 
-        NavigationController.setContentPanel(mainContentPanel, contentCardLayout);
-
         add(mainContentPanel,BorderLayout.CENTER);
 
     }

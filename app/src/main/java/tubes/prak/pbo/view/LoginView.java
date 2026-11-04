@@ -50,39 +50,46 @@ public class LoginView extends JPanel {
     }
 
     public void handleLoginButton(JButton loginButton, JPanel mainPanel, CardLayout cardLayout){
-        loginButton.addActionListener(e ->{
-            String username = txtusername.getText();
-            String password = new String(txtpassword.getPassword());
+    loginButton.addActionListener(e -> {
+        String username = txtusername.getText();
+        String password = new String(txtpassword.getPassword());
 
+        try {
+            loginController.login(username, password);
+
+            txtusername.setText("");
+            txtpassword.setText("");
+            Role userRole = Session.getSession().getRole();
+
+            // 1. Buat instance MainShell baru
+            MainShell newMainShell = new MainShell();
+
+            // 2. Tambahkan ke mainPanel (Root Panel)
+            mainPanel.add(newMainShell, Router.MAIN_SHELL);
             
-            try {
-                loginController.login(username, password);
+            // 3. Bangun Navbar & Default Panel
+            newMainShell.buildNavbarAndDefaultPanel();
 
-                txtusername.setText("");
-                txtpassword.setText("");
+            // 4. Refresh layout mainPanel agar CardLayout megenal komponen baru
+            mainPanel.revalidate();
+            mainPanel.repaint();
 
-                Role userRole = Session.getSession().getRole();
-                System.out.print("Role: "+Session.getSession().getRole());
-
-                //baru buat mainshell panel di action listener login dan tunjukan mainshell.
-                MainShell newMainShell = new MainShell();
-                mainPanel.add(newMainShell,Router.MAIN_SHELL);
-                newMainShell.buildNavbarAndDefaultPanel();
-                NavigationController.showRootPage(Router.MAIN_SHELL);
-                
-            }
-            catch (IllegalArgumentException ex) {
-                JOptionPane.showMessageDialog(LoginView.this, ex.getMessage(), "Input Tidak Valid", JOptionPane.WARNING_MESSAGE);
-            }
-            catch (InvalidCredentialsException invd){
-                JOptionPane.showMessageDialog(LoginView.this, invd.getMessage(),"Login Gagal", JOptionPane.ERROR_MESSAGE);
-            }
-            catch (Exception ex){
-                JOptionPane.showMessageDialog(LoginView.this, "Terjadi Kesalahan" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
-
-          });
-    }
+            // 5. Tampilkan halaman MainShell
+            NavigationController.showRootPage(Router.MAIN_SHELL);
+            
+        }
+        catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(LoginView.this, ex.getMessage(), "Input Tidak Valid", JOptionPane.WARNING_MESSAGE);
+        }
+        catch (InvalidCredentialsException invd){
+            JOptionPane.showMessageDialog(LoginView.this, invd.getMessage(),"Login Gagal", JOptionPane.ERROR_MESSAGE);
+        }
+        catch (Exception ex){
+            JOptionPane.showMessageDialog(LoginView.this, "Terjadi Kesalahan: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    });
+}
 
    
 

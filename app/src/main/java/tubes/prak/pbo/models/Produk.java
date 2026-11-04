@@ -1,46 +1,41 @@
 package tubes.prak.pbo.models;
 
+import tubes.prak.pbo.Interfaces.SellAble;
+import tubes.prak.pbo.Interfaces.ManufactureAble;
+
 import tubes.prak.pbo.ENUM.Satuan;
 
-public class Produk {
-    private int id_produk;
-    private String nama_produk;
-    private String satuan_produk;
-    private double harga_rata2_produk;
+public class Produk extends Item implements SellAble, ManufactureAble {
     private double harga_jual;
+    private int jumlahStok;
+    private int batasKritisProduk;
 
-    public Produk(int id_produk, String nama_produk, String satuan_produk, double harga_rata2_produk, double harga_jual){
-        this.id_produk = id_produk;
-        this.nama_produk = nama_produk;
-        
-        
-        this.satuan_produk = satuan_produk;
-        this.harga_rata2_produk = harga_rata2_produk;
+    public Produk(int id_produk, String nama_produk, Satuan satuan_produk, double harga_rata2_produk, double harga_jual, int batas_kritis, int jumlahStok){
+        super(id_produk, nama_produk, satuan_produk, harga_rata2_produk);
+        this.batasKritisProduk = batas_kritis;
         this.harga_jual = harga_jual;
+        this.jumlahStok = jumlahStok;
     }
 
 
-    public int getIdProduk(){
-        return this.id_produk;
-    }
-
-
-
-    public String getNamaProduk(){
-        return this.nama_produk;
-    }
-
-
-    public String getSatuanProduk(){
-        return this.satuan_produk;
-    }
-
-
-    public double getHargaRata2Produk(){
-        return this.harga_rata2_produk;
-    }
+    // //method overloading untuk insert
+    // public Produk(String nama_produk, Satuan satuan_produk, double harga_jual, int batas_kritis){
+    //     setNama(nama_produk);
+    //     this.harga_jual = harga_jual;
+    //     this.batasKritisProduk = batas_kritis;
+    // }
 
     public double getHargaJualProduk(){
         return this.harga_jual;
     }
+
+    public int getStok(){
+        return this.jumlahStok;
+    }
+
+    public int getBatasKritisProduk(){
+        return this.batasKritisProduk;
+    }
+
+
 }

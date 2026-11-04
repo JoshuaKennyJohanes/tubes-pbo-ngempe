@@ -1,15 +1,22 @@
 package tubes.prak.pbo.models;
 
-public class RawMaterial {
-    private String id_raw_material;
-    private String nama_material;
-    private String satuan_material;
-    private String harga_rata_rata;
+import tubes.prak.pbo.ENUM.Satuan;
 
-    public RawMaterial(String id_raw_material, String nama_material, String satuan_material, String harga_rata_rata){
-        this.id_raw_material = id_raw_material;
-        this.nama_material = nama_material;
-        this.satuan_material = satuan_material;
-        this.harga_rata_rata = harga_rata_rata;
+public class RawMaterial extends Item{
+    private double batasKritisMaterial;
+    private double jumlahStok;
+
+    public RawMaterial(int id_raw_material, String nama_material, Satuan satuan_material, double harga_rata2_material, double batas_kritis, double jumlahStok){
+        super(id_raw_material, nama_material, satuan_material, harga_rata2_material);
+        this.batasKritisMaterial = batas_kritis;
+        this.jumlahStok = jumlahStok; 
+    }
+
+    public double getBatasKritis(){
+        return this.batasKritisMaterial;
+    }
+
+    public double getJumlahStok(){
+        return this.jumlahStok;
     }
 }

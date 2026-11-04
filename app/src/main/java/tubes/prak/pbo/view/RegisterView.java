@@ -5,7 +5,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -29,8 +28,8 @@ public class RegisterView extends JPanel {
     private final JPasswordField txtPassword = new JPasswordField();
     private final JButton registerButton = new DefaultButtonOrange("Register");
     private final JLabel   messagelabel = new JLabel(" ");
-    private final JComboBox<Role> roleDropdown = new JComboBox<>(Role.values());
-    private final Role managerRole = Role.MANAGER;
+    // private final JComboBox<Role> roleDropdown = new JComboBox<>(Role.values());
+    // private final Role managerRole = Role.MANAGER;
 
     public RegisterView(JPanel mainPanel, CardLayout cardLayout){
         
@@ -100,9 +99,6 @@ public class RegisterView extends JPanel {
 
             
         }
-
-
-
 
     }
 
