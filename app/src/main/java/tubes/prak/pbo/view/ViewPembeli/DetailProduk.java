@@ -21,6 +21,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
+import tubes.prak.pbo.components.QuantityInput;
 import tubes.prak.pbo.models.BarangKeranjang;
 import tubes.prak.pbo.models.Produk;
 import tubes.prak.pbo.models.User;
@@ -92,7 +93,7 @@ public class DetailProduk extends JPanel {
         separator.setMaximumSize(new Dimension(Integer.MAX_VALUE, 10));
 
         JPanel hargaPanel = createRowPanel("Harga:",
-                "Rp " + String.format("%,.0f", produk.getHargaJualProduk()) + " / pouch");
+                "Rp " + String.format("%,.0f", produk.getHargaJualProduk()) + "/" + produk.getSatuanProduk());
 
         JPanel jumlahPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         jumlahPanel.setBackground(new Color(245, 247, 250));
@@ -100,21 +101,23 @@ public class DetailProduk extends JPanel {
         lblJumlahLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         lblJumlahLabel.setPreferredSize(new Dimension(80, 25));
         lblJumlahLabel.setForeground(new Color(100, 100, 100));
+        QuantityInput qtyInput = new QuantityInput(1);
 
-        JLabel lblJumlahValue = new JLabel(" "+produk.getStcok());//STOK
-        lblJumlahValue.setFont(new Font("SansSerif", Font.BOLD, 14));
-        lblJumlahValue.setForeground(new Color(40, 40, 40));
-        lblJumlahValue.setPreferredSize(new Dimension(50, 25));
-
-        JLabel lblSatuan = new JLabel("pouch");
+        // JLabel lblJumlahValue = new JLabel(" "+produk.getStcok());
+        // lblJumlahValue.setFont(new Font("SansSerif", Font.BOLD, 14));
+        // lblJumlahValue.setForeground(new Color(40, 40, 40));
+        // lblJumlahValue.setPreferredSize(new Dimension(50, 25));
+    
+        JLabel lblSatuan = new JLabel(produk.getSatuanProduk());
         lblSatuan.setFont(new Font("SansSerif", Font.PLAIN, 14));
         lblSatuan.setForeground(new Color(100, 100, 100));
 
         jumlahPanel.add(lblJumlahLabel);
-        jumlahPanel.add(lblJumlahValue);
+        jumlahPanel.add(new JPanel());
+        jumlahPanel.add(qtyInput);
         jumlahPanel.add(lblSatuan);
 
-        double totalSubtotal = produk.getHargaJualProduk() * 2;
+        double totalSubtotal = produk.getHargaJualProduk() * qtyInput.getValue();
         JPanel subtotalPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         subtotalPanel.setBackground(new Color(245, 247, 250));
         JLabel lblSubtotalLabel = new JLabel("Subtotal:");
@@ -125,6 +128,11 @@ public class DetailProduk extends JPanel {
         JLabel lblSubtotalValue = new JLabel("Rp " + String.format("%,.0f", totalSubtotal));
         lblSubtotalValue.setFont(new Font("SansSerif", Font.BOLD, 18));
         lblSubtotalValue.setForeground(new Color(20, 20, 20));
+        
+         qtyInput.addChangeListener(qty -> {
+            double total = produk.getHargaJualProduk() * qtyInput.getValue();
+            lblSubtotalValue.setText("Rp " + String.format("%,.0f", total));
+        });
 
         subtotalPanel.add(lblSubtotalLabel);
         subtotalPanel.add(lblSubtotalValue);
@@ -143,13 +151,12 @@ public class DetailProduk extends JPanel {
         btnTambah.addActionListener(e ->{
             try {
                 String namaprod = produk.getNamaProduk();
-                String input = JOptionPane.showInputDialog(null,"Masukkan Jumlah","Jumlah :",JOptionPane.QUESTION_MESSAGE);
+                int jumlah = qtyInput.getValue();
                 
-                if(input == null){
+                if(jumlah == 0){
                     return;
                 }
 
-                int jumlah = Integer.parseInt(input);
                 double total = jumlah * produk.getHargaJualProduk();
 
                 if (jumlah <= 0) {
@@ -164,8 +171,6 @@ public class DetailProduk extends JPanel {
                     return;
                 }
 
-
-                
                 BarangKeranjang isi = new BarangKeranjang(namaprod,jumlah,total);
                 user.tambahkeKeranjang(isi);
 
@@ -182,20 +187,6 @@ public class DetailProduk extends JPanel {
 
         });
         //Akhir punya daniel Batak
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         JButton btnLihatKeranjang = new JButton("Lihat Keranjang");
