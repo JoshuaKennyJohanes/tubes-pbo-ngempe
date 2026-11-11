@@ -13,14 +13,13 @@ public class DashboardPembeli extends JPanel {
     private JPanel mainContentPanel;
     private CardLayout cardLayout;
 
-    public DashboardPembeli(JPanel mainPanel, CardLayout cardLayoutInput, User user) {
+    public DashboardPembeli(JPanel mainPanel, CardLayout cardLayoutInput, User user,Keranjang panelKeranjang) {
 
         setLayout(new BorderLayout());
-        Keranjang panelKeranjang;
         cardLayout = new CardLayout();
         mainContentPanel = new JPanel(cardLayout);
         try {
-            EtalaseView panelEtalase = new EtalaseView(mainPanel, cardLayoutInput,user);
+            EtalaseView panelEtalase = new EtalaseView(mainPanel, cardLayoutInput,user,panelKeranjang);
             RiwayatTransaksiView panelRiwayat = new RiwayatTransaksiView(user);
             panelKeranjang = new Keranjang(user);
 

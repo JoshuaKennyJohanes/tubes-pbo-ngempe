@@ -30,7 +30,7 @@ import tubes.prak.pbo.util.Router;
 public class DetailProduk extends JPanel {
 
     // Konstruktor menerima produk, mainContentPanel, dan cardLayout
-    public DetailProduk(Produk produk, JPanel mainContentPanel, CardLayout cardLayout , User user) {
+    public DetailProduk(Produk produk, JPanel mainContentPanel, CardLayout cardLayout , User user, Keranjang panelKeranjang) {
 
         // 1. Atur layout untuk Panel utama kelas ini (DetailProduk extends JPanel)
         setLayout(new BorderLayout());
@@ -194,6 +194,11 @@ public class DetailProduk extends JPanel {
         btnLihatKeranjang.setForeground(new Color(80, 80, 80));
         btnLihatKeranjang.setFocusPainted(false);
         btnLihatKeranjang.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        btnLihatKeranjang.addActionListener(e ->{
+            panelKeranjang.refreshKeranjang(user);
+           cardLayout.show(mainContentPanel, Router.KERANJANG_PAGE);
+        });
 
         buttonActionPanel.add(btnTambah);
         buttonActionPanel.add(btnLihatKeranjang);

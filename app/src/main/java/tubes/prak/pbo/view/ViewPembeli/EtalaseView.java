@@ -20,7 +20,7 @@ import tubes.prak.pbo.repositories.ProdukRepository;
 
 public class EtalaseView extends JPanel {
 
-    public EtalaseView(JPanel mainContentPanel, CardLayout cardLayout,User user) throws SQLException {
+    public EtalaseView(JPanel mainContentPanel, CardLayout cardLayout,User user,Keranjang panelKeranjang) throws SQLException {
         setLayout(new BorderLayout());
         setBackground(new Color(245, 247, 250));
 
@@ -39,7 +39,7 @@ public class EtalaseView extends JPanel {
             card.getDetailButton().addActionListener(e -> {
                 // DetailProduk detailFrame = new DetailProduk(ProdukRepository.getProdukById(pk.getIdProduk()));
                 // detailFrame.setVisible(true);
-                DetailProduk produkDetail = new DetailProduk(pk, mainContentPanel, cardLayout,user);
+                DetailProduk produkDetail = new DetailProduk(pk, mainContentPanel, cardLayout,user,panelKeranjang);
                 mainContentPanel.add(produkDetail, "DETAIL_PRODUK");
                 cardLayout.show(mainContentPanel, "DETAIL_PRODUK");
             });

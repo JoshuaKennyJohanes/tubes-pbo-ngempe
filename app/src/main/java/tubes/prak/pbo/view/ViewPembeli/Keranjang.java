@@ -16,6 +16,9 @@ public class Keranjang extends JPanel{
     private DefaultTableModel modeltable;
     private JTable table;
 
+    private JLabel labeltotalbayar;
+    private double totalbayar;
+
     public Keranjang(User user) {
 
         setLayout(new BorderLayout());
@@ -27,26 +30,29 @@ public class Keranjang extends JPanel{
         };
 
         modeltable = new DefaultTableModel(kolom, 0);
-
+        labeltotalbayar = new JLabel();
         table = new JTable(modeltable);
 
-        table.add(new JLabel("Keranjang"), BorderLayout.NORTH);
+        add(new JLabel("Keranjang"), BorderLayout.NORTH);
         add(new JScrollPane(table), BorderLayout.CENTER);
+        add(labeltotalbayar,BorderLayout.SOUTH);
 
         refreshKeranjang(user);
     }
     public void refreshKeranjang(User user) {
             
         modeltable.setRowCount(0);
-            
+
+        totalbayar = 0;
         for (BarangKeranjang produk : user.getBarangKeranjang()) {
-            System.out.println(produk.getNamaBarang());
+            
             modeltable.addRow(new Object[] {
-                    produk.getNamaBarang(),
-                    produk.getJumlah(),
-                    produk.getHargaTotal()
-                });
-            }
-            System.out.println("Row count: "+modeltable.getRowCount());
+                produk.getNamaBarang(),
+                produk.getJumlah(),
+                produk.getHargaTotal()
+            });
+            totalbayar += produk.getHargaTotal();
+        }
+            labeltotalbayar.setText("Total Bayar: "+totalbayar);
     }
 }

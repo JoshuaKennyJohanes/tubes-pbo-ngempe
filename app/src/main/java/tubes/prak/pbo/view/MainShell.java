@@ -37,9 +37,11 @@ public class MainShell extends JPanel {
         //buat mainContentPanel sebagai subPanel (menu semuanya)
         NavigationController.setContentPanel(mainContentPanel, contentCardLayout);
 
-        mainContentPanel.add(new EtalaseView(mainContentPanel , contentCardLayout,user),Router.ETALASE_PAGE);
-
+        
         panelKeranjang = new Keranjang(user);
+
+        mainContentPanel.add(new EtalaseView(mainContentPanel , contentCardLayout,user,panelKeranjang),Router.ETALASE_PAGE);
+        
         mainContentPanel.add(panelKeranjang,Router.KERANJANG_PAGE);
         mainContentPanel.add(new RiwayatTransaksiView(user),Router.RIWAYAT_TRANSAKSI);
 
