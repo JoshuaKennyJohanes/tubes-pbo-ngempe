@@ -1,9 +1,11 @@
 package tubes.prak.pbo.models;
 
-import tubes.prak.pbo.Interfaces.SellAble;
-import tubes.prak.pbo.Interfaces.ManufactureAble;
+import java.util.Arrays;
+import java.util.List;
 
 import tubes.prak.pbo.ENUM.Satuan;
+import tubes.prak.pbo.Interfaces.ManufactureAble;
+import tubes.prak.pbo.Interfaces.SellAble;
 
 public class Produk extends Item implements SellAble, ManufactureAble {
     private double harga_jual;
@@ -36,6 +38,20 @@ public class Produk extends Item implements SellAble, ManufactureAble {
     public int getBatasKritisProduk(){
         return this.batasKritisProduk;
     }
+
+    @Override
+    public List<String> getTableHeader() {
+        return Arrays.asList("ID Produk","Nama Produk", "Satuan Produk","HPP Produk","Harga Jual","Jumlah Stock","Batas Kritis");
+    }
+
+    @Override
+    public Object[] toTableRow() {
+        return new Object[]{getId(), getNama(),getSatuan().name(),getHargaRata2(),getHargaJualProduk(),getStok(),getBatasKritisProduk()};
+    }
+
+    
+
+    
 
 
 }

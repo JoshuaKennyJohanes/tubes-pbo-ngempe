@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import tubes.prak.pbo.ENUM.Role;
 import tubes.prak.pbo.ENUM.Satuan;
 import tubes.prak.pbo.config.DatabaseConfig;
 import tubes.prak.pbo.models.Produk;
@@ -19,14 +18,13 @@ public class ProdukRepository {
         List<Produk> allList = new ArrayList<>();
 
         String sql="""
-            SELECT * 
-            FROM public.produk
+            SELECT * FROM produk
                 """;
         try (Connection conn = DatabaseConfig.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)){
             ResultSet resultSet = stmt.executeQuery();
 
-            while(!resultSet.next()){
+            while(resultSet.next()){
                     int id = resultSet.getInt("id_produk");
                     String nama = resultSet.getString("nama_produk");
                     Satuan satuan = Satuan.valueOf(resultSet.getString("satuan_produk"));

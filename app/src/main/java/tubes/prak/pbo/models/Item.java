@@ -1,8 +1,10 @@
 package tubes.prak.pbo.models;
 
+import java.util.List;
+
 import tubes.prak.pbo.ENUM.Satuan;
 
-public class Item {
+public abstract class Item {
     private int id_item;
     private String nama_item;
     private Satuan satuan_item;
@@ -31,12 +33,12 @@ public class Item {
         return this.harga_rata2_item;
     }
 
-    public void setNama(String nama){
-        this.nama_item = nama;
+    @Override 
+    public String toString(){
+        return id_item + " - " + nama_item;
     }
-
-    public void setSatuan(Satuan satuan){
-        this.satuan_item = satuan;
-    }
+    public abstract List<String> getTableHeader();
+    public abstract  Object[] toTableRow();
+    
 
 }

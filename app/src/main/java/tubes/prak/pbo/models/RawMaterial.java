@@ -1,5 +1,8 @@
 package tubes.prak.pbo.models;
 
+import java.util.Arrays;
+import java.util.List;
+
 import tubes.prak.pbo.ENUM.Satuan;
 
 public class RawMaterial extends Item{
@@ -19,4 +22,17 @@ public class RawMaterial extends Item{
     public double getJumlahStok(){
         return this.jumlahStok;
     }
+
+    @Override
+    public List<String> getTableHeader() {
+        return Arrays.asList("ID Material", "Nama Material", "Satuan Material", "Harga Material / Satuan", "Stok Material","Batas Kritis Material");
+    }
+
+    @Override
+    public Object[] toTableRow() {
+        return new Object[]{getId(), getNama(), getSatuan().name(), getHargaRata2(), getJumlahStok(),getBatasKritis()};
+    }
+
+    
+    
 }

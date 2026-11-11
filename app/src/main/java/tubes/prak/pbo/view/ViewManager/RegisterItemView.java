@@ -197,6 +197,11 @@ public class RegisterItemView extends JPanel {
                 txtRawCost.setText("");
                 txtRawStock.setText("");
                 txtRawCriticalLimit.setText("");
+                
+                
+                
+
+                
             } catch (Exception e) {
                 System.out.println("Error Naon Anjing ieu goblog");
             }

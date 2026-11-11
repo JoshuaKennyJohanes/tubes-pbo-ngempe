@@ -1,5 +1,7 @@
 package tubes.prak.pbo.controller;
 
+import java.util.List;
+
 import tubes.prak.pbo.ENUM.Satuan;
 import tubes.prak.pbo.models.Produk;
 import tubes.prak.pbo.models.RawMaterial;
@@ -53,5 +55,13 @@ public class ItemController {
         rawMaterialRepo.registerItem(newRawMaterial);
 
     }   
+
+    public List<Produk> getAllProduk(){
+        return produkRepo.findAllProduk();
+    }
+
+    public List<RawMaterial> getAllMaterials(){
+        return rawMaterialRepo.findAllRawMaterial();
+    }
 
 }

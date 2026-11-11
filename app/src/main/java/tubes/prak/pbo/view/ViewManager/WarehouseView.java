@@ -1,6 +1,5 @@
 package tubes.prak.pbo.view.ViewManager;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
@@ -12,14 +11,28 @@ public class WarehouseView extends JTabbedPane {
 
         
 
+         
         JPanel registerItemPanel = new JPanel();
         registerItemPanel.add(new RegisterItemView());
         
-        JPanel warehouseMonitor = new JPanel();
-        warehouseMonitor.add(new JLabel("Ini tab warhouse monitor"));
+        WarehouseMonitorView warehouseMonitor = new WarehouseMonitorView();
+        BomView bomView = new BomView();
 
         addTab("Register Item", registerItemPanel);
         addTab("Monitor Warehouse", warehouseMonitor);
+        addTab("Bill Of Materials Entry", bomView);
+
+        this.addChangeListener(e -> {
+            // Index 1 adalah tab "Monitor Warehouse"
+            if (getSelectedIndex() == 1) {
+                warehouseMonitor.refreshData(); // Panggil method refreshData() yang sudah kamu buat!
+            }
+
+            if (getSelectedIndex() ==2 ){
+                bomView.loadMasterData();
+            }
+
+        });
 
        
     }

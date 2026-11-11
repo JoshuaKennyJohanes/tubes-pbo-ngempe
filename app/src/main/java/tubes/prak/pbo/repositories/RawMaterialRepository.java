@@ -30,7 +30,7 @@ public class RawMaterialRepository {
         }
     }
 
-    public List<RawMaterial> findAllRawMaterial() throws SQLException{
+    public List<RawMaterial> findAllRawMaterial(){
         List<RawMaterial> listRawMaterial = new ArrayList<>();
 
         String sql = """
@@ -40,7 +40,7 @@ public class RawMaterialRepository {
         try(Connection conn = DatabaseConfig.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)){
             ResultSet resultSet = stmt.executeQuery();
 
-            while(!resultSet.next()){
+            while(resultSet.next()){
                 int id_raw_material = resultSet.getInt("id_raw_material");
                 String nama_material = resultSet.getString("nama_material");
                 Satuan satuan_material = Satuan.valueOf(resultSet.getString("satuan_material"));
@@ -50,6 +50,9 @@ public class RawMaterialRepository {
                 RawMaterial newRawMaterial = new RawMaterial(id_raw_material, nama_material, satuan_material, harga_rata2_bahan_baku, batas_kritis, jumlah_stok);
                 listRawMaterial.add(newRawMaterial);
             }
+
+        } catch (SQLException e){
+            e.printStackTrace();
         }
 
         return listRawMaterial;
