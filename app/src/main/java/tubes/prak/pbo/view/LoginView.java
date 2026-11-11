@@ -16,6 +16,7 @@ import tubes.prak.pbo.components.DefaultButtonOrange;
 import tubes.prak.pbo.controller.LoginController;
 import tubes.prak.pbo.controller.NavigationController;
 import tubes.prak.pbo.exception.InvalidCredentialsException;
+import tubes.prak.pbo.models.User;
 import tubes.prak.pbo.util.Router;
 import tubes.prak.pbo.util.Session;
 
@@ -29,8 +30,10 @@ public class LoginView extends JPanel {
     private final JButton signUpButton = new DefaultButtonOrange("Sign Up");
     private final JLabel messageLabel = new JLabel(" ");
 
+    
+    
+    
     public LoginView(JPanel mainPanel, CardLayout cardLayout) {
-
         setLayout(new GridBagLayout());
         JPanel form = new JPanel(new GridLayout(0, 1, 8, 8));
         form.add(new JLabel("Username atau Email"));
@@ -41,52 +44,55 @@ public class LoginView extends JPanel {
         form.add(signUpButton);
         form.add(messageLabel);
         add(form);
-
+        
         handleLoginButton(loginButton, mainPanel, cardLayout);
-
+        
         signUpButton.addActionListener(e->{
             cardLayout.show(mainPanel, Router.REGISTER_PAGE);
         });
     }
-
+    
     public void handleLoginButton(JButton loginButton, JPanel mainPanel, CardLayout cardLayout){
-    loginButton.addActionListener(e -> {
-        String username = txtusername.getText();
-        String password = new String(txtpassword.getPassword());
-
-        try {
-            loginController.login(username, password);
-
-            txtusername.setText("");
-            txtpassword.setText("");
-            Role userRole = Session.getSession().getRole();
-
-            // 1. Buat instance MainShell baru
-            MainShell newMainShell = new MainShell();
-
-            // 2. Tambahkan ke mainPanel (Root Panel)
-            mainPanel.add(newMainShell, Router.MAIN_SHELL);
+        
+        loginButton.addActionListener(e -> {
+            String username = txtusername.getText();
+            String password = new String(txtpassword.getPassword());
             
-            // 3. Bangun Navbar & Default Panel
-            newMainShell.buildNavbarAndDefaultPanel();
+            try {
+                loginController.login(username, password);
+                User user = Session.getSession();
 
-            // 4. Refresh layout mainPanel agar CardLayout megenal komponen baru
-            mainPanel.revalidate();
-            mainPanel.repaint();
+                txtusername.setText("");
+                txtpassword.setText("");
+                Role userRole = Session.getSession().getRole();
 
-            // 5. Tampilkan halaman MainShell
-            NavigationController.showRootPage(Router.MAIN_SHELL);
-            
-        }
+                // 1. Buat instance MainShell baru
+                MainShell newMainShell = new MainShell(user);
+
+                // 2. Tambahkan ke mainPanel (Root Panel)
+                mainPanel.add(newMainShell, Router.MAIN_SHELL);
+                
+                // 3. Bangun Navbar & Default Panel
+                newMainShell.buildNavbarAndDefaultPanel(user);
+
+                // 4. Refresh layout mainPanel agar CardLayout megenal komponen baru
+                mainPanel.revalidate();
+                mainPanel.repaint();
+
+                // 5. Tampilkan halaman MainShell
+                NavigationController.showRootPage(Router.MAIN_SHELL);
+                
+            }
         catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(LoginView.this, ex.getMessage(), "Input Tidak Valid", JOptionPane.WARNING_MESSAGE);
-        }
+            ex.printStackTrace();
+                JOptionPane.showMessageDialog(LoginView.this, ex.getMessage(), "Input Tidak Valid", JOptionPane.WARNING_MESSAGE);
+            }
         catch (InvalidCredentialsException invd){
-            JOptionPane.showMessageDialog(LoginView.this, invd.getMessage(),"Login Gagal", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(LoginView.this, invd.getMessage(),"Login Gagal", JOptionPane.ERROR_MESSAGE);
         }
         catch (Exception ex){
-            JOptionPane.showMessageDialog(LoginView.this, "Terjadi Kesalahan: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace();
+                JOptionPane.showMessageDialog(LoginView.this, "Terjadi Kesalahan: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
         }
     });
 }

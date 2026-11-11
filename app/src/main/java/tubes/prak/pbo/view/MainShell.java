@@ -2,27 +2,29 @@ package tubes.prak.pbo.view;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.sql.SQLException;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import tubes.prak.pbo.ENUM.Role;
 import tubes.prak.pbo.controller.NavigationController;
+import tubes.prak.pbo.models.User;
 import tubes.prak.pbo.util.Router;
 import tubes.prak.pbo.util.Session;
 import tubes.prak.pbo.view.ViewManager.ProduksiView;
 import tubes.prak.pbo.view.ViewManager.WarehouseView;
 import tubes.prak.pbo.view.ViewPembeli.EtalaseView;
+import tubes.prak.pbo.view.ViewPembeli.Keranjang;
 import tubes.prak.pbo.view.ViewPembeli.RiwayatTransaksiView;
 
 
-
 public class MainShell extends JPanel {
-
-   private JPanel mainContentPanel;
+    private Keranjang panelKeranjang;
+    private JPanel mainContentPanel;
     private CardLayout contentCardLayout;
 
-    public MainShell() {
+    public MainShell(User user) throws SQLException {
         setLayout(new BorderLayout());
 
         // 1. Inisialisasi Panel Utama dengan BorderLayout
@@ -35,8 +37,11 @@ public class MainShell extends JPanel {
         //buat mainContentPanel sebagai subPanel (menu semuanya)
         NavigationController.setContentPanel(mainContentPanel, contentCardLayout);
 
-        mainContentPanel.add(new EtalaseView(),Router.ETALASE_PAGE);
-        mainContentPanel.add(new RiwayatTransaksiView(),Router.RIWAYAT_TRANSAKSI);
+        mainContentPanel.add(new EtalaseView(mainContentPanel , contentCardLayout,user),Router.ETALASE_PAGE);
+
+        panelKeranjang = new Keranjang(user);
+        mainContentPanel.add(panelKeranjang,Router.KERANJANG_PAGE);
+        mainContentPanel.add(new RiwayatTransaksiView(user),Router.RIWAYAT_TRANSAKSI);
 
         mainContentPanel.add(new WarehouseView(), Router.WAREHOUSE_PAGE);
         mainContentPanel.add(new ProduksiView(), Router.PRODUKSI_PAGE);
@@ -46,8 +51,8 @@ public class MainShell extends JPanel {
 
     }
 
-    public void buildNavbarAndDefaultPanel(){
-        NavbarPanel navbar = new NavbarPanel();
+    public void buildNavbarAndDefaultPanel(User user){
+        NavbarPanel navbar = new NavbarPanel(user,panelKeranjang);
 
         if(Session.getSession().getRole().equals(Role.MANAGER)){
             //show default manager

@@ -1,41 +1,56 @@
 package tubes.prak.pbo.models;
 
-import tubes.prak.pbo.Interfaces.SellAble;
-import tubes.prak.pbo.Interfaces.ManufactureAble;
-
-import tubes.prak.pbo.ENUM.Satuan;
-
-public class Produk extends Item implements SellAble, ManufactureAble {
+public class Produk {
+    private int id_produk;
+    private String nama_produk;
+    private String satuan_produk;
+    private double harga_rata2_produk;
     private double harga_jual;
-    private int jumlahStok;
-    private int batasKritisProduk;
+    private String imgUrl;
+    private String deskripsiProduk;
+    private double stok ;
 
-    public Produk(int id_produk, String nama_produk, Satuan satuan_produk, double harga_rata2_produk, double harga_jual, int batas_kritis, int jumlahStok){
-        super(id_produk, nama_produk, satuan_produk, harga_rata2_produk);
-        this.batasKritisProduk = batas_kritis;
+    public Produk(int id_produk, String nama_produk, String satuan_produk, double harga_rata2_produk, double harga_jual, String url, String deskripsi,double stok){
+        this.id_produk = id_produk;
+        this.nama_produk = nama_produk;
+        this.harga_rata2_produk = harga_rata2_produk;
+        this.satuan_produk = satuan_produk;
         this.harga_jual = harga_jual;
-        this.jumlahStok = jumlahStok;
+        this.imgUrl = url;
+        this.deskripsiProduk = deskripsi;
+        this.stok = stok;
+    }
+    public double getStcok(){
+        return this.stok;
+    }
+
+    public int getIdProduk(){
+        return this.id_produk;
+    }
+
+    public String getNamaProduk(){
+        return this.nama_produk;
     }
 
 
-    // //method overloading untuk insert
-    // public Produk(String nama_produk, Satuan satuan_produk, double harga_jual, int batas_kritis){
-    //     setNama(nama_produk);
-    //     this.harga_jual = harga_jual;
-    //     this.batasKritisProduk = batas_kritis;
-    // }
+    public String getSatuanProduk(){
+        return this.satuan_produk;
+    }
+
+
+    public double getHargaRata2Produk(){
+        return this.harga_rata2_produk;
+    }
 
     public double getHargaJualProduk(){
         return this.harga_jual;
     }
 
-    public int getStok(){
-        return this.jumlahStok;
+    public String getImageUrl(){
+        return this.imgUrl;
     }
 
-    public int getBatasKritisProduk(){
-        return this.batasKritisProduk;
+    public String getDeskripsiProduk() {
+        return deskripsiProduk;
     }
-
-
 }

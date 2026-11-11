@@ -15,9 +15,7 @@ public class RegisterController{
 
     public void register(String nama, String username, String password, String email, String alamat, Role role) throws InvalidCredentialsException, IllegalArgumentException, SQLException{
 
-        System.out.println(username + password);
-
-       
+      
         if(username==null || username.trim().isEmpty()){
             throw new IllegalArgumentException("Username tidak boleh kosong!");
         }

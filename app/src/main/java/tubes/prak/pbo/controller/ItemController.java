@@ -1,7 +1,6 @@
 package tubes.prak.pbo.controller;
 
 import tubes.prak.pbo.ENUM.Satuan;
-import tubes.prak.pbo.models.Produk;
 import tubes.prak.pbo.models.RawMaterial;
 import tubes.prak.pbo.repositories.ProdukRepository;
 import tubes.prak.pbo.repositories.RawMaterialRepository;
@@ -25,9 +24,7 @@ public class ItemController {
         }
 
 
-        Produk newProduk = new Produk(0, namaProduk, satuanProduk, 0, hargaJualProduk, stokKritis, 0);
-        //kalau valid register produk baru
-        produkRepo.registerProduk(newProduk);
+       
 
     }
 

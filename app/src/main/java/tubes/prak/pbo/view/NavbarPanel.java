@@ -12,12 +12,14 @@ import javax.swing.JPanel;
 import tubes.prak.pbo.ENUM.Role;
 import tubes.prak.pbo.components.DefaultButtonOrange;
 import tubes.prak.pbo.controller.NavigationController;
+import tubes.prak.pbo.models.User;
 import tubes.prak.pbo.util.Router;
 import tubes.prak.pbo.util.Session;
+import tubes.prak.pbo.view.ViewPembeli.Keranjang;
 
 public class NavbarPanel extends JPanel {
 
-    public NavbarPanel() {
+    public NavbarPanel(User user,Keranjang panelKeranjang) {
 
         // Atur layout dan warna background navbar (sebelah kiri)
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -29,6 +31,7 @@ public class NavbarPanel extends JPanel {
         // Tombol sisi buyer
         DefaultButtonOrange btnEtalase = new DefaultButtonOrange("Etalase");
         DefaultButtonOrange btnRiwayat = new DefaultButtonOrange("Riwayat Transaksi");
+        DefaultButtonOrange btnKeranjang = new DefaultButtonOrange("Keranjang");
         DefaultButtonOrange btnLogout = new DefaultButtonOrange("Log Out");
 
         // Tombol sisi manager
@@ -38,7 +41,7 @@ public class NavbarPanel extends JPanel {
 
         //Looping dan list untuk menerapkan design ke semua button
         JButton[] menuButtons = {
-                btnEtalase, btnRiwayat, btnLogout, btnWarehouse, btnProduksi, btnLogout
+                btnEtalase, btnRiwayat, btnLogout, btnWarehouse, btnProduksi, btnLogout , btnKeranjang
         };
 
         Dimension buttonSize = new Dimension(170, 38);
@@ -57,6 +60,10 @@ public class NavbarPanel extends JPanel {
         });
         btnRiwayat.addActionListener(e -> {
             NavigationController.showSubPage(Router.RIWAYAT_TRANSAKSI);
+        });
+        btnKeranjang.addActionListener(e ->{
+            panelKeranjang.refreshKeranjang(user);
+            NavigationController.showSubPage(Router.KERANJANG_PAGE);
         });
         
         btnLogout.addActionListener(e -> {
@@ -86,6 +93,8 @@ public class NavbarPanel extends JPanel {
            add(Box.createRigidArea(new Dimension(0, 8)));
            add(btnRiwayat);
            add(Box.createRigidArea(new Dimension(0, 8)));
+           add(btnKeranjang);
+           add(Box.createRigidArea(new Dimension(0,8)));
         }
 
         add(Box.createVerticalGlue());

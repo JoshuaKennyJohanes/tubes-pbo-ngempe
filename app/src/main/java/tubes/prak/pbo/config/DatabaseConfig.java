@@ -14,7 +14,7 @@ public final class DatabaseConfig {
 
     private static final String USER = "postgres";
 
-    private static final String PASSWORD = "12345";
+    private static final String PASSWORD = "241969";
 
     private DatabaseConfig() {
         // Mencegah class ini dibuat sebagai objek.

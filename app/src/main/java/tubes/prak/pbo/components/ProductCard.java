@@ -77,4 +77,7 @@ public class ProductCard extends JPanel {
 
         g2.dispose();
     }
+     public DetailButton getDetailButton(){
+        return detailButton;
+    }
 }
