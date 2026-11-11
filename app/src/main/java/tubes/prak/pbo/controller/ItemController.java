@@ -5,12 +5,14 @@ import java.util.List;
 import tubes.prak.pbo.ENUM.Satuan;
 import tubes.prak.pbo.models.Produk;
 import tubes.prak.pbo.models.RawMaterial;
+import tubes.prak.pbo.repositories.BomRepository;
 import tubes.prak.pbo.repositories.ProdukRepository;
 import tubes.prak.pbo.repositories.RawMaterialRepository;
 
 public class ItemController {
     ProdukRepository produkRepo = new ProdukRepository();
     RawMaterialRepository rawMaterialRepo = new RawMaterialRepository();
+    BomRepository bomRepository = new BomRepository();
     
     public void registerProduk(String namaProduk, Satuan satuanProduk, double hargaJualProduk, int stokKritis) throws Exception{
         
@@ -55,6 +57,24 @@ public class ItemController {
         rawMaterialRepo.registerItem(newRawMaterial);
 
     }   
+
+    public void registerBOM(Produk produk, RawMaterial rawMaterial, double qty) throws Exception{
+        if(produk == null){
+            throw new Exception("Produk Harus dipilih!");
+        }
+        if(rawMaterial==null){
+            throw new Exception("Bahan baku harus dipilih!");
+        }
+        if(qty <= 0){
+            throw new Exception("Masukan nominal bahan baku yang valid");
+        }
+
+        try {
+            bomRepository.registerBOM(produk, rawMaterial, qty);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public List<Produk> getAllProduk(){
         return produkRepo.findAllProduk();

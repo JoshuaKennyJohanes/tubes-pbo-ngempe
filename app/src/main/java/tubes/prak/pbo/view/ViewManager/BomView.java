@@ -138,7 +138,7 @@ public class BomView extends JPanel{
 
     // Inner Class untuk Mengelola Baris Komposisi GUI
     // Inner Class untuk Mengelola Baris Komposisi GUI
-private class CompositionRow {
+ private class CompositionRow {
     private JPanel panel;
     private JComboBox<RawMaterial> cbMaterial;
     private JTextField txtQuantity;
@@ -225,7 +225,9 @@ private class CompositionRow {
 
     // Method untuk simpan data ke Database
     private void saveBomData() {
-        if (cbFinishedProduct.getSelectedIndex() <= 0) {
+        
+
+        if (cbFinishedProduct.getSelectedItem() == null) {
             JOptionPane.showMessageDialog(this, "Silakan pilih produk jadi terlebih dahulu.");
             return;
         }
@@ -234,6 +236,15 @@ private class CompositionRow {
         System.out.println("Produk: " + cbFinishedProduct.getSelectedItem());
         
         for (CompositionRow row : compositionRows) {
+
+            try {
+            itemController.registerBOM((Produk) cbFinishedProduct.getSelectedItem(), row.getSelectedMaterial(), Double.parseDouble(row.getQuantityText()));
+            }    
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+            
+            //Validasi SOUT
             RawMaterial rm = row.getSelectedMaterial();
             String qty = row.getQuantityText();
             if (rm != null && !qty.isEmpty()) {
