@@ -5,9 +5,10 @@ public class Router {
     public static String REGISTER_PAGE = "register_page";
     public static String ETALASE_PAGE = "etalase_page";
     public static String RIWAYAT_TRANSAKSI = "riwayat_transaksi";
-    public static String BUYER_DASHBOARD = "buyer_dashboard";
-    public static String MANAGER_DASHBOARD = "manager_dashboard";
+    public static String MAIN_SHELL = "main_shell";
     public static String WAREHOUSE_PAGE = "warehouse_page";
     public static String PRODUKSI_PAGE = "produksi_page";
-    public static String PRODUK_DETAIL = "Detail_Produk";
+    public static String FINANCE_PAGE = "finance_page";
+    public static String BOM_PAGE = "BOM_PAGE";
+    public static String KERANJANG_PAGE = "KERANJANG_PAGE";
 }

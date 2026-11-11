@@ -28,7 +28,8 @@ public class ProdukRepository {
                     resultSet.getDouble("harga_rata2_produk"),
                     resultSet.getDouble("harga_jual"),
                     resultSet.getString("imageUrl"),
-                    resultSet.getString("deskripsi_produk")
+                    resultSet.getString("deskripsi_produk"),
+                    resultSet.getDouble("jumlah_stok")
                 );
             }
         } catch (SQLException e) {
@@ -57,7 +58,8 @@ public class ProdukRepository {
                     resultSet.getDouble("harga_rata2_produk"),
                     resultSet.getDouble("harga_jual"),
                     resultSet.getString("imageUrl"),
-                    resultSet.getString("deskripsi_produk")
+                    resultSet.getString("deskripsi_produk"),
+                    resultSet.getDouble("jumlah_stok")
                 );
 
                 allList.add(produk);

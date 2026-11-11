@@ -8,8 +8,9 @@ public class Produk {
     private double harga_jual;
     private String imgUrl;
     private String deskripsiProduk;
+    private double stok ;
 
-    public Produk(int id_produk, String nama_produk, String satuan_produk, double harga_rata2_produk, double harga_jual, String url, String deskripsi){
+    public Produk(int id_produk, String nama_produk, String satuan_produk, double harga_rata2_produk, double harga_jual, String url, String deskripsi,double stok){
         this.id_produk = id_produk;
         this.nama_produk = nama_produk;
         this.harga_rata2_produk = harga_rata2_produk;
@@ -17,14 +18,15 @@ public class Produk {
         this.harga_jual = harga_jual;
         this.imgUrl = url;
         this.deskripsiProduk = deskripsi;
+        this.stok = stok;
     }
-
+    public double getStcok(){
+        return this.stok;
+    }
 
     public int getIdProduk(){
         return this.id_produk;
     }
-
-
 
     public String getNamaProduk(){
         return this.nama_produk;
