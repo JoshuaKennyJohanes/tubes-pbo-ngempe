@@ -13,20 +13,22 @@ import tubes.prak.pbo.models.RawMaterial;
 
 public class RawMaterialRepository {
 
-    public void registerItem(RawMaterial rawMaterial) throws SQLException{
-        String sql =""" 
-                    INSERT INTO raw_material (nama_material, satuan_material, harga_rata2_bahan_baku, jumlah_stok, batas_kritis)
-                    VALUES (?,?,?,?,?)
-                """;
+    public void registerItem(RawMaterial rawMaterial) throws SQLException {
+        String sql = """
+            INSERT INTO raw_material (nama_material, satuan_material, harga_rata2_bahan_baku,
+                                      jumlah_stok, batas_kritis, image_url)
+            VALUES (?,?,?,?,?,?)
+            """;
 
-        try(Connection conn = DatabaseConfig.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)){
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, rawMaterial.getNama());
             stmt.setString(2, rawMaterial.getSatuan().name());
             stmt.setDouble(3, rawMaterial.getHargaRata2());
             stmt.setDouble(4, rawMaterial.getJumlahStok());
             stmt.setDouble(5, rawMaterial.getBatasKritis());
+            stmt.setString(6, rawMaterial.getImageUrl());
             stmt.executeUpdate();
-
         }
     }
 
@@ -47,7 +49,8 @@ public class RawMaterialRepository {
                 double harga_rata2_bahan_baku = resultSet.getDouble("harga_rata2_bahan_baku");
                 double jumlah_stok = resultSet.getDouble("jumlah_stok");
                 double batas_kritis = resultSet.getDouble("batas_kritis");
-                RawMaterial newRawMaterial = new RawMaterial(id_raw_material, nama_material, satuan_material, harga_rata2_bahan_baku, batas_kritis, jumlah_stok);
+                String image_url = resultSet.getString("image_url");
+                RawMaterial newRawMaterial = new RawMaterial(id_raw_material, nama_material, satuan_material, harga_rata2_bahan_baku, batas_kritis, jumlah_stok, image_url);
                 listRawMaterial.add(newRawMaterial);
             }
 

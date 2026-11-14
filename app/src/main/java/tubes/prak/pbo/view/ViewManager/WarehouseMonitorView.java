@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.swing.JComboBox;
@@ -54,7 +55,11 @@ public class WarehouseMonitorView extends JPanel {
      * Memuat data dari repositori ke memori local
      */
     private void loadDataFromRepositories() {
-        this.listProduk = produkRepo.findAllProduk();
+        try {
+            this.listProduk = produkRepo.findAllProduk();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         this.listRawMaterial = materialRepo.findAllRawMaterial();
     }
 

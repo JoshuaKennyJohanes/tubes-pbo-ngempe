@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,9 +58,14 @@ public class BomView extends JPanel{
         masterRawMaterials = itemController.getAllMaterials();
         cbFinishedProduct = new JComboBox<>();
 
-        for(Produk item : itemController.getAllProduk()){
-            cbFinishedProduct.addItem(item);
+        try{
+            for(Produk item : itemController.getAllProduk()){
+                cbFinishedProduct.addItem(item);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
+
 
     }
 

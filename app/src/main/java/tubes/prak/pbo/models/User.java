@@ -12,7 +12,8 @@ public class User {
     private Role role;
     private String userName;
     private String password;
-    private List<Produk> keranjangUser = new ArrayList<>();
+    private List<BarangKeranjang> keranjangUser = new ArrayList<>();
+
 
 
 
@@ -25,6 +26,19 @@ public class User {
         this.password = password;
         
     }
+
+    public List<BarangKeranjang> getBarangKeranjang(){
+        System.out.println(keranjangUser.size());
+        return this.keranjangUser;
+    }
+    public void tambahkeKeranjang(BarangKeranjang item){
+        keranjangUser.add(item);
+    }
+    public String isiKeranjang(){
+        System.out.println(keranjangUser.size());
+        return "";
+    }
+
 
     public int getId(){
         return this.id;

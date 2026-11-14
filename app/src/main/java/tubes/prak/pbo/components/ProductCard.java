@@ -26,17 +26,17 @@ public class ProductCard extends JPanel {
     public ProductCard(ImageIcon icon, String title, String price) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setOpaque(false);
-        setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15)); 
+        setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         labelImage = new JLabel(icon);
         labelImage.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
+
         // Title Produk
         labelTitle = new JLabel(title);
         labelTitle.setFont(new Font("SansSerif", Font.BOLD, 18));
         labelTitle.setForeground(new Color(30, 35, 45));
         labelTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
+
         // Price Produk
         labelPrice = new JLabel(price);
         labelPrice.setFont(new Font("SansSerif", Font.BOLD, 18));
@@ -76,5 +76,9 @@ public class ProductCard extends JPanel {
         g2.drawRoundRect(0, 0, width - 1, height - 1, cornerRadius, cornerRadius);
 
         g2.dispose();
+    }
+
+    public DetailButton getDetailButton(){
+        return detailButton;
     }
 }

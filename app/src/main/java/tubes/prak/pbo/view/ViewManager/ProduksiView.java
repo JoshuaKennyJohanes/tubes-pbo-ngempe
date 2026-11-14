@@ -1,12 +1,37 @@
 package tubes.prak.pbo.view.ViewManager;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import com.sun.source.util.JavacTask;
+import tubes.prak.pbo.controller.ItemController;
+import tubes.prak.pbo.models.RawMaterial;
 
-public class ProduksiView extends JPanel{
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProduksiView extends JTabbedPane{
+
+    ItemController itemController = new ItemController();
+
+    //List RawMaterial yang dipilih
+    List<RawMaterial> avaibleRawMaterials;
+//    Produk selectedProduk;
+
 
     public ProduksiView (){
-        add(new JLabel("Ini Panel Produksi"));
+        //load utama (2 komponen) header (isinya ada planned production --> bentuk tabel), tombol untuk tambah
+        
+
+
+
     }
+
+
+    public void generateProductionForm(){
+        JPanel productionForm = new JPanel();
+
+    }
+
+
+
     
 }

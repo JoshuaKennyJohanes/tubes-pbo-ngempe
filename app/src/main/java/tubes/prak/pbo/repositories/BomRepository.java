@@ -15,7 +15,7 @@ public class BomRepository {
             VALUES (?,?,?);
             """;
         try (Connection conn = DatabaseConfig.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)){
-            stmt.setInt(1, produk.getId());
+            stmt.setInt(1, produk.getIdProduk());
             stmt.setInt(2, rawMaterial.getId());
             stmt.setDouble(3, qty);
             stmt.executeUpdate();
