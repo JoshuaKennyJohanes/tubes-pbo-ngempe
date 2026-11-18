@@ -21,6 +21,7 @@ import tubes.prak.pbo.view.ViewPembeli.RiwayatTransaksiView;
 
 public class MainShell extends JPanel {
     private Keranjang panelKeranjang;
+    private RiwayatTransaksiView dataRiwayat;
     private JPanel mainContentPanel;
     private CardLayout contentCardLayout;
 
@@ -39,11 +40,12 @@ public class MainShell extends JPanel {
 
         
         panelKeranjang = new Keranjang(user);
+        dataRiwayat  = new RiwayatTransaksiView(user);
 
         mainContentPanel.add(new EtalaseView(mainContentPanel , contentCardLayout,user,panelKeranjang),Router.ETALASE_PAGE);
         
         mainContentPanel.add(panelKeranjang,Router.KERANJANG_PAGE);
-        mainContentPanel.add(new RiwayatTransaksiView(user),Router.RIWAYAT_TRANSAKSI);
+        mainContentPanel.add(dataRiwayat,Router.RIWAYAT_TRANSAKSI);
 
         mainContentPanel.add(new WarehouseView(), Router.WAREHOUSE_PAGE);
         mainContentPanel.add(new ProduksiView(), Router.PRODUKSI_PAGE);
@@ -54,7 +56,7 @@ public class MainShell extends JPanel {
     }
 
     public void buildNavbarAndDefaultPanel(User user){
-        NavbarPanel navbar = new NavbarPanel(user,panelKeranjang);
+        NavbarPanel navbar = new NavbarPanel(user,panelKeranjang,dataRiwayat);
 
         if(Session.getSession().getRole().equals(Role.MANAGER)){
             //show default manager

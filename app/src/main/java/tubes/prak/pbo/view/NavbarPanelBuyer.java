@@ -15,6 +15,7 @@ import tubes.prak.pbo.models.User;
 import tubes.prak.pbo.util.Router;
 import tubes.prak.pbo.util.Session;
 import tubes.prak.pbo.view.ViewPembeli.Keranjang;
+import tubes.prak.pbo.view.ViewPembeli.RiwayatTransaksiView;
 
 public class NavbarPanelBuyer extends JPanel {
 
@@ -51,16 +52,16 @@ public class NavbarPanelBuyer extends JPanel {
             cardLayoutMainContent.show(mainContentPanel,Router.ETALASE_PAGE);
         });
         btnRiwayat.addActionListener(e->{
+            RiwayatTransaksiView dataRiwayat = new RiwayatTransaksiView(user);
+
+            mainContentPanel.add(dataRiwayat,Router.RIWAYAT_TRANSAKSI);
 
             cardLayoutMainContent.show(mainContentPanel,Router.RIWAYAT_TRANSAKSI);
         });
         btnKeranjang.addActionListener(e ->{
             Keranjang panelKeranjang = new Keranjang(user);
             
-            mainContentPanel.add(
-                panelKeranjang,
-                Router.KERANJANG_PAGE
-            );
+            mainContentPanel.add(panelKeranjang, Router.KERANJANG_PAGE);
             cardLayoutMainContent.show(mainContentPanel, Router.KERANJANG_PAGE);
         });
 

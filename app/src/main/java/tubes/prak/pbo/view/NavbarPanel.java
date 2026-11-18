@@ -16,10 +16,11 @@ import tubes.prak.pbo.models.User;
 import tubes.prak.pbo.util.Router;
 import tubes.prak.pbo.util.Session;
 import tubes.prak.pbo.view.ViewPembeli.Keranjang;
+import tubes.prak.pbo.view.ViewPembeli.RiwayatTransaksiView;
 
 public class NavbarPanel extends JPanel {
 
-    public NavbarPanel(User user,Keranjang panelKeranjang) {
+    public NavbarPanel(User user,Keranjang panelKeranjang,RiwayatTransaksiView dataRiwayat) {
 
         // Atur layout dan warna background navbar (sebelah kiri)
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -59,6 +60,7 @@ public class NavbarPanel extends JPanel {
             NavigationController.showSubPage(Router.ETALASE_PAGE);
         });
         btnRiwayat.addActionListener(e -> {
+            dataRiwayat.refreshKeranjang(user);
             NavigationController.showSubPage(Router.RIWAYAT_TRANSAKSI);
         });
         btnKeranjang.addActionListener(e ->{

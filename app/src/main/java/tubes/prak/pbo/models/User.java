@@ -25,7 +25,10 @@ public class User {
         this.password = password;
         
     }
-
+    public List<BarangKeranjang> setKosongKeranjang(){
+        keranjangUser.clear();
+        return this.keranjangUser;
+    }
     public List<BarangKeranjang> getBarangKeranjang(){
         System.out.println(keranjangUser.size());
         return this.keranjangUser;

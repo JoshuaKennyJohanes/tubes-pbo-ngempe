@@ -3,14 +3,18 @@ package tubes.prak.pbo.view.ViewPembeli;
 
 import java.awt.BorderLayout;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import tubes.prak.pbo.exception.InvalidCredentialsException;
 import tubes.prak.pbo.models.BarangKeranjang;
 import tubes.prak.pbo.models.User;
+import tubes.prak.pbo.repositories.SalesOrderRespository;
 
 public class Keranjang extends JPanel{
     private DefaultTableModel modeltable;
@@ -18,7 +22,8 @@ public class Keranjang extends JPanel{
 
     private JLabel labeltotalbayar;
     private double totalbayar;
-
+    private JButton btnCheckout;
+    private SalesOrderRespository repo;
     public Keranjang(User user) {
 
         setLayout(new BorderLayout());
@@ -26,18 +31,56 @@ public class Keranjang extends JPanel{
         String[] kolom = {
             "Nama Produk",
             "Jumlah Produk",
-            "Jumlah Total"
+            "Jumlah Total",
+            "Hilangkan dari Keranjang"
         };
 
         modeltable = new DefaultTableModel(kolom, 0);
         labeltotalbayar = new JLabel();
         table = new JTable(modeltable);
+        btnCheckout = new JButton();
 
         add(new JLabel("Keranjang"), BorderLayout.NORTH);
         add(new JScrollPane(table), BorderLayout.CENTER);
-        add(labeltotalbayar,BorderLayout.SOUTH);
+        
+        JPanel panelBawah = new JPanel(new BorderLayout());
 
-        refreshKeranjang(user);
+        panelBawah.add(labeltotalbayar, BorderLayout.CENTER);
+        
+        btnCheckout = new JButton("Checkout");
+        panelBawah.add(btnCheckout, BorderLayout.EAST);
+
+        add(panelBawah, BorderLayout.SOUTH);
+
+
+        btnCheckout.addActionListener(e -> {
+            try {
+
+                repo = new SalesOrderRespository();
+
+                boolean cek = repo.checkout(user);
+                if(cek == false){
+                    throw new InvalidCredentialsException("Keranjang Masih Kosong");
+                }
+                user.setKosongKeranjang();
+                refreshKeranjang(user);
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Checkout berhasil!"
+                );
+
+                refreshKeranjang(user);
+
+            } catch (InvalidCredentialsException ex) {
+
+                ex.printStackTrace();
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Checkout gagal!"
+                );
+            }
+        });
     }
     public void refreshKeranjang(User user) {
             
@@ -49,7 +92,8 @@ public class Keranjang extends JPanel{
             modeltable.addRow(new Object[] {
                 produk.getNamaBarang(),
                 produk.getJumlah(),
-                produk.getHargaTotal()
+                produk.getHargaTotal(),
+                
             });
             totalbayar += produk.getHargaTotal();
         }
