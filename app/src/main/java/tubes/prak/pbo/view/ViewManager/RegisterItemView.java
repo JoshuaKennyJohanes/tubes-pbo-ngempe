@@ -23,6 +23,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -43,6 +45,7 @@ public class RegisterItemView extends JPanel {
 
     // Komponen form Product
     private JTextField txtProductName, txtProductPrice, txtProductCriticalLimit;
+    private JTextArea txtProductDescription;
     private JComboBox<Satuan> cbProductUnit;
     private JLabel lblProductPreview;
     private File productImage;
@@ -57,7 +60,7 @@ public class RegisterItemView extends JPanel {
         setLayout(new BorderLayout(10, 10));
 
         // --- PANEL ATAS: Pilihan Jenis Item ---
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 15));
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
         topPanel.add(new JLabel("Pilih Jenis Item:"));
 
         String[] itemTypes = { "-- Pilih Jenis --", "Product", "Raw Material" };
@@ -79,7 +82,7 @@ public class RegisterItemView extends JPanel {
         add(cardPanel, BorderLayout.CENTER);
 
         // --- PANEL BAWAH: Tombol Action ---
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
         JButton btnSubmit = new JButton("Simpan");
         bottomPanel.add(btnSubmit);
         add(bottomPanel, BorderLayout.SOUTH);
@@ -99,11 +102,6 @@ public class RegisterItemView extends JPanel {
         btnSubmit.addActionListener(e -> handleSubmit());
     }
 
-    // ------------------------------------------------------------------
-    // Pembuatan form
-    // ------------------------------------------------------------------
-
-    /** Membungkus form supaya menempel di atas dan tidak melar memenuhi seluruh tinggi panel. */
     private JPanel wrapTop(JPanel form) {
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
@@ -115,7 +113,7 @@ public class RegisterItemView extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridy = row;
         gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.anchor = GridBagConstraints.WEST;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
 
         gbc.gridx = 0;
         gbc.weightx = 0;
@@ -128,7 +126,7 @@ public class RegisterItemView extends JPanel {
         panel.add(component, gbc);
     }
 
-    // Form khusus Produk
+    // Form khusus Produk (dengan tambahan Deskripsi Produk)
     private JPanel createProductForm() {
         JPanel panel = new JPanel(new GridBagLayout());
 
@@ -137,11 +135,17 @@ public class RegisterItemView extends JPanel {
         txtProductPrice = new JTextField();
         txtProductCriticalLimit = new JTextField();
 
+        txtProductDescription = new JTextArea(3, 25);
+        txtProductDescription.setLineWrap(true);
+        txtProductDescription.setWrapStyleWord(true);
+        JScrollPane scrollDesc = new JScrollPane(txtProductDescription);
+
         addRow(panel, 0, "Nama Produk:", txtProductName);
         addRow(panel, 1, "Satuan:", cbProductUnit);
         addRow(panel, 2, "Harga Jual:", txtProductPrice);
         addRow(panel, 3, "Batas Kritis Warehouse:", txtProductCriticalLimit);
-        addRow(panel, 4, "Foto Produk:", createImagePicker(true));
+        addRow(panel, 4, "Deskripsi Produk (Opsional):", scrollDesc);
+        addRow(panel, 5, "Foto Produk:", createImagePicker(true));
 
         return panel;
     }
@@ -169,10 +173,6 @@ public class RegisterItemView extends JPanel {
     private Satuan[] satuanOptions() {
         return new Satuan[] { Satuan.GR, Satuan.KG, Satuan.L, Satuan.ML, Satuan.PACK, Satuan.PCS, Satuan.TABUNG };
     }
-
-    // ------------------------------------------------------------------
-    // Pemilih gambar
-    // ------------------------------------------------------------------
 
     private JPanel createImagePicker(boolean isProduct) {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
@@ -224,7 +224,6 @@ public class RegisterItemView extends JPanel {
         return panel;
     }
 
-    /** Menampilkan gambar pada label dengan mempertahankan rasio aspek. */
     private void showPreview(JLabel label, BufferedImage img) {
         double scale = Math.min((double) PREVIEW_SIZE / img.getWidth(), (double) PREVIEW_SIZE / img.getHeight());
         int w = Math.max(1, (int) (img.getWidth() * scale));
@@ -239,10 +238,6 @@ public class RegisterItemView extends JPanel {
         label.setIcon(null);
         label.setText(NO_PHOTO_TEXT);
     }
-
-    // ------------------------------------------------------------------
-    // Logic saat tombol Simpan diklik
-    // ------------------------------------------------------------------
 
     private void handleSubmit() {
         String selectedType = (String) cbItemType.getSelectedItem();
@@ -269,8 +264,9 @@ public class RegisterItemView extends JPanel {
         Satuan unit = (Satuan) cbProductUnit.getSelectedItem();
         double price = Double.parseDouble(txtProductPrice.getText().trim());
         int limit = Integer.parseInt(txtProductCriticalLimit.getText().trim());
+        String description = txtProductDescription.getText().trim();
 
-        itemController.registerProduk(name, unit, price, limit, productImage);
+        itemController.registerProduk(name, unit, price, limit, description, productImage);
 
         JOptionPane.showMessageDialog(this,
                 "Product Berhasil Disimpan:\n" +
@@ -283,6 +279,7 @@ public class RegisterItemView extends JPanel {
         txtProductName.setText("");
         txtProductPrice.setText("");
         txtProductCriticalLimit.setText("");
+        txtProductDescription.setText("");
         cbProductUnit.setSelectedIndex(0);
         productImage = null;
         resetPreview(lblProductPreview);

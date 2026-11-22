@@ -209,4 +209,187 @@ public class ItemController {
         }
         bomRepository.deleteByProdukId(idProduk);
     }
+
+// Ganti/tambahkan method-method berikut di dalam class ItemController (method BOM & validasi stok tetap dipertahankan)
+
+    public List<Produk> getAllProduk() throws SQLException {
+        return produkRepo.findAllProduk();
+    }
+
+    public void registerProduk(String namaProduk, Satuan satuanProduk, double hargaJualProduk,
+                               int stokKritis, String deskripsiProduk, File gambar) throws Exception {
+
+        if (namaProduk == null || namaProduk.isBlank() || satuanProduk == null
+                || hargaJualProduk <= 0 || stokKritis <= 0) {
+            throw new Exception("Nama, satuan, harga jual, dan batas kritis harus diisi dengan valid!");
+        }
+        if (produkRepo.isNamaProdukExists(namaProduk, null)) {
+            throw new Exception("Nama produk \"" + namaProduk.trim() + "\" sudah terdaftar!");
+        }
+
+        String cleanDeskripsi = (deskripsiProduk != null) ? deskripsiProduk.trim() : "";
+        String imageUrl = ImageStorage.save(gambar, "produk");
+
+        try {
+            Produk newProduk = new Produk(
+                    0,
+                    namaProduk.trim(),
+                    satuanProduk.name(),
+                    0,
+                    hargaJualProduk,
+                    imageUrl,
+                    cleanDeskripsi,
+                    0,
+                    stokKritis
+            );
+            produkRepo.registerProduk(newProduk);
+        } catch (Exception e) {
+            ImageStorage.delete(imageUrl);
+            throw e;
+        }
+    }
+
+    // Ganti method updateProduk pada ItemController.java dengan versi berikut
+    public void updateProduk(Produk existingProduk, String namaBaru, double hargaJualBaru,
+                             int stokBaru, int batasKritisBaru, String deskripsiBaru, File gambarBaru) throws Exception {
+        if (existingProduk == null) {
+            throw new Exception("Data produk tidak ditemukan!");
+        }
+        if (namaBaru == null || namaBaru.isBlank()) {
+            throw new Exception("Nama produk tidak boleh kosong!");
+        }
+        if (hargaJualBaru <= 0) {
+            throw new Exception("Harga jual harus lebih dari 0!");
+        }
+        if (stokBaru < 0) {
+            throw new Exception("Jumlah stok tidak boleh kurang dari 0!");
+        }
+        if (batasKritisBaru < 0) {
+            throw new Exception("Batas kritis tidak boleh kurang dari 0!");
+        }
+
+        int stokLama = existingProduk.getStok();
+
+        // Cegah penambahan stok produk dari menu Warehouse (hanya boleh lewat jadwal Produksi)
+        if (stokBaru > stokLama) {
+            throw new Exception(
+                    "Penambahan stok produk tidak diizinkan melalui menu Warehouse!\n" +
+                            "Stok saat ini: " + stokLama + " " + existingProduk.getSatuanProduk() +
+                            ". Gunakan menu Produksi untuk menambah stok produk."
+            );
+        }
+
+        if (produkRepo.isNamaProdukExists(namaBaru, existingProduk.getIdProduk())) {
+            throw new Exception("Update ditolak: Nama produk \"" + namaBaru.trim() + "\" sudah digunakan produk lain!");
+        }
+
+        String oldImageUrl = existingProduk.getImageUrl();
+        String finalImageUrl = oldImageUrl;
+
+        if (gambarBaru != null) {
+            finalImageUrl = ImageStorage.save(gambarBaru, "produk");
+        }
+
+        String cleanDeskripsi = (deskripsiBaru != null) ? deskripsiBaru.trim() : "";
+        int selisihBerkurang = stokLama - stokBaru;
+
+        try {
+            Produk updatedProduk = new Produk(
+                    existingProduk.getIdProduk(),
+                    namaBaru.trim(),
+                    existingProduk.getSatuanProduk(),
+                    existingProduk.getHargaRata2Produk(),
+                    hargaJualBaru,
+                    finalImageUrl,
+                    cleanDeskripsi,
+                    stokBaru,
+                    batasKritisBaru
+            );
+
+            produkRepo.updateProduk(updatedProduk);
+
+            // Jika upload foto baru sukses & DB berhasil di-update, hapus file foto lama
+            if (gambarBaru != null && oldImageUrl != null && !oldImageUrl.equals(finalImageUrl)) {
+                ImageStorage.delete(oldImageUrl);
+            }
+
+            // Jika terjadi pengurangan stok (produk rusak/hilang), panggil hook pencatatan
+            if (selisihBerkurang > 0) {
+                catatSelisihStockOpnameProduk(existingProduk, stokLama, stokBaru, selisihBerkurang);
+            }
+        } catch (Exception e) {
+            // Rollback file foto baru jika gagal update ke database
+            if (gambarBaru != null) {
+                ImageStorage.delete(finalImageUrl);
+            }
+            throw e;
+        }
+    }
+
+    // =========================================================================
+// HOOK PENGEMBANGAN BERIKUTNYA: Integrasi Kerugian Produk ke Finance & Audit Log
+// =========================================================================
+    private void catatSelisihStockOpnameProduk(Produk produk, int stokLama, int stokBaru, int selisihBerkurang) {
+        double nilaiKerugian = selisihBerkurang * produk.getHargaRata2Produk();
+
+        // TODO [FINANCE INTEGRATION]:
+        // Catat sebagai variabel expense (kerugian produk rusak/hilang)
+        // sebesar `nilaiKerugian` ke tabel finance.
+
+        // TODO [AUDIT LOG INTEGRATION]:
+        // Simpan riwayat perubahan stok opname produk (id_produk, stokLama -> stokBaru, selisihBerkurang, user, timestamp)
+        // ke tabel audit_log.
+
+        System.out.println("[STOCK OPNAME PRODUK HOOK] Produk: " + produk.getNamaProduk()
+                + " | Stok: " + stokLama + " -> " + stokBaru
+                + " | Selisih: -" + selisihBerkurang + " " + produk.getSatuanProduk()
+                + " | Est. Expense (HPP): Rp " + nilaiKerugian);
+    }
+    public void updateStokRawMaterial(RawMaterial existingMaterial, double stokBaru) throws Exception {
+        if (existingMaterial == null) {
+            throw new Exception("Data bahan baku tidak ditemukan!");
+        }
+        if (stokBaru < 0) {
+            throw new Exception("Jumlah stok tidak boleh kurang dari 0!");
+        }
+
+        double stokLama = existingMaterial.getJumlahStok();
+
+        // Cegah penambahan stok dari menu Warehouse (hanya boleh lewat Purchase Order)
+        if (stokBaru > stokLama) {
+            throw new Exception(
+                    "Penambahan stok tidak diizinkan melalui menu Warehouse!\n" +
+                            "Stok saat ini: " + stokLama + " " + existingMaterial.getSatuan() +
+                            ". Gunakan menu Purchase Order untuk menambah stok."
+            );
+        }
+
+        double selisihBerkurang = stokLama - stokBaru;
+
+        rawMaterialRepo.updateStokMaterial(existingMaterial.getId(), stokBaru);
+
+        if (selisihBerkurang > 0) {
+            catatSelisihStockOpname(existingMaterial, stokLama, stokBaru, selisihBerkurang);
+        }
+    }
+
+    // =========================================================================
+// HOOK PENGEMBANGAN BERIKUTNYA: Integrasi ke Tabel Finance & Audit Log
+// =========================================================================
+    private void catatSelisihStockOpname(RawMaterial material, double stokLama, double stokBaru, double selisihBerkurang) {
+        double nilaiKerugian = selisihBerkurang * material.getHargaRata2();
+
+        // TODO [FINANCE INTEGRATION]:
+        // Catat sebagai variabel expense (kerugian bahan baku rusak/hilang/busuk)
+        // sebesar `nilaiKerugian` ke tabel finance.
+
+        // TODO [AUDIT LOG INTEGRATION]:
+        // Simpan riwayat perubahan stok opname (id_raw_material, stokLama -> stokBaru, selisihBerkurang, user, timestamp)
+        // ke tabel audit_log.
+
+        System.out.println("[STOCK OPNAME HOOK] Material: " + material.getNama()
+                + " | Stok: " + stokLama + " -> " + stokBaru
+                + " | Selisih: -" + selisihBerkurang + " " + material.getSatuan()
+                + " | Est. Expense: Rp " + nilaiKerugian);
+    }
 }

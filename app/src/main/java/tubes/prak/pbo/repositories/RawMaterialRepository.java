@@ -99,5 +99,21 @@ public class RawMaterialRepository {
         }
     }
 
+    // Tambahkan method ini di dalam class RawMaterialRepository
+    public void updateStokMaterial(int idRawMaterial, double stokBaru) throws SQLException {
+        String sql = """
+        UPDATE public.raw_material
+        SET jumlah_stok = ?
+        WHERE id_raw_material = ?
+        """;
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDouble(1, stokBaru);
+            stmt.setInt(2, idRawMaterial);
+            stmt.executeUpdate();
+        }
+    }
+
     
 }

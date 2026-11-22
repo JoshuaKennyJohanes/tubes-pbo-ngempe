@@ -14,4 +14,5 @@ public class Router {
     public static final String CARD_LIST = "CARD_LIST";
     public static final String CARD_ADD  = "CARD_ADD";
     public static final String CARD_EDIT = "CARD_EDIT";
+    public static String SALES_ODER = "sales_order";
 }
