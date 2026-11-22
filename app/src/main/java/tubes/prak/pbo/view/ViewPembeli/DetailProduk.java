@@ -151,6 +151,7 @@ public class DetailProduk extends JPanel {
         btnTambah.addActionListener(e ->{
             try {
                 String namaprod = produk.getNamaProduk();
+                int idprd = produk.getIdProduk();
                 int jumlah = qtyInput.getValue();
 
                 if(jumlah == 0){
@@ -171,11 +172,8 @@ public class DetailProduk extends JPanel {
                     return;
                 }
 
-                BarangKeranjang isi = new BarangKeranjang(namaprod,jumlah,total);
+                BarangKeranjang isi = new BarangKeranjang(idprd,namaprod,jumlah,total);
                 user.tambahkeKeranjang(isi);
-
-                System.out.println("Isi Barang ada: ");
-                System.out.println(user.getBarangKeranjang());
 
 
                 JOptionPane.showMessageDialog(null,

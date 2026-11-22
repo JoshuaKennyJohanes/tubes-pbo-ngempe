@@ -23,6 +23,7 @@ import tubes.prak.pbo.view.ViewPembeli.RiwayatTransaksiView;
 public class MainShell extends JPanel {
     private Keranjang panelKeranjang;
     private JPanel mainContentPanel;
+    private RiwayatTransaksiView dataRiwayat;
     private CardLayout contentCardLayout;
 
     public MainShell(User user) throws SQLException {
@@ -40,6 +41,7 @@ public class MainShell extends JPanel {
 
 
         panelKeranjang = new Keranjang(user);
+        dataRiwayat  = new RiwayatTransaksiView(user);
 
         mainContentPanel.add(new EtalaseView(mainContentPanel , contentCardLayout,user,panelKeranjang),Router.ETALASE_PAGE);
 
@@ -48,6 +50,7 @@ public class MainShell extends JPanel {
         mainContentPanel.add(new WarehouseView(), Router.WAREHOUSE_PAGE);
         mainContentPanel.add(new ProduksiView(), Router.PRODUKSI_PAGE);
         mainContentPanel.add(new BomView(), Router.BOM_PAGE);
+        mainContentPanel.add(dataRiwayat,Router.RIWAYAT_TRANSAKSI);
 
         add(mainContentPanel,BorderLayout.CENTER);
 

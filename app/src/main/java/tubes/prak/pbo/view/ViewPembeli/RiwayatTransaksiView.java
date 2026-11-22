@@ -11,13 +11,14 @@ import javax.swing.table.DefaultTableModel;
 
 import tubes.prak.pbo.models.User;
 import tubes.prak.pbo.repositories.SalesOrderRespository;
-;
 
 public class RiwayatTransaksiView extends JPanel {
     private DefaultTableModel modelPO;
 
     private JTable tablePO;
     private JTable tableDetail;
+
+    private SalesOrderRespository sor;
 
     public RiwayatTransaksiView(User user) {
         //TRANSAKSI SEMUA
@@ -46,7 +47,7 @@ public class RiwayatTransaksiView extends JPanel {
         content.add(new JLabel("Riwayat Transaksi"));
 
         add(content, BorderLayout.CENTER);
-        SalesOrderRespository sor = new SalesOrderRespository();
+        sor = new SalesOrderRespository();
         sor.loadData(modelPO,user.getId());
 
 
@@ -62,6 +63,11 @@ public class RiwayatTransaksiView extends JPanel {
 
         add(content, BorderLayout.CENTER);
 
+
+    }
+    public void refreshKeranjang(User user) {
+        sor = new SalesOrderRespository();
+        sor.loadData(modelPO, user.getId());
 
     }
 }
