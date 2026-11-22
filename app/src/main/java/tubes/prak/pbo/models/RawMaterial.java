@@ -25,6 +25,8 @@ public class RawMaterial extends Item{
         return this.jumlahStok;
     }
 
+
+
     public String getImageUrl(){
         return this.imageUrl;
     }

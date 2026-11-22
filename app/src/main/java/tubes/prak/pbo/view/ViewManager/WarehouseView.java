@@ -9,9 +9,6 @@ public class WarehouseView extends JTabbedPane {
         // ada fitur tambah item (produk / raw material)
         // ada tab untuk bisa monitor ada produk dan raw material apa saja
 
-        
-
-         
         JPanel registerItemPanel = new JPanel();
         registerItemPanel.add(new RegisterItemView());
         
@@ -20,16 +17,11 @@ public class WarehouseView extends JTabbedPane {
 
         addTab("Register Item", registerItemPanel);
         addTab("Monitor Warehouse", warehouseMonitor);
-        addTab("Bill Of Materials Entry", bomView);
 
         this.addChangeListener(e -> {
             // Index 1 adalah tab "Monitor Warehouse"
             if (getSelectedIndex() == 1) {
                 warehouseMonitor.refreshData(); // Panggil method refreshData() yang sudah kamu buat!
-            }
-
-            if (getSelectedIndex() ==2 ){
-                bomView.loadMasterData();
             }
 
         });

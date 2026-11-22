@@ -69,4 +69,6 @@ public class Produk extends Item{
     public Object[] toTableRow() {
         return new Object[]{getId(), getNama(),getSatuan().name(),getHargaRata2(),getHargaJualProduk(),getStok(),getBatasKritisProduk()};
     }
+
+
 }

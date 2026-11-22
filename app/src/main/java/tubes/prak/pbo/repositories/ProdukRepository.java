@@ -64,4 +64,46 @@ public class ProdukRepository {
             stmt.executeUpdate();
         }
     }
+
+    public static void tambahStokDanUpdateHargaRata2(Connection conn, int idProduk, double jumlahProduksi, double totalHppProduksi) throws SQLException {
+        String sqlSelect = """
+        SELECT jumlah_stok, harga_rata2_produk
+        FROM public.produk
+        WHERE id_produk = ?
+        FOR UPDATE
+        """;
+
+        String sqlUpdate = """
+        UPDATE public.produk
+        SET jumlah_stok = ?, harga_rata2_produk = ?
+        WHERE id_produk = ?
+        """;
+
+        int stokLama;
+        double hargaRata2Lama;
+
+        try (PreparedStatement stmtSelect = conn.prepareStatement(sqlSelect)) {
+            stmtSelect.setInt(1, idProduk);
+            try (ResultSet rs = stmtSelect.executeQuery()) {
+                if (!rs.next()) {
+                    throw new SQLException("Produk dengan ID " + idProduk + " tidak ditemukan.");
+                }
+                stokLama = rs.getInt("jumlah_stok");
+                hargaRata2Lama = rs.getDouble("harga_rata2_produk");
+            }
+        }
+
+        int stokBaru = stokLama + (int) Math.round(jumlahProduksi);
+        double totalNilaiLama = stokLama * hargaRata2Lama;
+        double hargaRata2Baru = (stokBaru > 0)
+                ? (totalNilaiLama + totalHppProduksi) / stokBaru
+                : hargaRata2Lama;
+
+        try (PreparedStatement stmtUpdate = conn.prepareStatement(sqlUpdate)) {
+            stmtUpdate.setInt(1, stokBaru);
+            stmtUpdate.setDouble(2, hargaRata2Baru);
+            stmtUpdate.setInt(3, idProduk);
+            stmtUpdate.executeUpdate();
+        }
+    }
 }

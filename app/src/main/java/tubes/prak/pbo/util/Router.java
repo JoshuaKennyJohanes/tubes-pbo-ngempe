@@ -11,4 +11,7 @@ public class Router {
     public static String PRODUKSI_PAGE = "produksi_page";
     public static String FINANCE_PAGE = "finance_page";
     public static String BOM_PAGE = "BOM_PAGE";
+    public static final String CARD_LIST = "CARD_LIST";
+    public static final String CARD_ADD  = "CARD_ADD";
+    public static final String CARD_EDIT = "CARD_EDIT";
 }

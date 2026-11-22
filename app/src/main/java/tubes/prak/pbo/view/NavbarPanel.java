@@ -37,11 +37,12 @@ public class NavbarPanel extends JPanel {
         // Tombol sisi manager
         DefaultButtonOrange btnWarehouse = new DefaultButtonOrange("Warehouse");
         DefaultButtonOrange btnProduksi = new DefaultButtonOrange("Produksi");
+        DefaultButtonOrange btnBom = new DefaultButtonOrange("BOM Management");
 
 
         //Looping dan list untuk menerapkan design ke semua button
         JButton[] menuButtons = {
-                btnEtalase, btnRiwayat, btnLogout, btnWarehouse, btnProduksi, btnLogout , btnKeranjang
+                btnEtalase, btnRiwayat, btnLogout, btnWarehouse, btnProduksi, btnLogout , btnKeranjang, btnBom
         };
 
         Dimension buttonSize = new Dimension(170, 38);
@@ -77,6 +78,9 @@ public class NavbarPanel extends JPanel {
             NavigationController.showSubPage(Router.PRODUKSI_PAGE);
         });
 
+        btnBom.addActionListener(e-> {
+            NavigationController.showSubPage(Router.BOM_PAGE);
+        });
 
 
         //penambahan button tergantung dengan session.
@@ -86,6 +90,9 @@ public class NavbarPanel extends JPanel {
 
             add(btnProduksi);
             add(Box.createRigidArea(new Dimension(0, 8)));
+
+            add(btnBom);
+            add(Box.createRigidArea(new Dimension(0,8)));
         }
 
         if (Session.getSession().getRole().equals(Role.PEMBELI)) {

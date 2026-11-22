@@ -61,5 +61,43 @@ public class RawMaterialRepository {
         return listRawMaterial;
     }
 
+    public static void kurangiStokMaterial(Connection conn, int idRawMaterial, String namaMaterial, double qtyDipakai) throws SQLException {
+        String sqlCek = """
+        SELECT jumlah_stok
+        FROM public.raw_material
+        WHERE id_raw_material = ?
+        FOR UPDATE
+        """;
+
+        String sqlUpdate = """
+        UPDATE public.raw_material
+        SET jumlah_stok = jumlah_stok - ?
+        WHERE id_raw_material = ?
+        """;
+
+        try (PreparedStatement stmtCek = conn.prepareStatement(sqlCek)) {
+            stmtCek.setInt(1, idRawMaterial);
+            try (ResultSet rs = stmtCek.executeQuery()) {
+                if (!rs.next()) {
+                    throw new SQLException("Bahan baku '" + namaMaterial + "' (ID: " + idRawMaterial + ") tidak ditemukan.");
+                }
+
+                double stokTersedia = rs.getDouble("jumlah_stok");
+                if (stokTersedia < qtyDipakai) {
+                    throw new SQLException(
+                            "Stok tidak mencukupi untuk " + namaMaterial +
+                                    " (Butuh: " + qtyDipakai + ", Tersedia: " + stokTersedia + ")"
+                    );
+                }
+            }
+        }
+
+        try (PreparedStatement stmtUpdate = conn.prepareStatement(sqlUpdate)) {
+            stmtUpdate.setDouble(1, qtyDipakai);
+            stmtUpdate.setInt(2, idRawMaterial);
+            stmtUpdate.executeUpdate();
+        }
+    }
+
     
 }

@@ -12,6 +12,7 @@ import tubes.prak.pbo.controller.NavigationController;
 import tubes.prak.pbo.models.User;
 import tubes.prak.pbo.util.Router;
 import tubes.prak.pbo.util.Session;
+import tubes.prak.pbo.view.ViewManager.BomView;
 import tubes.prak.pbo.view.ViewManager.ProduksiView;
 import tubes.prak.pbo.view.ViewManager.WarehouseView;
 import tubes.prak.pbo.view.ViewPembeli.EtalaseView;
@@ -44,10 +45,9 @@ public class MainShell extends JPanel {
 
         mainContentPanel.add(panelKeranjang,Router.KERANJANG_PAGE);
         mainContentPanel.add(new RiwayatTransaksiView(user),Router.RIWAYAT_TRANSAKSI);
-
         mainContentPanel.add(new WarehouseView(), Router.WAREHOUSE_PAGE);
         mainContentPanel.add(new ProduksiView(), Router.PRODUKSI_PAGE);
-
+        mainContentPanel.add(new BomView(), Router.BOM_PAGE);
 
         add(mainContentPanel,BorderLayout.CENTER);
 
