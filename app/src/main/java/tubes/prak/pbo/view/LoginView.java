@@ -30,9 +30,9 @@ public class LoginView extends JPanel {
     private final JButton signUpButton = new DefaultButtonOrange("Sign Up");
     private final JLabel messageLabel = new JLabel(" ");
 
-    
-    
-    
+
+
+
     public LoginView(JPanel mainPanel, CardLayout cardLayout) {
         setLayout(new GridBagLayout());
         JPanel form = new JPanel(new GridLayout(0, 1, 8, 8));
@@ -53,11 +53,11 @@ public class LoginView extends JPanel {
     }
     
     public void handleLoginButton(JButton loginButton, JPanel mainPanel, CardLayout cardLayout){
-        
+
         loginButton.addActionListener(e -> {
             String username = txtusername.getText();
             String password = new String(txtpassword.getPassword());
-            
+
             try {
                 loginController.login(username, password);
                 User user = Session.getSession();
@@ -71,7 +71,7 @@ public class LoginView extends JPanel {
 
                 // 2. Tambahkan ke mainPanel (Root Panel)
                 mainPanel.add(newMainShell, Router.MAIN_SHELL);
-                
+
                 // 3. Bangun Navbar & Default Panel
                 newMainShell.buildNavbarAndDefaultPanel(user);
 
@@ -81,23 +81,23 @@ public class LoginView extends JPanel {
 
                 // 5. Tampilkan halaman MainShell
                 NavigationController.showRootPage(Router.MAIN_SHELL);
-                
+
             }
-        catch (IllegalArgumentException ex) {
-            ex.printStackTrace();
+            catch (IllegalArgumentException ex) {
+                ex.printStackTrace();
                 JOptionPane.showMessageDialog(LoginView.this, ex.getMessage(), "Input Tidak Valid", JOptionPane.WARNING_MESSAGE);
             }
-        catch (InvalidCredentialsException invd){
+            catch (InvalidCredentialsException invd){
                 JOptionPane.showMessageDialog(LoginView.this, invd.getMessage(),"Login Gagal", JOptionPane.ERROR_MESSAGE);
-        }
-        catch (Exception ex){
+            }
+            catch (Exception ex){
                 JOptionPane.showMessageDialog(LoginView.this, "Terjadi Kesalahan: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 ex.printStackTrace();
-        }
-    });
-}
+            }
+        });
+    }
 
-   
+
 
     public JButton getLoginButton() {
         return loginButton;

@@ -23,7 +23,7 @@ public class User {
         this.role = role;
         this.userName = userName;
         this.password = password;
-        
+
     }
     public List<BarangKeranjang> setKosongKeranjang(){
         keranjangUser.clear();
@@ -40,6 +40,21 @@ public class User {
         System.out.println(keranjangUser.size());
         return "";
     }
+    // public List<BarangKeranjang> setKosongKeranjang(){
+    //     keranjangUser.clear();
+    //     return this.keranjangUser;
+    // }
+    // public List<BarangKeranjang> getBarangKeranjang(){
+    //     System.out.println(keranjangUser.size());
+    //     return this.keranjangUser;
+    // }
+    // public void tambahkeKeranjang(BarangKeranjang item){
+    //     keranjangUser.add(item);
+    // }
+    // public String isiKeranjang(){
+    //     System.out.println(keranjangUser.size());
+    //     return "";
+    // }
 
     public int getId(){
         return this.id;

@@ -3,7 +3,7 @@
     "adapter": "Java",
     "request": "launch",
     "label": "mainApp",
-    "mainClass": "app.main.src.tubes.prak.pbo.App",
+    "mainClass": "App.java",
   },
   {
     "adapter": "Java",

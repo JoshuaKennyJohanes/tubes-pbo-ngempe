@@ -14,33 +14,33 @@ import tubes.prak.pbo.repositories.SalesOrderRespository;
 
 public class RiwayatTransaksiView extends JPanel {
     private DefaultTableModel modelPO;
-    
+
     private JTable tablePO;
     private JTable tableDetail;
 
     private SalesOrderRespository sor;
-    
+
     public RiwayatTransaksiView(User user) {
         //TRANSAKSI SEMUA
         setLayout(new BorderLayout());
-        
+
         String[] kolom = {
-            "ID",
-            "Tanggal Pesan",
-            "Jumlah",
-            "Cara_Bayar",
-            "Status Pembayaran"
+                "ID",
+                "Tanggal Pesan",
+                "Jumlah",
+                "Cara_Bayar",
+                "Status Pembayaran"
         };
         modelPO = new DefaultTableModel(kolom, 0){
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
-             }
+            }
         };
         tablePO = new JTable(modelPO);
 
         tablePO.setModel(modelPO);
-        
+
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 
@@ -49,11 +49,11 @@ public class RiwayatTransaksiView extends JPanel {
         add(content, BorderLayout.CENTER);
         sor = new SalesOrderRespository();
         sor.loadData(modelPO,user.getId());
-        
+
 
         //TRANSAKSI RINCIAN
         content.add(new JLabel("Klik transaksi untuk melihat rincian"));
-        
+
         content.add(new JScrollPane(tablePO));
 
         content.add(new JLabel("Rincian Transaksi"));
@@ -63,12 +63,12 @@ public class RiwayatTransaksiView extends JPanel {
 
         add(content, BorderLayout.CENTER);
 
-        
+
     }
     public void refreshKeranjang(User user) {
         sor = new SalesOrderRespository();
         sor.loadData(modelPO, user.getId());
-          
+
     }
 }
 

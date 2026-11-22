@@ -13,24 +13,26 @@ import tubes.prak.pbo.models.RawMaterial;
 
 public class RawMaterialRepository {
 
-    public void registerItem(RawMaterial rawMaterial) throws SQLException{
-        String sql =""" 
-                    INSERT INTO raw_material (nama_material, satuan_material, harga_rata2_bahan_baku, jumlah_stok, batas_kritis)
-                    VALUES (?,?,?,?,?)
-                """;
+    public void registerItem(RawMaterial rawMaterial) throws SQLException {
+        String sql = """
+            INSERT INTO raw_material (nama_material, satuan_material, harga_rata2_bahan_baku,
+                                      jumlah_stok, batas_kritis, image_url)
+            VALUES (?,?,?,?,?,?)
+            """;
 
-        try(Connection conn = DatabaseConfig.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)){
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, rawMaterial.getNama());
             stmt.setString(2, rawMaterial.getSatuan().name());
             stmt.setDouble(3, rawMaterial.getHargaRata2());
             stmt.setDouble(4, rawMaterial.getJumlahStok());
             stmt.setDouble(5, rawMaterial.getBatasKritis());
+            stmt.setString(6, rawMaterial.getImageUrl());
             stmt.executeUpdate();
-
         }
     }
 
-    public List<RawMaterial> findAllRawMaterial() throws SQLException{
+    public List<RawMaterial> findAllRawMaterial(){
         List<RawMaterial> listRawMaterial = new ArrayList<>();
 
         String sql = """
@@ -47,12 +49,70 @@ public class RawMaterialRepository {
                 double harga_rata2_bahan_baku = resultSet.getDouble("harga_rata2_bahan_baku");
                 double jumlah_stok = resultSet.getDouble("jumlah_stok");
                 double batas_kritis = resultSet.getDouble("batas_kritis");
-                RawMaterial newRawMaterial = new RawMaterial(id_raw_material, nama_material, satuan_material, harga_rata2_bahan_baku, batas_kritis, jumlah_stok);
+                String image_url = resultSet.getString("image_url");
+                RawMaterial newRawMaterial = new RawMaterial(id_raw_material, nama_material, satuan_material, harga_rata2_bahan_baku, batas_kritis, jumlah_stok, image_url);
                 listRawMaterial.add(newRawMaterial);
             }
+
+        } catch (SQLException e){
+            e.printStackTrace();
         }
 
         return listRawMaterial;
+    }
+
+    public static void kurangiStokMaterial(Connection conn, int idRawMaterial, String namaMaterial, double qtyDipakai) throws SQLException {
+        String sqlCek = """
+        SELECT jumlah_stok
+        FROM public.raw_material
+        WHERE id_raw_material = ?
+        FOR UPDATE
+        """;
+
+        String sqlUpdate = """
+        UPDATE public.raw_material
+        SET jumlah_stok = jumlah_stok - ?
+        WHERE id_raw_material = ?
+        """;
+
+        try (PreparedStatement stmtCek = conn.prepareStatement(sqlCek)) {
+            stmtCek.setInt(1, idRawMaterial);
+            try (ResultSet rs = stmtCek.executeQuery()) {
+                if (!rs.next()) {
+                    throw new SQLException("Bahan baku '" + namaMaterial + "' (ID: " + idRawMaterial + ") tidak ditemukan.");
+                }
+
+                double stokTersedia = rs.getDouble("jumlah_stok");
+                if (stokTersedia < qtyDipakai) {
+                    throw new SQLException(
+                            "Stok tidak mencukupi untuk " + namaMaterial +
+                                    " (Butuh: " + qtyDipakai + ", Tersedia: " + stokTersedia + ")"
+                    );
+                }
+            }
+        }
+
+        try (PreparedStatement stmtUpdate = conn.prepareStatement(sqlUpdate)) {
+            stmtUpdate.setDouble(1, qtyDipakai);
+            stmtUpdate.setInt(2, idRawMaterial);
+            stmtUpdate.executeUpdate();
+        }
+    }
+
+    // Tambahkan method ini di dalam class RawMaterialRepository
+    public void updateStokMaterial(int idRawMaterial, double stokBaru) throws SQLException {
+        String sql = """
+        UPDATE public.raw_material
+        SET jumlah_stok = ?
+        WHERE id_raw_material = ?
+        """;
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDouble(1, stokBaru);
+            stmt.setInt(2, idRawMaterial);
+            stmt.executeUpdate();
+        }
     }
 
     

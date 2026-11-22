@@ -12,8 +12,9 @@ import tubes.prak.pbo.controller.NavigationController;
 import tubes.prak.pbo.models.User;
 import tubes.prak.pbo.util.Router;
 import tubes.prak.pbo.util.Session;
+import tubes.prak.pbo.view.ViewManager.BomView;
 import tubes.prak.pbo.view.ViewManager.ProduksiView;
-import tubes.prak.pbo.view.ViewManager.PurchaseOrderView;
+import tubes.prak.pbo.view.ViewManager.SalesOrderView;
 import tubes.prak.pbo.view.ViewManager.WarehouseView;
 import tubes.prak.pbo.view.ViewPembeli.EtalaseView;
 import tubes.prak.pbo.view.ViewPembeli.Keranjang;
@@ -22,8 +23,8 @@ import tubes.prak.pbo.view.ViewPembeli.RiwayatTransaksiView;
 
 public class MainShell extends JPanel {
     private Keranjang panelKeranjang;
-    private RiwayatTransaksiView dataRiwayat;
     private JPanel mainContentPanel;
+    private RiwayatTransaksiView dataRiwayat;
     private CardLayout contentCardLayout;
 
     public MainShell(User user) throws SQLException {
@@ -39,25 +40,26 @@ public class MainShell extends JPanel {
         //buat mainContentPanel sebagai subPanel (menu semuanya)
         NavigationController.setContentPanel(mainContentPanel, contentCardLayout);
 
-        
+
         panelKeranjang = new Keranjang(user);
         dataRiwayat  = new RiwayatTransaksiView(user);
 
         mainContentPanel.add(new EtalaseView(mainContentPanel , contentCardLayout,user,panelKeranjang),Router.ETALASE_PAGE);
-        
-        mainContentPanel.add(panelKeranjang,Router.KERANJANG_PAGE);
-        mainContentPanel.add(dataRiwayat,Router.RIWAYAT_TRANSAKSI);
 
+        mainContentPanel.add(panelKeranjang,Router.KERANJANG_PAGE);
+        mainContentPanel.add(new RiwayatTransaksiView(user),Router.RIWAYAT_TRANSAKSI);
         mainContentPanel.add(new WarehouseView(), Router.WAREHOUSE_PAGE);
         mainContentPanel.add(new ProduksiView(), Router.PRODUKSI_PAGE);
-        mainContentPanel.add(new PurchaseOrderView(), Router.PURCHASE_ORDER);
+        mainContentPanel.add(new BomView(), Router.BOM_PAGE);
+        mainContentPanel.add(new SalesOrderView(), Router.SALES_ODER);
+        mainContentPanel.add(dataRiwayat,Router.RIWAYAT_TRANSAKSI);
 
         add(mainContentPanel,BorderLayout.CENTER);
 
     }
 
     public void buildNavbarAndDefaultPanel(User user){
-        NavbarPanel navbar = new NavbarPanel(user,panelKeranjang,dataRiwayat);
+        NavbarPanel navbar = new NavbarPanel(user,panelKeranjang, dataRiwayat);
 
         if(Session.getSession().getRole().equals(Role.MANAGER)){
             //show default manager

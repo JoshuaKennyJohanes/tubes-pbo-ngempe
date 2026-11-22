@@ -107,7 +107,6 @@ public class DetailProduk extends JPanel {
         // lblJumlahValue.setFont(new Font("SansSerif", Font.BOLD, 14));
         // lblJumlahValue.setForeground(new Color(40, 40, 40));
         // lblJumlahValue.setPreferredSize(new Dimension(50, 25));
-    
         JLabel lblSatuan = new JLabel(produk.getSatuanProduk());
         lblSatuan.setFont(new Font("SansSerif", Font.PLAIN, 14));
         lblSatuan.setForeground(new Color(100, 100, 100));
@@ -128,8 +127,8 @@ public class DetailProduk extends JPanel {
         JLabel lblSubtotalValue = new JLabel("Rp " + String.format("%,.0f", totalSubtotal));
         lblSubtotalValue.setFont(new Font("SansSerif", Font.BOLD, 18));
         lblSubtotalValue.setForeground(new Color(20, 20, 20));
-        
-         qtyInput.addChangeListener(qty -> {
+
+        qtyInput.addChangeListener(qty -> {
             double total = produk.getHargaJualProduk() * qtyInput.getValue();
             lblSubtotalValue.setText("Rp " + String.format("%,.0f", total));
         });
@@ -153,7 +152,6 @@ public class DetailProduk extends JPanel {
                 String namaprod = produk.getNamaProduk();
                 int idprd = produk.getIdProduk();
                 int jumlah = qtyInput.getValue();
-                
                 if(jumlah == 0){
                     return;
                 }
@@ -166,7 +164,7 @@ public class DetailProduk extends JPanel {
                     return;
                 }
 
-                if (jumlah > produk.getStcok()) {
+                if (jumlah > produk.getStok()) {
                     JOptionPane.showMessageDialog(null,
                             "Stok tidak mencukupi!");
                     return;
@@ -174,7 +172,6 @@ public class DetailProduk extends JPanel {
 
                 BarangKeranjang isi = new BarangKeranjang(idprd,namaprod,jumlah,total);
                 user.tambahkeKeranjang(isi);
-                
 
                 JOptionPane.showMessageDialog(null,
                         "Produk berhasil ditambahkan ke keranjang!");
@@ -195,7 +192,7 @@ public class DetailProduk extends JPanel {
 
         btnLihatKeranjang.addActionListener(e ->{
             panelKeranjang.refreshKeranjang(user);
-           cardLayout.show(mainContentPanel, Router.KERANJANG_PAGE);
+            cardLayout.show(mainContentPanel, Router.KERANJANG_PAGE);
         });
 
         buttonActionPanel.add(btnTambah);
@@ -231,7 +228,7 @@ public class DetailProduk extends JPanel {
         btnKembali.setFocusPainted(false);
         btnKembali.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnKembali.addActionListener(e -> {
-                cardLayout.show(mainContentPanel, Router.ETALASE_PAGE);
+            cardLayout.show(mainContentPanel, Router.ETALASE_PAGE);
         });
 
         JPanel backButtonWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 10));

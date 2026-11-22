@@ -20,7 +20,7 @@ import tubes.prak.pbo.view.ViewPembeli.RiwayatTransaksiView;
 
 public class NavbarPanel extends JPanel {
 
-    public NavbarPanel(User user,Keranjang panelKeranjang,RiwayatTransaksiView dataRiwayat) {
+    public NavbarPanel(User user,Keranjang panelKeranjang, RiwayatTransaksiView dataRiwayat) {
 
         // Atur layout dan warna background navbar (sebelah kiri)
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -34,17 +34,17 @@ public class NavbarPanel extends JPanel {
         DefaultButtonOrange btnRiwayat = new DefaultButtonOrange("Riwayat Transaksi");
         DefaultButtonOrange btnKeranjang = new DefaultButtonOrange("Keranjang");
         DefaultButtonOrange btnLogout = new DefaultButtonOrange("Log Out");
+        DefaultButtonOrange btnSalesOrder = new DefaultButtonOrange("Sales Order");
 
         // Tombol sisi manager
         DefaultButtonOrange btnWarehouse = new DefaultButtonOrange("Warehouse");
         DefaultButtonOrange btnProduksi = new DefaultButtonOrange("Produksi");
-        DefaultButtonOrange btnPurchaseOrder = new DefaultButtonOrange("Purchase Order");
+        DefaultButtonOrange btnBom = new DefaultButtonOrange("BOM Management");
 
 
         //Looping dan list untuk menerapkan design ke semua button
         JButton[] menuButtons = {
-                btnEtalase, btnRiwayat, btnLogout, btnWarehouse, btnProduksi, btnLogout , btnKeranjang, btnPurchaseOrder
-        };
+                btnEtalase, btnRiwayat, btnLogout, btnWarehouse, btnProduksi, btnLogout , btnKeranjang, btnBom,btnSalesOrder };
 
         Dimension buttonSize = new Dimension(170, 38);
 
@@ -68,7 +68,6 @@ public class NavbarPanel extends JPanel {
             panelKeranjang.refreshKeranjang(user);
             NavigationController.showSubPage(Router.KERANJANG_PAGE);
         });
-        
         btnLogout.addActionListener(e -> {
             Session.logOut();
             NavigationController.showRootPage(Router.LOGIN_PAGE);
@@ -80,11 +79,13 @@ public class NavbarPanel extends JPanel {
             NavigationController.showSubPage(Router.PRODUKSI_PAGE);
         });
 
-        btnPurchaseOrder.addActionListener(e -> {
-            NavigationController.showSubPage(Router.PURCHASE_ORDER);
+        btnBom.addActionListener(e-> {
+            NavigationController.showSubPage(Router.BOM_PAGE);
         });
 
-
+        btnSalesOrder.addActionListener( e-> {
+            NavigationController.showSubPage(Router.SALES_ODER);
+        });
 
         //penambahan button tergantung dengan session.
         if (Session.getSession().getRole().equals(Role.MANAGER)) {
@@ -94,17 +95,20 @@ public class NavbarPanel extends JPanel {
             add(btnProduksi);
             add(Box.createRigidArea(new Dimension(0, 8)));
 
-            add(btnPurchaseOrder);
-            add(Box.createRigidArea(new Dimension(0, 8)));
+            add(btnBom);
+            add(Box.createRigidArea(new Dimension(0,8)));
+
+            add(btnSalesOrder);
+            add(Box.createRigidArea(new Dimension(0,8)));
         }
 
         if (Session.getSession().getRole().equals(Role.PEMBELI)) {
-           add(btnEtalase);
-           add(Box.createRigidArea(new Dimension(0, 8)));
-           add(btnRiwayat);
-           add(Box.createRigidArea(new Dimension(0, 8)));
-           add(btnKeranjang);
-           add(Box.createRigidArea(new Dimension(0,8)));
+            add(btnEtalase);
+            add(Box.createRigidArea(new Dimension(0, 8)));
+            add(btnRiwayat);
+            add(Box.createRigidArea(new Dimension(0, 8)));
+            add(btnKeranjang);
+            add(Box.createRigidArea(new Dimension(0,8)));
         }
 
         add(Box.createVerticalGlue());

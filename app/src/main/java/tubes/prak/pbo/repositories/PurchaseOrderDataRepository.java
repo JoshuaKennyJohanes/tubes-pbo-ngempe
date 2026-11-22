@@ -48,7 +48,8 @@ public class PurchaseOrderDataRepository {
                         Satuan.valueOf(resultSet.getString("satuan_material")),
                         resultSet.getDouble("harga_rata2_bahan_baku"),
                         resultSet.getDouble("batas_kritis"),
-                        resultSet.getDouble("jumlah_stok")));
+                        resultSet.getDouble("jumlah_stok"), resultSet.getString("image_url"))
+                    );
             }
         }
         return rawMaterials;

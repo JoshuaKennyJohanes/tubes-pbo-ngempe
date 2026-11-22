@@ -1,6 +1,7 @@
 package tubes.prak.pbo.util;
 
 public class Router {
+    public static String KERANJANG_PAGE = "keranjang_page" ;
     public static String LOGIN_PAGE = "login_page";
     public static String REGISTER_PAGE = "register_page";
     public static String ETALASE_PAGE = "etalase_page";
@@ -10,6 +11,9 @@ public class Router {
     public static String PRODUKSI_PAGE = "produksi_page";
     public static String FINANCE_PAGE = "finance_page";
     public static String BOM_PAGE = "BOM_PAGE";
-    public static String KERANJANG_PAGE = "KERANJANG_PAGE";
     public static String PURCHASE_ORDER = "Pembelian_Order";
+    public static final String CARD_LIST = "CARD_LIST";
+    public static final String CARD_ADD  = "CARD_ADD";
+    public static final String CARD_EDIT = "CARD_EDIT";
+    public static String SALES_ODER = "sales_order";
 }

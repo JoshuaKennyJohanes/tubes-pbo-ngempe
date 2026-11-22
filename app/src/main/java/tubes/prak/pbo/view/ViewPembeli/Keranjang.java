@@ -29,10 +29,10 @@ public class Keranjang extends JPanel{
         setLayout(new BorderLayout());
 
         String[] kolom = {
-            "Nama Produk",
-            "Jumlah Produk",
-            "Jumlah Total",
-            "Hilangkan dari Keranjang"
+                "Nama Produk",
+                "Jumlah Produk",
+                "Jumlah Total",
+                "Hilangkan dari Keranjang"
         };
 
         modeltable = new DefaultTableModel(kolom, 0);
@@ -42,11 +42,11 @@ public class Keranjang extends JPanel{
 
         add(new JLabel("Keranjang"), BorderLayout.NORTH);
         add(new JScrollPane(table), BorderLayout.CENTER);
-        
+
         JPanel panelBawah = new JPanel(new BorderLayout());
 
         panelBawah.add(labeltotalbayar, BorderLayout.CENTER);
-        
+
         btnCheckout = new JButton("Checkout");
         panelBawah.add(btnCheckout, BorderLayout.EAST);
 
@@ -83,20 +83,19 @@ public class Keranjang extends JPanel{
         });
     }
     public void refreshKeranjang(User user) {
-            
         modeltable.setRowCount(0);
 
         totalbayar = 0;
         for (BarangKeranjang produk : user.getBarangKeranjang()) {
-            
+
             modeltable.addRow(new Object[] {
-                produk.getNamaBarang(),
-                produk.getJumlah(),
-                produk.getHargaTotal(),
-                
+                    produk.getNamaBarang(),
+                    produk.getJumlah(),
+                    produk.getHargaTotal(),
+
             });
             totalbayar += produk.getHargaTotal();
         }
-            labeltotalbayar.setText("Total Bayar: "+totalbayar);
+        labeltotalbayar.setText("Total Bayar: "+totalbayar);
     }
 }
