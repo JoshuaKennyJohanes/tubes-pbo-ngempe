@@ -40,7 +40,7 @@ public class RawMaterialRepository {
         try(Connection conn = DatabaseConfig.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)){
             ResultSet resultSet = stmt.executeQuery();
 
-            while(!resultSet.next()){
+            while(resultSet.next()){
                 int id_raw_material = resultSet.getInt("id_raw_material");
                 String nama_material = resultSet.getString("nama_material");
                 Satuan satuan_material = Satuan.valueOf(resultSet.getString("satuan_material"));

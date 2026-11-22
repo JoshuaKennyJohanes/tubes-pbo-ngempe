@@ -11,4 +11,5 @@ public class Router {
     public static String FINANCE_PAGE = "finance_page";
     public static String BOM_PAGE = "BOM_PAGE";
     public static String KERANJANG_PAGE = "KERANJANG_PAGE";
+    public static String PURCHASE_ORDER = "Pembelian_Order";
 }
