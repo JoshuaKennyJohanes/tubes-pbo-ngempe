@@ -40,11 +40,12 @@ public class NavbarPanel extends JPanel {
         DefaultButtonOrange btnWarehouse = new DefaultButtonOrange("Warehouse");
         DefaultButtonOrange btnProduksi = new DefaultButtonOrange("Produksi");
         DefaultButtonOrange btnBom = new DefaultButtonOrange("BOM Management");
+        DefaultButtonOrange btnPurchaseOrder = new DefaultButtonOrange("Purchase Order");
 
 
         //Looping dan list untuk menerapkan design ke semua button
         JButton[] menuButtons = {
-                btnEtalase, btnRiwayat, btnLogout, btnWarehouse, btnProduksi, btnLogout , btnKeranjang, btnBom,btnSalesOrder };
+                btnEtalase, btnRiwayat, btnLogout, btnWarehouse, btnProduksi, btnLogout , btnKeranjang, btnPurchaseOrder, btnBom,btnSalesOrder };
 
         Dimension buttonSize = new Dimension(170, 38);
 
@@ -78,6 +79,9 @@ public class NavbarPanel extends JPanel {
         btnProduksi.addActionListener(e -> {
             NavigationController.showSubPage(Router.PRODUKSI_PAGE);
         });
+        btnPurchaseOrder.addActionListener(e -> {
+            NavigationController.showSubPage(Router.PURCHASE_ORDER);
+        });
 
         btnBom.addActionListener(e-> {
             NavigationController.showSubPage(Router.BOM_PAGE);
@@ -96,6 +100,9 @@ public class NavbarPanel extends JPanel {
             add(Box.createRigidArea(new Dimension(0, 8)));
 
             add(btnBom);
+            add(Box.createRigidArea(new Dimension(0,8)));
+
+            add(btnPurchaseOrder);
             add(Box.createRigidArea(new Dimension(0,8)));
 
             add(btnSalesOrder);

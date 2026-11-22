@@ -35,7 +35,7 @@ public class PurchaseOrderDataRepository {
     public List<RawMaterial> findRawMaterials() throws SQLException {
         List<RawMaterial> rawMaterials = new ArrayList<>();
         String sql = "SELECT id_raw_material, nama_material, satuan_material, "
-                + "harga_rata2_bahan_baku, jumlah_stok, batas_kritis "
+                + "harga_rata2_bahan_baku, jumlah_stok, batas_kritis, image_url "
                 + "FROM raw_material ORDER BY nama_material";
 
         try (Connection connection = DatabaseConfig.getConnection();
@@ -48,7 +48,8 @@ public class PurchaseOrderDataRepository {
                         Satuan.valueOf(resultSet.getString("satuan_material")),
                         resultSet.getDouble("harga_rata2_bahan_baku"),
                         resultSet.getDouble("batas_kritis"),
-                        resultSet.getDouble("jumlah_stok"), resultSet.getString("image_url"))
+                        resultSet.getDouble("jumlah_stok"), 
+                        resultSet.getString("image_url"))
                     );
             }
         }
