@@ -152,4 +152,29 @@ public class ProdukRepository {
             stmtUpdate.executeUpdate();
         }
     }
+
+    public void updateProduk(Connection conn, Produk produk) throws SQLException {
+        String sql = """
+        UPDATE public.produk
+        SET nama_produk = ?,
+            harga_jual = ?,
+            jumlah_stok = ?,
+            batas_kritis = ?,
+            image_url = ?,
+            deskripsi_produk = ?
+        WHERE id_produk = ?
+        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, produk.getNamaProduk());
+            stmt.setDouble(2, produk.getHargaJualProduk());
+            stmt.setInt(3, produk.getStok());
+            stmt.setInt(4, produk.getBatasKritisProduk());
+            stmt.setString(5, produk.getImageUrl());
+            stmt.setString(6, produk.getDeskripsiProduk());
+            stmt.setInt(7, produk.getIdProduk());
+            stmt.executeUpdate();
+        }
+    }
+
 }

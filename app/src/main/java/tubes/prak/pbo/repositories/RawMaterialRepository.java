@@ -115,5 +115,19 @@ public class RawMaterialRepository {
         }
     }
 
+    //overload untuk mencatat ke finance ledger
+    public void updateStokMaterial(Connection conn, int idRawMaterial, double stokBaru) throws SQLException {
+        String sql = """
+        UPDATE public.raw_material
+        SET jumlah_stok = ?
+        WHERE id_raw_material = ?
+        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDouble(1, stokBaru);
+            stmt.setInt(2, idRawMaterial);
+            stmt.executeUpdate();
+        }
+    }
     
 }
