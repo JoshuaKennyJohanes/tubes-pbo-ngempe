@@ -38,7 +38,7 @@ public class NavbarPanel extends JPanel {
         // Tombol sisi manager
         DefaultButtonOrange btnWarehouse = new DefaultButtonOrange("Warehouse");
         DefaultButtonOrange btnProduksi = new DefaultButtonOrange("Produksi");
-        DefaultButtonOrange btnPurchaseOrder = new DefaultButtonOrange("Purchace_Order");
+        DefaultButtonOrange btnPurchaseOrder = new DefaultButtonOrange("Purchase Order");
 
 
         //Looping dan list untuk menerapkan design ke semua button
