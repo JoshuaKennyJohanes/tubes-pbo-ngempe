@@ -13,6 +13,7 @@ import tubes.prak.pbo.models.User;
 import tubes.prak.pbo.util.Router;
 import tubes.prak.pbo.util.Session;
 import tubes.prak.pbo.view.ViewManager.BomView;
+import tubes.prak.pbo.view.ViewManager.FinanceView;
 import tubes.prak.pbo.view.ViewManager.ProduksiView;
 import tubes.prak.pbo.view.ViewManager.PurchaseOrderView;
 import tubes.prak.pbo.view.ViewManager.SalesOrderView;
@@ -46,7 +47,6 @@ public class MainShell extends JPanel {
         dataRiwayat  = new RiwayatTransaksiView(user);
 
         mainContentPanel.add(new EtalaseView(mainContentPanel , contentCardLayout,user,panelKeranjang),Router.ETALASE_PAGE);
-
         mainContentPanel.add(panelKeranjang,Router.KERANJANG_PAGE);
         mainContentPanel.add(new RiwayatTransaksiView(user),Router.RIWAYAT_TRANSAKSI);
         mainContentPanel.add(new WarehouseView(), Router.WAREHOUSE_PAGE);
@@ -55,6 +55,8 @@ public class MainShell extends JPanel {
         mainContentPanel.add(new PurchaseOrderView(), Router.PURCHASE_ORDER);
         mainContentPanel.add(new SalesOrderView(), Router.SALES_ODER);
         mainContentPanel.add(dataRiwayat,Router.RIWAYAT_TRANSAKSI);
+        mainContentPanel.add(new FinanceView(), Router.FINANCE_PAGE);
+        mainContentPanel.add(new PurchaseOrderView(), Router.PURCHASE_ORDER);
 
         add(mainContentPanel,BorderLayout.CENTER);
 

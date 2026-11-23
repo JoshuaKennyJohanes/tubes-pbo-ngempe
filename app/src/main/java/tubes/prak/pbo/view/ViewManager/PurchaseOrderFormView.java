@@ -119,7 +119,7 @@ public class PurchaseOrderFormView extends JPanel {
                     actualPrice,
                     status,
                     receivedDate,
-                    vendors.get(vendorIndex).getId_vendor(),
+                    vendors.get(vendorIndex).getIdVendor(),
                     rawMaterials.get(rawMaterialIndex).getId(),
                     Session.getSession().getId(),
                     quantity);

@@ -151,4 +151,81 @@ public class ProdukRepository {
             stmtUpdate.executeUpdate();
         }
     }
+
+    public void updateProduk(Connection conn, Produk produk) throws SQLException {
+        String sql = """
+        UPDATE public.produk
+        SET nama_produk = ?,
+            harga_jual = ?,
+            jumlah_stok = ?,
+            batas_kritis = ?,
+            image_url = ?,
+            deskripsi_produk = ?
+        WHERE id_produk = ?
+        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, produk.getNamaProduk());
+            stmt.setDouble(2, produk.getHargaJualProduk());
+            stmt.setInt(3, produk.getStok());
+            stmt.setInt(4, produk.getBatasKritisProduk());
+            stmt.setString(5, produk.getImageUrl());
+            stmt.setString(6, produk.getDeskripsiProduk());
+            stmt.setInt(7, produk.getIdProduk());
+            stmt.executeUpdate();
+        }
+    }
+
+
+    public void kurangiStokProduk(Connection conn, int idProduk, int qtyTerjual) throws SQLException {
+        String sqlCek = """
+            SELECT nama_produk, jumlah_stok
+            FROM public.produk
+            WHERE id_produk = ?
+            FOR UPDATE
+            """;
+
+        String sqlUpdate = """
+            UPDATE public.produk
+            SET jumlah_stok = jumlah_stok - ?
+            WHERE id_produk = ?
+            """;
+
+        try (PreparedStatement stmtCek = conn.prepareStatement(sqlCek)) {
+            stmtCek.setInt(1, idProduk);
+            try (ResultSet rs = stmtCek.executeQuery()) {
+                if (!rs.next()) {
+                    throw new SQLException("Produk dengan ID " + idProduk + " tidak ditemukan.");
+                }
+                String namaProduk = rs.getString("nama_produk");
+                int stokTersedia = rs.getInt("jumlah_stok");
+                if (stokTersedia < qtyTerjual) {
+                    throw new SQLException(
+                            "Stok tidak mencukupi untuk produk \"" + namaProduk +
+                                    "\" (Diminta: " + qtyTerjual + ", Tersedia: " + stokTersedia + ")"
+                    );
+                }
+            }
+        }
+
+        try (PreparedStatement stmtUpdate = conn.prepareStatement(sqlUpdate)) {
+            stmtUpdate.setInt(1, qtyTerjual);
+            stmtUpdate.setInt(2, idProduk);
+            stmtUpdate.executeUpdate();
+        }
+    }
+
+    public void tambahStokProduk(Connection conn, int idProduk, int qtyKembali) throws SQLException {
+        String sqlUpdate = """
+            UPDATE public.produk
+            SET jumlah_stok = jumlah_stok + ?
+            WHERE id_produk = ?
+            """;
+
+        try (PreparedStatement stmtUpdate = conn.prepareStatement(sqlUpdate)) {
+            stmtUpdate.setInt(1, qtyKembali);
+            stmtUpdate.setInt(2, idProduk);
+            stmtUpdate.executeUpdate();
+        }
+    }
 }

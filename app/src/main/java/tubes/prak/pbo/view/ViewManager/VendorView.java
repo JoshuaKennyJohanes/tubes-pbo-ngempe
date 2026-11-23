@@ -23,9 +23,9 @@ public class VendorView extends JPanel {
 
         for (Vendor vendor : vendors) {
             model.addRow(new Object[] {
-                    vendor.getId_vendor(),
+                    vendor.getIdVendor(),
                     vendor.getNamaVendor(),
-                    vendor.getTelpVendor(),
+                    vendor.getNoTelp(),
                     vendor.getAlamatVendor()
             });
         }

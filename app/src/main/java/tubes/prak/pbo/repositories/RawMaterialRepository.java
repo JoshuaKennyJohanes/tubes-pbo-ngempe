@@ -115,5 +115,60 @@ public class RawMaterialRepository {
         }
     }
 
+    //overload untuk mencatat ke finance ledger
+    public void updateStokMaterial(Connection conn, int idRawMaterial, double stokBaru) throws SQLException {
+        String sql = """
+        UPDATE public.raw_material
+        SET jumlah_stok = ?
+        WHERE id_raw_material = ?
+        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDouble(1, stokBaru);
+            stmt.setInt(2, idRawMaterial);
+            stmt.executeUpdate();
+        }
+    }
+
+    public void tambahStokDanUpdateHargaRata2(Connection conn, int idRawMaterial,
+                                              double qtyMasuk, double totalHargaPo) throws SQLException {
+        String sqlCek = """
+            SELECT jumlah_stok, harga_rata2_bahan_baku
+            FROM public.raw_material
+            WHERE id_raw_material = ?
+            FOR UPDATE
+            """;
+
+        String sqlUpdate = """
+            UPDATE public.raw_material
+            SET jumlah_stok = ?, harga_rata2_bahan_baku = ?
+            WHERE id_raw_material = ?
+            """;
+
+        double stokLama;
+        double hargaRata2Lama;
+
+        try (PreparedStatement stmtCek = conn.prepareStatement(sqlCek)) {
+            stmtCek.setInt(1, idRawMaterial);
+            try (ResultSet rs = stmtCek.executeQuery()) {
+                if (!rs.next()) {
+                    throw new SQLException("Raw material dengan ID " + idRawMaterial + " tidak ditemukan.");
+                }
+                stokLama = rs.getDouble("jumlah_stok");
+                hargaRata2Lama = rs.getDouble("harga_rata2_bahan_baku");
+            }
+        }
+
+        double totalValueLama = stokLama * hargaRata2Lama;
+        double stokBaru = stokLama + qtyMasuk;
+        double hargaRata2Baru = (stokBaru > 0) ? (totalValueLama + totalHargaPo) / stokBaru : 0.0;
+
+        try (PreparedStatement stmtUpdate = conn.prepareStatement(sqlUpdate)) {
+            stmtUpdate.setDouble(1, stokBaru);
+            stmtUpdate.setDouble(2, hargaRata2Baru);
+            stmtUpdate.setInt(3, idRawMaterial);
+            stmtUpdate.executeUpdate();
+        }
+    }
     
 }

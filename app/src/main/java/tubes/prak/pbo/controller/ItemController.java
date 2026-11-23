@@ -1,23 +1,29 @@
 package tubes.prak.pbo.controller;
 
 import java.io.File;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import tubes.prak.pbo.ENUM.JenisPos;
 import tubes.prak.pbo.ENUM.Satuan;
+import tubes.prak.pbo.config.DatabaseConfig;
 import tubes.prak.pbo.models.Bom;
 import tubes.prak.pbo.models.Produk;
 import tubes.prak.pbo.models.RawMaterial;
 import tubes.prak.pbo.repositories.BomRepository;
+import tubes.prak.pbo.repositories.FinanceRepository;
 import tubes.prak.pbo.repositories.ProdukRepository;
 import tubes.prak.pbo.repositories.RawMaterialRepository;
 import tubes.prak.pbo.util.ImageStorage;
+import tubes.prak.pbo.util.Session;
 
 public class ItemController {
     ProdukRepository produkRepo = new ProdukRepository();
     RawMaterialRepository rawMaterialRepo = new RawMaterialRepository();
     BomRepository bomRepository = new BomRepository();
+    FinanceRepository financeRepo = new FinanceRepository();
 
     public void registerProduk(String namaProduk, Satuan satuanProduk, double hargaJualProduk,
                                int stokKritis, File gambar) throws Exception {
@@ -249,7 +255,6 @@ public class ItemController {
         }
     }
 
-    // Ganti method updateProduk pada ItemController.java dengan versi berikut
     public void updateProduk(Produk existingProduk, String namaBaru, double hargaJualBaru,
                              int stokBaru, int batasKritisBaru, String deskripsiBaru, File gambarBaru) throws Exception {
         if (existingProduk == null) {
@@ -269,8 +274,6 @@ public class ItemController {
         }
 
         int stokLama = existingProduk.getStok();
-
-        // Cegah penambahan stok produk dari menu Warehouse (hanya boleh lewat jadwal Produksi)
         if (stokBaru > stokLama) {
             throw new Exception(
                     "Penambahan stok produk tidak diizinkan melalui menu Warehouse!\n" +
@@ -285,7 +288,6 @@ public class ItemController {
 
         String oldImageUrl = existingProduk.getImageUrl();
         String finalImageUrl = oldImageUrl;
-
         if (gambarBaru != null) {
             finalImageUrl = ImageStorage.save(gambarBaru, "produk");
         }
@@ -293,7 +295,11 @@ public class ItemController {
         String cleanDeskripsi = (deskripsiBaru != null) ? deskripsiBaru.trim() : "";
         int selisihBerkurang = stokLama - stokBaru;
 
+        Connection conn = null;
         try {
+            conn = DatabaseConfig.getConnection();
+            conn.setAutoCommit(false);
+
             Produk updatedProduk = new Produk(
                     existingProduk.getIdProduk(),
                     namaBaru.trim(),
@@ -306,25 +312,92 @@ public class ItemController {
                     batasKritisBaru
             );
 
-            produkRepo.updateProduk(updatedProduk);
+            produkRepo.updateProduk(conn, updatedProduk);
 
-            // Jika upload foto baru sukses & DB berhasil di-update, hapus file foto lama
+            if (selisihBerkurang > 0) {
+                double nilaiKerugian = selisihBerkurang * existingProduk.getHargaRata2Produk();
+                String deskripsiOpname = "OPNAME - Pengurangan stok produk " + existingProduk.getNamaProduk()
+                        + " (-" + selisihBerkurang + " " + existingProduk.getSatuanProduk() + ")";
+                Integer userId = (Session.getSession() != null) ? Session.getSession().getId() : null;
+
+                financeRepo.insertLedger(conn, null, null, JenisPos.OPNAME, nilaiKerugian, deskripsiOpname, userId);
+            }
+
+            conn.commit();
+
             if (gambarBaru != null && oldImageUrl != null && !oldImageUrl.equals(finalImageUrl)) {
                 ImageStorage.delete(oldImageUrl);
             }
-
-            // Jika terjadi pengurangan stok (produk rusak/hilang), panggil hook pencatatan
-            if (selisihBerkurang > 0) {
-                catatSelisihStockOpnameProduk(existingProduk, stokLama, stokBaru, selisihBerkurang);
-            }
         } catch (Exception e) {
-            // Rollback file foto baru jika gagal update ke database
+            if (conn != null) {
+                try { conn.rollback(); } catch (SQLException ignored) {}
+            }
             if (gambarBaru != null) {
                 ImageStorage.delete(finalImageUrl);
             }
             throw e;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException ignored) {}
+            }
         }
     }
+
+    public void updateStokRawMaterial(RawMaterial existingMaterial, double stokBaru) throws Exception {
+        if (existingMaterial == null) {
+            throw new Exception("Data bahan baku tidak ditemukan!");
+        }
+        if (stokBaru < 0) {
+            throw new Exception("Jumlah stok tidak boleh kurang dari 0!");
+        }
+
+        double stokLama = existingMaterial.getJumlahStok();
+        if (stokBaru > stokLama) {
+            throw new Exception(
+                    "Penambahan stok tidak diizinkan melalui menu Warehouse!\n" +
+                            "Stok saat ini: " + stokLama + " " + existingMaterial.getSatuan() +
+                            ". Gunakan menu Purchase Order untuk menambah stok."
+            );
+        }
+
+        double selisihBerkurang = stokLama - stokBaru;
+
+        Connection conn = null;
+        try {
+            conn = DatabaseConfig.getConnection();
+            conn.setAutoCommit(false);
+
+            rawMaterialRepo.updateStokMaterial(conn, existingMaterial.getId(), stokBaru);
+
+            if (selisihBerkurang > 0) {
+                double nilaiKerugian = selisihBerkurang * existingMaterial.getHargaRata2();
+                String deskripsiOpname = "OPNAME - Pengurangan stok bahan baku " + existingMaterial.getNama()
+                        + " (-" + selisihBerkurang + " " + existingMaterial.getSatuan() + ")";
+                Integer userId = (Session.getSession() != null) ? Session.getSession().getId() : null;
+
+                financeRepo.insertLedger(conn, null, null, JenisPos.OPNAME, nilaiKerugian, deskripsiOpname, userId);
+            }
+
+            conn.commit();
+        } catch (Exception e) {
+            if (conn != null) {
+                try { conn.rollback(); } catch (SQLException ignored) {}
+            }
+            throw e;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException ignored) {}
+            }
+        }
+    }
+
+
 
     // =========================================================================
 // HOOK PENGEMBANGAN BERIKUTNYA: Integrasi Kerugian Produk ke Finance & Audit Log
@@ -345,33 +418,6 @@ public class ItemController {
                 + " | Selisih: -" + selisihBerkurang + " " + produk.getSatuanProduk()
                 + " | Est. Expense (HPP): Rp " + nilaiKerugian);
     }
-    public void updateStokRawMaterial(RawMaterial existingMaterial, double stokBaru) throws Exception {
-        if (existingMaterial == null) {
-            throw new Exception("Data bahan baku tidak ditemukan!");
-        }
-        if (stokBaru < 0) {
-            throw new Exception("Jumlah stok tidak boleh kurang dari 0!");
-        }
-
-        double stokLama = existingMaterial.getJumlahStok();
-
-        // Cegah penambahan stok dari menu Warehouse (hanya boleh lewat Purchase Order)
-        if (stokBaru > stokLama) {
-            throw new Exception(
-                    "Penambahan stok tidak diizinkan melalui menu Warehouse!\n" +
-                            "Stok saat ini: " + stokLama + " " + existingMaterial.getSatuan() +
-                            ". Gunakan menu Purchase Order untuk menambah stok."
-            );
-        }
-
-        double selisihBerkurang = stokLama - stokBaru;
-
-        rawMaterialRepo.updateStokMaterial(existingMaterial.getId(), stokBaru);
-
-        if (selisihBerkurang > 0) {
-            catatSelisihStockOpname(existingMaterial, stokLama, stokBaru, selisihBerkurang);
-        }
-    }
 
     // =========================================================================
 // HOOK PENGEMBANGAN BERIKUTNYA: Integrasi ke Tabel Finance & Audit Log
@@ -391,5 +437,13 @@ public class ItemController {
                 + " | Stok: " + stokLama + " -> " + stokBaru
                 + " | Selisih: -" + selisihBerkurang + " " + material.getSatuan()
                 + " | Est. Expense: Rp " + nilaiKerugian);
+    }
+
+    public void kurangiStokProduk(Connection conn, int idProduk, int qtyTerjual) throws SQLException {
+        produkRepo.kurangiStokProduk(conn, idProduk, qtyTerjual);
+    }
+
+    public void kembalikanStokProduk(Connection conn, int idProduk, int qtyKembali) throws SQLException {
+        produkRepo.tambahStokProduk(conn, idProduk, qtyKembali);
     }
 }

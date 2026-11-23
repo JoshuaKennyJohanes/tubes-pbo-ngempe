@@ -33,9 +33,7 @@ public class User {
         System.out.println(keranjangUser.size());
         return this.keranjangUser;
     }
-    public void tambahkeKeranjang(BarangKeranjang item){
-        keranjangUser.add(item);
-    }
+
     public String isiKeranjang(){
         System.out.println(keranjangUser.size());
         return "";
@@ -79,5 +77,36 @@ public class User {
     public String getPasswword(){
         return this.password;
     }
+
+
+
+    public void tambahkeKeranjang(BarangKeranjang item) {
+        if (item == null) {
+            return;
+        }
+        for (BarangKeranjang existing : keranjangUser) {
+            if (existing.getId_produk() == item.getId_produk()) {
+                existing.tambahJumlah(item.getJumlah(), item.getHargaTotal());
+                return;
+            }
+        }
+        keranjangUser.add(item);
+    }
+
+    public int getJumlahDiKeranjang(int idProduk) {
+        for (BarangKeranjang item : keranjangUser) {
+            if (item.getId_produk() == idProduk) {
+                return item.getJumlah();
+            }
+        }
+        return 0;
+    }
+
+    public void hapusDariKeranjang(BarangKeranjang item) {
+        if (item != null) {
+            keranjangUser.remove(item);
+        }
+    }
+
 
 }

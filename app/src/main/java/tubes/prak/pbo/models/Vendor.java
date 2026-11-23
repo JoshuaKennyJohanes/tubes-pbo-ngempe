@@ -1,28 +1,28 @@
 package tubes.prak.pbo.models;
 
 public class Vendor {
-    private int id_vendor;
+    private int idVendor;
     private String namaVendor;
-    private String telpVendor;
+    private String noTelp;
     private String alamatVendor;
 
-    public Vendor(int id_vendor, String namaVendor, String telpVendor, String alamatVendor) {
-        this.alamatVendor = alamatVendor;
-        this.id_vendor = id_vendor;
+    public Vendor(int idVendor, String namaVendor, String noTelp, String alamatVendor) {
+        this.idVendor = idVendor;
         this.namaVendor = namaVendor;
-        this.telpVendor = telpVendor;
+        this.noTelp = noTelp;
+        this.alamatVendor = alamatVendor;
     }
 
-    public int getId_vendor() {
-        return id_vendor;
+    public int getIdVendor() {
+        return idVendor;
     }
 
     public String getNamaVendor() {
         return namaVendor;
     }
 
-    public String getTelpVendor() {
-        return telpVendor;
+    public String getNoTelp() {
+        return noTelp;
     }
 
     public String getAlamatVendor() {
@@ -31,6 +31,6 @@ public class Vendor {
 
     @Override
     public String toString() {
-        return namaVendor;
+        return namaVendor + (noTelp != null && !noTelp.isBlank() ? " (" + noTelp + ")" : "");
     }
 }

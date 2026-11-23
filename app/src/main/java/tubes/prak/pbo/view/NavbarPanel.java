@@ -34,18 +34,19 @@ public class NavbarPanel extends JPanel {
         DefaultButtonOrange btnRiwayat = new DefaultButtonOrange("Riwayat Transaksi");
         DefaultButtonOrange btnKeranjang = new DefaultButtonOrange("Keranjang");
         DefaultButtonOrange btnLogout = new DefaultButtonOrange("Log Out");
-        DefaultButtonOrange btnSalesOrder = new DefaultButtonOrange("Sales Order");
 
         // Tombol sisi manager
         DefaultButtonOrange btnWarehouse = new DefaultButtonOrange("Warehouse");
         DefaultButtonOrange btnProduksi = new DefaultButtonOrange("Produksi");
         DefaultButtonOrange btnBom = new DefaultButtonOrange("BOM Management");
-        DefaultButtonOrange btnPurchaseOrder = new DefaultButtonOrange("Purchase Order");
+        DefaultButtonOrange btnSalesOrder = new DefaultButtonOrange("Sales Order");
+        DefaultButtonOrange btnFinance = new DefaultButtonOrange("Finance");
+        DefaultButtonOrange btnPurchaseOrder  = new DefaultButtonOrange("Purchasing");
 
 
         //Looping dan list untuk menerapkan design ke semua button
         JButton[] menuButtons = {
-                btnEtalase, btnRiwayat, btnLogout, btnWarehouse, btnProduksi, btnLogout , btnKeranjang, btnPurchaseOrder, btnBom,btnSalesOrder };
+                btnEtalase, btnRiwayat, btnLogout, btnWarehouse, btnProduksi, btnLogout , btnKeranjang, btnBom,btnSalesOrder, btnFinance, btnPurchaseOrder };
 
         Dimension buttonSize = new Dimension(170, 38);
 
@@ -91,6 +92,14 @@ public class NavbarPanel extends JPanel {
             NavigationController.showSubPage(Router.SALES_ODER);
         });
 
+        btnFinance.addActionListener(e->{
+            NavigationController.showSubPage(Router.FINANCE_PAGE);
+        });
+
+        btnPurchaseOrder.addActionListener( e->{
+            NavigationController.showSubPage(Router.PURCHASE_ORDER);
+        });
+
         //penambahan button tergantung dengan session.
         if (Session.getSession().getRole().equals(Role.MANAGER)) {
             add(btnWarehouse);
@@ -107,6 +116,12 @@ public class NavbarPanel extends JPanel {
 
             add(btnSalesOrder);
             add(Box.createRigidArea(new Dimension(0,8)));
+
+            add(btnFinance);
+            add(Box.createRigidArea(new Dimension(0,8)));
+
+            add(btnPurchaseOrder);
+            add(Box.createRigidArea(new Dimension(0,8)));
         }
 
         if (Session.getSession().getRole().equals(Role.PEMBELI)) {
@@ -121,5 +136,7 @@ public class NavbarPanel extends JPanel {
         add(Box.createVerticalGlue());
         add(btnLogout);
     }
+
+
 
 }

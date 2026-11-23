@@ -30,12 +30,7 @@ public class TestApp {
     Image scaledImage = rawIcon.getImage().getScaledInstance(250, 160, Image.SCALE_SMOOTH);
     ImageIcon img = new ImageIcon(scaledImage);
 
-    // Membuat 1 buah card
-    ProductCard card = new ProductCard(img, "Original Bawang Gurih", "Rp20.000");
-    card.setPreferredSize(new Dimension(310, 360));
-    mainPanel.add(card);
-    frame.add(mainPanel);
-    frame.setVisible(true);
+
 
     
     }
