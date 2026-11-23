@@ -9,7 +9,7 @@ import java.util.List;
 
 import tubes.prak.pbo.ENUM.Satuan;
 import tubes.prak.pbo.config.DatabaseConfig;
-import tubes.prak.pbo.models.RawMaterial;
+import tubes.prak.pbo.models.productRelated.RawMaterial;
 
 public class RawMaterialRepository {
 

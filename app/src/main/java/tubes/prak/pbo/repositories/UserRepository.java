@@ -10,7 +10,10 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import tubes.prak.pbo.ENUM.Role;
 import tubes.prak.pbo.config.DatabaseConfig;
-import tubes.prak.pbo.models.User;
+import tubes.prak.pbo.models.users.User;
+import tubes.prak.pbo.models.users.UserBuyer;
+import tubes.prak.pbo.models.users.UserManager;
+import tubes.prak.pbo.models.users.UserWorker;
 
 public class UserRepository {
 
@@ -40,15 +43,18 @@ public class UserRepository {
 
                 // 3. Verifikasi password mentah dari input dengan hash di DB
                 if (BCrypt.checkpw(password, storedHash)) {
-                    return new User(
-                            rs.getInt("id_user"),
-                            rs.getString("nama"),
-                            rs.getString("email"),
-                            Role.valueOf(rs.getString("role")),
-                            rs.getString("username"),
-                            storedHash);
+                    int id = rs.getInt("id_user");
+                    String nama = rs.getString("nama");
+                    String email = rs.getString("email");
+                    Role role = Role.valueOf(rs.getString("role"));
+                    String uname = rs.getString("username");
+
+                    return switch (role) {
+                        case PEMBELI -> new UserBuyer(id, nama, email, uname, storedHash);
+                        case MANAGER -> new UserManager(id, nama, email, uname, storedHash);
+                        case WORKER  -> new UserWorker(id, nama, email, uname, storedHash);
+                    };
                 } else {
-                    // Password tidak cocok
                     return null;
                 }
             }

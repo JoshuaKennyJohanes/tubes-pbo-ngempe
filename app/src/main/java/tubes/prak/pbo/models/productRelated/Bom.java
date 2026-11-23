@@ -1,11 +1,9 @@
-package tubes.prak.pbo.models;
-
-import java.util.List;
+package tubes.prak.pbo.models.productRelated;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class Bom {
+public class Bom extends Produk {
     private int idBom;
     private int idProduk;
     private Produk produk;

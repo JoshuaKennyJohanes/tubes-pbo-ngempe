@@ -7,9 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import tubes.prak.pbo.ENUM.Satuan;
 import tubes.prak.pbo.config.DatabaseConfig;
-import tubes.prak.pbo.models.Produk;
+import tubes.prak.pbo.models.productRelated.Produk;
 
 
 public class ProdukRepository {
@@ -57,8 +56,8 @@ public class ProdukRepository {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, produk.getNamaProduk());
             stmt.setString(2, produk.getSatuanProduk());
-            stmt.setDouble(3, produk.getHargaRata2Produk());
-            stmt.setDouble(4, produk.getHargaJualProduk());
+            stmt.setDouble(3, produk.getHPP());
+            stmt.setDouble(4, produk.getHargaJual());
             stmt.setInt(5, produk.getStok());
             stmt.setInt(6, produk.getBatasKritisProduk());
             stmt.setString(7, produk.getImageUrl());
@@ -101,7 +100,7 @@ public class ProdukRepository {
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, produk.getNamaProduk());
-            stmt.setDouble(2, produk.getHargaJualProduk());
+            stmt.setDouble(2, produk.getHargaJual());
             stmt.setInt(3, produk.getStok());
             stmt.setInt(4, produk.getBatasKritisProduk());
             stmt.setString(5, produk.getImageUrl());
@@ -167,7 +166,7 @@ public class ProdukRepository {
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, produk.getNamaProduk());
-            stmt.setDouble(2, produk.getHargaJualProduk());
+            stmt.setDouble(2, produk.getHargaJual());
             stmt.setInt(3, produk.getStok());
             stmt.setInt(4, produk.getBatasKritisProduk());
             stmt.setString(5, produk.getImageUrl());

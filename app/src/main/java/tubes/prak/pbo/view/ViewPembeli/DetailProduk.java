@@ -28,10 +28,10 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import tubes.prak.pbo.components.QuantityInput;
+import tubes.prak.pbo.components.panels.QuantityInput;
 import tubes.prak.pbo.models.BarangKeranjang;
-import tubes.prak.pbo.models.Produk;
-import tubes.prak.pbo.models.User;
+import tubes.prak.pbo.models.productRelated.Produk;
+import tubes.prak.pbo.models.users.UserBuyer;
 import tubes.prak.pbo.util.Router;
 
 public class DetailProduk extends JPanel {
@@ -39,12 +39,12 @@ public class DetailProduk extends JPanel {
     private static final DecimalFormat CURRENCY_FORMAT = new DecimalFormat("#,##0");
 
     public DetailProduk(Produk produk, JPanel mainContentPanel, CardLayout cardLayout,
-                        User user, Keranjang panelKeranjang) {
+                        UserBuyer user, Keranjang panelKeranjang) {
         this(produk, mainContentPanel, cardLayout, user, panelKeranjang, null);
     }
 
     public DetailProduk(Produk produk, JPanel mainContentPanel, CardLayout cardLayout,
-                        User user, Keranjang panelKeranjang, Runnable onBackToEtalase) {
+                        UserBuyer user, Keranjang panelKeranjang, Runnable onBackToEtalase) {
 
         setLayout(new BorderLayout(10, 12));
         setBackground(new Color(245, 247, 250));
@@ -129,7 +129,7 @@ public class DetailProduk extends JPanel {
         separator.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JPanel hargaPanel = createRowPanel("Harga:",
-                "Rp " + CURRENCY_FORMAT.format(produk.getHargaJualProduk()) + " / " + produk.getSatuanProduk());
+                "Rp " + CURRENCY_FORMAT.format(produk.getHargaJual()) + " / " + produk.getSatuanProduk());
 
         boolean tersedia = produk.getStok() > 0;
         JPanel stokPanel = createRowPanel("Stok:",
@@ -157,7 +157,7 @@ public class DetailProduk extends JPanel {
         jumlahPanel.add(lblSatuan);
 
         // Baris Subtotal Dinamis
-        double totalSubtotal = produk.getHargaJualProduk() * qtyInput.getValue();
+        double totalSubtotal = produk.getHargaJual() * qtyInput.getValue();
         JPanel subtotalPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         subtotalPanel.setOpaque(false);
         subtotalPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -173,7 +173,7 @@ public class DetailProduk extends JPanel {
         lblSubtotalValue.setForeground(new Color(22, 101, 52));
 
         qtyInput.addChangeListener(qty -> {
-            double total = produk.getHargaJualProduk() * qtyInput.getValue();
+            double total = produk.getHargaJual() * qtyInput.getValue();
             lblSubtotalValue.setText("Rp " + CURRENCY_FORMAT.format(total));
         });
 
@@ -214,7 +214,7 @@ public class DetailProduk extends JPanel {
                 return;
             }
 
-            double total = jumlah * produk.getHargaJualProduk();
+            double total = jumlah * produk.getHargaJual();
             BarangKeranjang item = new BarangKeranjang(
                     produk.getIdProduk(),
                     produk.getNamaProduk(),

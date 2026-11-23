@@ -1,7 +1,7 @@
 package tubes.prak.pbo.controller;
 
 import tubes.prak.pbo.ENUM.StatusProduksi;
-import tubes.prak.pbo.models.Bom;
+import tubes.prak.pbo.models.productRelated.Bom;
 import tubes.prak.pbo.models.DetailProduksi;
 import tubes.prak.pbo.models.Produksi;
 import tubes.prak.pbo.repositories.ProduksiRepository;

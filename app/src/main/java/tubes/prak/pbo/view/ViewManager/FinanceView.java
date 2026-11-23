@@ -25,8 +25,8 @@ import javax.swing.JTextField;
 import javax.swing.Scrollable;
 import javax.swing.border.EmptyBorder;
 
-import tubes.prak.pbo.components.FinanceLedgerCard;
-import tubes.prak.pbo.components.FinanceSummaryCard;
+import tubes.prak.pbo.components.cards.FinanceLedgerCard;
+import tubes.prak.pbo.components.cards.FinanceSummaryCard;
 import tubes.prak.pbo.controller.FinanceController;
 import tubes.prak.pbo.models.FinanceLedger;
 import tubes.prak.pbo.models.FinanceSummary;

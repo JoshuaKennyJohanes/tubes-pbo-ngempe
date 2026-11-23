@@ -10,7 +10,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.Rectangle;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.List;
@@ -28,7 +27,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.Scrollable;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -36,10 +34,11 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import tubes.prak.pbo.ENUM.StatusPo;
-import tubes.prak.pbo.components.PurchaseOrderCard;
+import tubes.prak.pbo.components.base.CardListPanel;
+import tubes.prak.pbo.components.cards.PurchaseOrderCard;
 import tubes.prak.pbo.controller.PurchaseOrderController;
 import tubes.prak.pbo.models.PurchaseOrder;
-import tubes.prak.pbo.models.RawMaterial;
+import tubes.prak.pbo.models.productRelated.RawMaterial;
 import tubes.prak.pbo.models.Vendor;
 
 public class PurchaseOrderView extends JPanel {
@@ -64,7 +63,8 @@ public class PurchaseOrderView extends JPanel {
     private JLabel lblVendorWarning;
 
     // History Container
-    private ScrollableCardListPanel historyListContainer;
+    private final CardListPanel<PurchaseOrder> historyList =
+            new CardListPanel<>(po -> new PurchaseOrderCard(po, this::handleConfirmArrived));
 
     public PurchaseOrderView() {
         setLayout(new BorderLayout(10, 12));
@@ -313,16 +313,11 @@ public class PurchaseOrderView extends JPanel {
         topBar.add(lblSectionTitle, BorderLayout.WEST);
         topBar.add(filterPanel, BorderLayout.EAST);
 
-        historyListContainer = new ScrollableCardListPanel();
-        historyListContainer.setLayout(new BoxLayout(historyListContainer, BoxLayout.Y_AXIS));
-        historyListContainer.setBorder(new EmptyBorder(4, 2, 4, 2));
-
-        JScrollPane scrollPane = new JScrollPane(historyListContainer);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        historyList.setGap(8);
+        historyList.setEmptyMessage("Belum ada riwayat Purchase Order yang sesuai filter.");
 
         section.add(topBar, BorderLayout.NORTH);
-        section.add(scrollPane, BorderLayout.CENTER);
+        section.add(historyList, BorderLayout.CENTER);
 
         return section;
     }
@@ -489,41 +484,30 @@ public class PurchaseOrderView extends JPanel {
     }
 
     private void loadHistoryCards() {
-        historyListContainer.removeAll();
         String filter = (String) cbFilterStatus.getSelectedItem();
 
         try {
-            List<PurchaseOrder> allPo = poController.getAllPurchaseOrders();
-            int renderedCount = 0;
-
-            for (PurchaseOrder po : allPo) {
-                if ("PAID".equals(filter) && po.getStatusPo() != StatusPo.PAID) {
-                    continue;
-                }
-                if ("ARRIVED".equals(filter) && po.getStatusPo() != StatusPo.ARRIVED) {
-                    continue;
-                }
-
-                historyListContainer.add(new PurchaseOrderCard(po, this::handleConfirmArrived));
-                historyListContainer.add(Box.createVerticalStrut(8));
-                renderedCount++;
-            }
-
-            if (renderedCount == 0) {
-                JLabel lblEmpty = new JLabel("Belum ada riwayat Purchase Order yang sesuai filter.");
-                lblEmpty.setFont(new Font("SansSerif", Font.ITALIC, 13));
-                lblEmpty.setForeground(Color.GRAY);
-                lblEmpty.setBorder(new EmptyBorder(20, 10, 20, 10));
-                historyListContainer.add(lblEmpty);
-            }
+            List<PurchaseOrder> filtered = poController.getAllPurchaseOrders().stream()
+                    .filter(po -> matchesFilter(po, filter))
+                    .toList();
+            historyList.setItems(filtered);
         } catch (SQLException e) {
+            historyList.clear();
             JOptionPane.showMessageDialog(this,
                     "Gagal memuat riwayat Purchase Order: " + e.getMessage(),
                     "Database Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
 
-        historyListContainer.revalidate();
-        historyListContainer.repaint();
+    private static boolean matchesFilter(PurchaseOrder po, String filter) {
+        if (filter == null) {
+            return true;
+        }
+        return switch (filter) {
+            case "PAID" -> po.getStatusPo() == StatusPo.PAID;
+            case "ARRIVED" -> po.getStatusPo() == StatusPo.ARRIVED;
+            default -> true;
+        };
     }
 
     private void openTambahVendorDialog() {
@@ -568,30 +552,4 @@ public class PurchaseOrderView extends JPanel {
         }
     }
 
-    private static class ScrollableCardListPanel extends JPanel implements Scrollable {
-        @Override
-        public Dimension getPreferredScrollableViewportSize() {
-            return getPreferredSize();
-        }
-
-        @Override
-        public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
-            return 16;
-        }
-
-        @Override
-        public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
-            return 60;
-        }
-
-        @Override
-        public boolean getScrollableTracksViewportWidth() {
-            return true;
-        }
-
-        @Override
-        public boolean getScrollableTracksViewportHeight() {
-            return false;
-        }
-    }
 }

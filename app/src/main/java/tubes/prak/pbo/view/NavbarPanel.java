@@ -3,133 +3,91 @@ package tubes.prak.pbo.view;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import tubes.prak.pbo.ENUM.Role;
 import tubes.prak.pbo.components.DefaultButtonOrange;
 import tubes.prak.pbo.controller.NavigationController;
-import tubes.prak.pbo.models.User;
+import tubes.prak.pbo.models.users.UserBuyer;
+import tubes.prak.pbo.models.users.UserStaff;
 import tubes.prak.pbo.util.Router;
 import tubes.prak.pbo.util.Session;
 import tubes.prak.pbo.view.ViewPembeli.Keranjang;
 
 public class NavbarPanel extends JPanel {
 
-    public NavbarPanel(User user,Keranjang panelKeranjang) {
+    private static final Dimension BUTTON_SIZE = new Dimension(170, 38);
 
-        // Atur layout dan warna background navbar (sebelah kiri)
+    private NavbarPanel() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Color.DARK_GRAY);
         setPreferredSize(new Dimension(180, 0));
+    }
 
-        // --- MEMBUAT TOMBOL ----//
+    public static NavbarPanel forBuyer(UserBuyer buyer, Keranjang panelKeranjang) {
+        NavbarPanel navbar = new NavbarPanel();
 
-        // Tombol sisi buyer
-        DefaultButtonOrange btnEtalase = new DefaultButtonOrange("Etalase");
-        DefaultButtonOrange btnRiwayat = new DefaultButtonOrange("Riwayat Transaksi");
-        DefaultButtonOrange btnKeranjang = new DefaultButtonOrange("Keranjang");
-        DefaultButtonOrange btnLogout = new DefaultButtonOrange("Log Out");
-
-        // Tombol sisi manager
-        DefaultButtonOrange btnWarehouse = new DefaultButtonOrange("Warehouse");
-        DefaultButtonOrange btnProduksi = new DefaultButtonOrange("Produksi");
-        DefaultButtonOrange btnBom = new DefaultButtonOrange("BOM Management");
-        DefaultButtonOrange btnSalesOrder = new DefaultButtonOrange("Sales Order");
-        DefaultButtonOrange btnFinance = new DefaultButtonOrange("Finance");
-        DefaultButtonOrange btnPurchaseOrder  = new DefaultButtonOrange("Purchasing");
-
-
-        //Looping dan list untuk menerapkan design ke semua button
-        JButton[] menuButtons = {
-                btnEtalase, btnRiwayat, btnLogout, btnWarehouse, btnProduksi, btnLogout , btnKeranjang, btnBom,btnSalesOrder, btnFinance, btnPurchaseOrder };
-
-        Dimension buttonSize = new Dimension(170, 38);
-
-        for (JButton btn : menuButtons) {
-            btn.setMaximumSize(buttonSize);
-            btn.setPreferredSize(buttonSize);
-            btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        }
-
-
-        //penambahan action listener di luar blok if
-        btnEtalase.addActionListener(e -> {
-            NavigationController.showSubPage(Router.ETALASE_PAGE);
-        });
-        btnRiwayat.addActionListener(e -> {
-            NavigationController.showSubPage(Router.RIWAYAT_TRANSAKSI);
-        });
-        btnKeranjang.addActionListener(e ->{
-            panelKeranjang.refreshKeranjang(user);
+        navbar.addMenuButton("Etalase", () -> NavigationController.showSubPage(Router.ETALASE_PAGE));
+        navbar.addMenuButton("Riwayat Transaksi", () -> NavigationController.showSubPage(Router.RIWAYAT_TRANSAKSI));
+        navbar.addMenuButton("Keranjang", () -> {
+            panelKeranjang.refreshKeranjang(buyer);
             NavigationController.showSubPage(Router.KERANJANG_PAGE);
         });
 
+        navbar.addLogoutButton();
+        return navbar;
+    }
+
+    public static NavbarPanel forStaff(UserStaff staff) {
+        NavbarPanel navbar = new NavbarPanel();
+
+        if (staff.canAccessWarehouse()) {
+            navbar.addMenuButton("Warehouse", () -> NavigationController.showSubPage(Router.WAREHOUSE_PAGE));
+        }
+        if (staff.canAccessProduction()) {
+            navbar.addMenuButton("Produksi", () -> NavigationController.showSubPage(Router.PRODUKSI_PAGE));
+        }
+        if (staff.canAccessBom()) {
+            navbar.addMenuButton("BOM Management", () -> NavigationController.showSubPage(Router.BOM_PAGE));
+        }
+        if (staff.canAccessSalesOrder()) {
+            navbar.addMenuButton("Sales Order", () -> NavigationController.showSubPage(Router.SALES_ODER));
+        }
+        if (staff.canAccessFinance()) {
+            navbar.addMenuButton("Finance", () -> NavigationController.showSubPage(Router.FINANCE_PAGE));
+        }
+        if (staff.canAccessPurchasing()) {
+            navbar.addMenuButton("Purchasing", () -> NavigationController.showSubPage(Router.PURCHASE_ORDER));
+        }
+
+        navbar.addLogoutButton();
+        return navbar;
+    }
+
+    private void addMenuButton(String label, Runnable action) {
+        DefaultButtonOrange btn = new DefaultButtonOrange(label);
+        styleButton(btn);
+        btn.addActionListener(e -> action.run());
+        add(btn);
+        add(Box.createRigidArea(new Dimension(0, 8)));
+    }
+
+    private void addLogoutButton() {
+        DefaultButtonOrange btnLogout = new DefaultButtonOrange("Log Out");
+        styleButton(btnLogout);
         btnLogout.addActionListener(e -> {
             Session.logOut();
             NavigationController.showRootPage(Router.LOGIN_PAGE);
         });
-        btnWarehouse.addActionListener(e -> {
-            NavigationController.showSubPage(Router.WAREHOUSE_PAGE);
-        });
-        btnProduksi.addActionListener(e -> {
-            NavigationController.showSubPage(Router.PRODUKSI_PAGE);
-        });
-
-        btnBom.addActionListener(e-> {
-            NavigationController.showSubPage(Router.BOM_PAGE);
-        });
-
-        btnSalesOrder.addActionListener( e-> {
-            NavigationController.showSubPage(Router.SALES_ODER);
-        });
-
-        btnFinance.addActionListener(e->{
-            NavigationController.showSubPage(Router.FINANCE_PAGE);
-        });
-
-        btnPurchaseOrder.addActionListener( e->{
-            NavigationController.showSubPage(Router.PURCHASE_ORDER);
-        });
-
-        //penambahan button tergantung dengan session.
-        if (Session.getSession().getRole().equals(Role.MANAGER)) {
-            add(btnWarehouse);
-            add(Box.createRigidArea(new Dimension(0, 8)));
-
-            add(btnProduksi);
-            add(Box.createRigidArea(new Dimension(0, 8)));
-
-            add(btnBom);
-            add(Box.createRigidArea(new Dimension(0,8)));
-
-            add(btnSalesOrder);
-            add(Box.createRigidArea(new Dimension(0,8)));
-
-            add(btnFinance);
-            add(Box.createRigidArea(new Dimension(0,8)));
-
-            add(btnPurchaseOrder);
-            add(Box.createRigidArea(new Dimension(0,8)));
-        }
-
-        if (Session.getSession().getRole().equals(Role.PEMBELI)) {
-            add(btnEtalase);
-            add(Box.createRigidArea(new Dimension(0, 8)));
-            add(btnRiwayat);
-            add(Box.createRigidArea(new Dimension(0, 8)));
-            add(btnKeranjang);
-            add(Box.createRigidArea(new Dimension(0,8)));
-        }
-
         add(Box.createVerticalGlue());
         add(btnLogout);
     }
 
-
-
+    private void styleButton(JButton btn) {
+        btn.setMaximumSize(BUTTON_SIZE);
+        btn.setPreferredSize(BUTTON_SIZE);
+        btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+    }
 }

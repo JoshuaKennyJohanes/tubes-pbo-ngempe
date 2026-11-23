@@ -5,38 +5,36 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Rectangle;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.Scrollable;
 import javax.swing.border.EmptyBorder;
 
 import tubes.prak.pbo.ENUM.StatusPembayaran;
-import tubes.prak.pbo.components.RiwayatTransaksiCard;
+import tubes.prak.pbo.components.base.CardFormat;
+import tubes.prak.pbo.components.base.CardListPanel;
+import tubes.prak.pbo.components.cards.RiwayatTransaksiCard;
 import tubes.prak.pbo.controller.SalesOrderController;
 import tubes.prak.pbo.models.SalesOrder;
-import tubes.prak.pbo.models.User;
+import tubes.prak.pbo.models.users.User;
 
 public class RiwayatTransaksiView extends JPanel {
 
-    private static final DecimalFormat CURRENCY_FORMAT = new DecimalFormat("#,##0");
+    private static final String FILTER_SEMUA = "Semua Status";
 
     private final SalesOrderController salesOrderController = new SalesOrderController();
     private final User currentUser;
 
+    private final CardListPanel<SalesOrder> orderList = new CardListPanel<>(
+            order -> new RiwayatTransaksiCard(order, this::handleBayarOrder, this::handleBatalkanOrder));
+
     private JComboBox<String> cbFilterStatus;
-    private ScrollableCardListPanel cardListContainer;
 
     public RiwayatTransaksiView(User user) {
         this.currentUser = user;
@@ -44,8 +42,10 @@ public class RiwayatTransaksiView extends JPanel {
         setLayout(new BorderLayout(10, 12));
         setBorder(new EmptyBorder(12, 12, 12, 12));
 
+        orderList.setEmptyMessage("Belum ada riwayat transaksi yang sesuai filter.");
+
         add(buildHeaderPanel(), BorderLayout.NORTH);
-        add(buildContentPanel(), BorderLayout.CENTER);
+        add(orderList, BorderLayout.CENTER);
 
         refreshKeranjang(user);
     }
@@ -63,7 +63,7 @@ public class RiwayatTransaksiView extends JPanel {
         JPanel rightControls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         rightControls.setOpaque(false);
 
-        cbFilterStatus = new JComboBox<>(new String[]{"Semua Status", "PENDING", "PAID", "CANCELLED"});
+        cbFilterStatus = new JComboBox<>(new String[]{FILTER_SEMUA, "PENDING", "PAID", "CANCELLED"});
         cbFilterStatus.setPreferredSize(new Dimension(135, 28));
         cbFilterStatus.addActionListener(e -> refreshKeranjang(currentUser));
 
@@ -82,53 +82,24 @@ public class RiwayatTransaksiView extends JPanel {
         return headerPanel;
     }
 
-    private JScrollPane buildContentPanel() {
-        cardListContainer = new ScrollableCardListPanel();
-        cardListContainer.setLayout(new BoxLayout(cardListContainer, BoxLayout.Y_AXIS));
-        cardListContainer.setBorder(new EmptyBorder(4, 2, 4, 2));
-
-        JScrollPane scrollPane = new JScrollPane(cardListContainer);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        return scrollPane;
-    }
-
+    // Nama method dipertahankan agar pemanggil di luar view tidak perlu diubah
     public void refreshKeranjang(User user) {
-        cardListContainer.removeAll();
         if (user == null) {
+            orderList.clear();
             return;
         }
 
-        String filter = (cbFilterStatus != null) ? (String) cbFilterStatus.getSelectedItem() : "Semua Status";
+        StatusPembayaran wanted = selectedStatusFilter();
 
         try {
-            List<SalesOrder> orders = salesOrderController.getSalesOrdersByUser(user.getId());
-            int renderedCount = 0;
+            List<SalesOrder> orders = salesOrderController.getSalesOrdersByUser(user.getId()).stream()
+                    .filter(order -> wanted == null
+                            || StatusPembayaran.fromString(order.getStatusPembayaran()) == wanted)
+                    .toList();
 
-            for (SalesOrder order : orders) {
-                StatusPembayaran status = StatusPembayaran.fromString(order.getStatusPembayaran());
-
-                if ("PENDING".equals(filter) && status != StatusPembayaran.PENDING) continue;
-                if ("PAID".equals(filter) && status != StatusPembayaran.PAID) continue;
-                if ("CANCELLED".equals(filter) && status != StatusPembayaran.CANCELLED) continue;
-
-                cardListContainer.add(new RiwayatTransaksiCard(
-                        order,
-                        this::handleBayarOrder,
-                        this::handleBatalkanOrder
-                ));
-                cardListContainer.add(Box.createVerticalStrut(10));
-                renderedCount++;
-            }
-
-            if (renderedCount == 0) {
-                JLabel lblEmpty = new JLabel("Belum ada riwayat transaksi yang sesuai filter.");
-                lblEmpty.setFont(new Font("SansSerif", Font.ITALIC, 13));
-                lblEmpty.setForeground(Color.GRAY);
-                lblEmpty.setBorder(new EmptyBorder(24, 10, 24, 10));
-                cardListContainer.add(lblEmpty);
-            }
+            orderList.setItems(orders);
         } catch (SQLException e) {
+            orderList.clear();
             JOptionPane.showMessageDialog(
                     this,
                     "Gagal memuat riwayat transaksi: " + e.getMessage(),
@@ -136,16 +107,22 @@ public class RiwayatTransaksiView extends JPanel {
                     JOptionPane.ERROR_MESSAGE
             );
         }
+    }
 
-        cardListContainer.revalidate();
-        cardListContainer.repaint();
+    /** null berarti "Semua Status" (atau combo belum dibuat). */
+    private StatusPembayaran selectedStatusFilter() {
+        String filter = (cbFilterStatus != null) ? (String) cbFilterStatus.getSelectedItem() : null;
+        if (filter == null || FILTER_SEMUA.equals(filter)) {
+            return null;
+        }
+        return StatusPembayaran.valueOf(filter);
     }
 
     private void handleBayarOrder(SalesOrder order) {
         int confirm = JOptionPane.showConfirmDialog(
                 this,
                 "Konfirmasi pembayaran QRIS untuk Order #" + order.getIdOrder() + "?\n\n" +
-                        "Total Pembayaran: Rp " + CURRENCY_FORMAT.format(order.getTotalTransaksi()) + "\n" +
+                        "Total Pembayaran: " + CardFormat.rupiah(order.getTotalTransaksi()) + "\n" +
                         "Status pesanan akan berubah menjadi PAID.",
                 "Konfirmasi Pembayaran QRIS",
                 JOptionPane.YES_NO_OPTION,
@@ -201,33 +178,6 @@ public class RiwayatTransaksiView extends JPanel {
                         JOptionPane.ERROR_MESSAGE
                 );
             }
-        }
-    }
-
-    private static class ScrollableCardListPanel extends JPanel implements Scrollable {
-        @Override
-        public Dimension getPreferredScrollableViewportSize() {
-            return getPreferredSize();
-        }
-
-        @Override
-        public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
-            return 16;
-        }
-
-        @Override
-        public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
-            return 60;
-        }
-
-        @Override
-        public boolean getScrollableTracksViewportWidth() {
-            return true;
-        }
-
-        @Override
-        public boolean getScrollableTracksViewportHeight() {
-            return false;
         }
     }
 }

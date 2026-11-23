@@ -16,7 +16,7 @@ import tubes.prak.pbo.components.DefaultButtonOrange;
 import tubes.prak.pbo.controller.LoginController;
 import tubes.prak.pbo.controller.NavigationController;
 import tubes.prak.pbo.exception.InvalidCredentialsException;
-import tubes.prak.pbo.models.User;
+import tubes.prak.pbo.models.users.User;
 import tubes.prak.pbo.util.Router;
 import tubes.prak.pbo.util.Session;
 

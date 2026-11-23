@@ -10,10 +10,12 @@ public enum JenisPos {
         if (value == null || value.isBlank()) {
             return OPNAME;
         }
+
         try {
             return JenisPos.valueOf(value.trim().toUpperCase());
         } catch (IllegalArgumentException e) {
             return OPNAME;
         }
+
     }
 }

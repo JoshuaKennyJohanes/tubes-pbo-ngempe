@@ -5,8 +5,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Rectangle;
-import java.text.DecimalFormat;
+import java.util.Collection;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -15,37 +15,43 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.Scrollable;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import tubes.prak.pbo.components.KeranjangItemCard;
+import tubes.prak.pbo.components.base.CardFormat;
+import tubes.prak.pbo.components.base.CardListPanel;
+import tubes.prak.pbo.components.cards.KeranjangItemCard;
 import tubes.prak.pbo.controller.SalesOrderController;
 import tubes.prak.pbo.models.BarangKeranjang;
-import tubes.prak.pbo.models.User;
+import tubes.prak.pbo.models.users.UserBuyer;
 
 public class Keranjang extends JPanel {
 
-    private static final DecimalFormat CURRENCY_FORMAT = new DecimalFormat("#,##0");
-
     private final SalesOrderController salesOrderController = new SalesOrderController();
-    private final User currentUser;
+    private final UserBuyer currentUser;
+
+    private final CardListPanel<BarangKeranjang> itemList =
+            new CardListPanel<>(item -> new KeranjangItemCard(item, this::handleHapusItem));
+
+    // User yang sedang ditampilkan (bisa berbeda dari currentUser jika refresh dipanggil dari luar)
+    private UserBuyer displayedUser;
 
     private JLabel lblJumlahItem;
     private JLabel labeltotalbayar;
     private JButton btnCheckout;
-    private ScrollableCardListPanel cardListContainer;
 
-    public Keranjang(User user) {
+    public Keranjang(UserBuyer user) {
         this.currentUser = user;
 
         setLayout(new BorderLayout(10, 12));
         setBorder(new EmptyBorder(12, 12, 12, 12));
 
+        itemList.setGap(8);
+        itemList.setEmptyMessage("Keranjang Anda masih kosong. Silakan pilih produk di menu Etalase.");
+
         add(buildHeaderPanel(), BorderLayout.NORTH);
-        add(buildContentPanel(), BorderLayout.CENTER);
+        add(itemList, BorderLayout.CENTER);
         add(buildFooterPanel(), BorderLayout.SOUTH);
 
         refreshKeranjang(user);
@@ -69,17 +75,6 @@ public class Keranjang extends JPanel {
         headerPanel.add(lblJumlahItem, BorderLayout.EAST);
 
         return headerPanel;
-    }
-
-    private JScrollPane buildContentPanel() {
-        cardListContainer = new ScrollableCardListPanel();
-        cardListContainer.setLayout(new BoxLayout(cardListContainer, BoxLayout.Y_AXIS));
-        cardListContainer.setBorder(new EmptyBorder(4, 2, 4, 2));
-
-        JScrollPane scrollPane = new JScrollPane(cardListContainer);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        return scrollPane;
     }
 
     private JPanel buildFooterPanel() {
@@ -147,63 +142,29 @@ public class Keranjang extends JPanel {
         }
     }
 
-    public void refreshKeranjang(User user) {
-        cardListContainer.removeAll();
-        double totalBayar = 0.0;
-        int totalQty = 0;
-
-        if (user == null || user.getBarangKeranjang().isEmpty()) {
-            JLabel lblEmpty = new JLabel("Keranjang Anda masih kosong. Silakan pilih produk di menu Etalase.");
-            lblEmpty.setFont(new Font("SansSerif", Font.ITALIC, 13));
-            lblEmpty.setForeground(Color.GRAY);
-            lblEmpty.setBorder(new EmptyBorder(24, 10, 24, 10));
-            cardListContainer.add(lblEmpty);
-            btnCheckout.setEnabled(false);
-        } else {
-            btnCheckout.setEnabled(true);
-            for (BarangKeranjang produk : user.getBarangKeranjang()) {
-                cardListContainer.add(new KeranjangItemCard(produk, itemDihapus -> {
-                    user.hapusDariKeranjang(itemDihapus);
-                    refreshKeranjang(user);
-                }));
-                cardListContainer.add(Box.createVerticalStrut(8));
-
-                totalBayar += produk.getHargaTotal();
-                totalQty += produk.getJumlah();
-            }
+    private void handleHapusItem(BarangKeranjang item) {
+        if (displayedUser == null) {
+            return;
         }
-
-        lblJumlahItem.setText(totalQty + " Item");
-        labeltotalbayar.setText("Total Bayar: Rp " + CURRENCY_FORMAT.format(totalBayar));
-
-        cardListContainer.revalidate();
-        cardListContainer.repaint();
+        displayedUser.hapusDariKeranjang(item);
+        refreshKeranjang(displayedUser);
     }
 
-    private static class ScrollableCardListPanel extends JPanel implements Scrollable {
-        @Override
-        public Dimension getPreferredScrollableViewportSize() {
-            return getPreferredSize();
+    public void refreshKeranjang(UserBuyer user) {
+        this.displayedUser = user;
+
+        Collection<BarangKeranjang> items = (user != null) ? user.getBarangKeranjang() : List.of();
+
+        double totalBayar = 0.0;
+        int totalQty = 0;
+        for (BarangKeranjang item : items) {
+            totalBayar += item.getHargaTotal();
+            totalQty += item.getJumlah();
         }
 
-        @Override
-        public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
-            return 16;
-        }
-
-        @Override
-        public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
-            return 60;
-        }
-
-        @Override
-        public boolean getScrollableTracksViewportWidth() {
-            return true;
-        }
-
-        @Override
-        public boolean getScrollableTracksViewportHeight() {
-            return false;
-        }
+        itemList.setItems(items);
+        btnCheckout.setEnabled(!items.isEmpty());
+        lblJumlahItem.setText(totalQty + " Item");
+        labeltotalbayar.setText("Total Bayar: " + CardFormat.rupiah(totalBayar));
     }
 }

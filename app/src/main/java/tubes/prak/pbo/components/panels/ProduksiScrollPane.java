@@ -1,5 +1,6 @@
-package tubes.prak.pbo.components;
+package tubes.prak.pbo.components.panels;
 
+import tubes.prak.pbo.components.cards.ProduksiCard;
 import tubes.prak.pbo.models.Produksi;
 
 import javax.swing.*;

@@ -7,9 +7,9 @@ import java.sql.SQLException;
 import java.util.*;
 
 import tubes.prak.pbo.config.DatabaseConfig;
-import tubes.prak.pbo.models.Bom;
-import tubes.prak.pbo.models.Produk;
-import tubes.prak.pbo.models.RawMaterial;
+import tubes.prak.pbo.models.productRelated.Bom;
+import tubes.prak.pbo.models.productRelated.Produk;
+import tubes.prak.pbo.models.productRelated.RawMaterial;
 
 public class BomRepository {
     // Tambahkan method ini di dalam class BomRepository

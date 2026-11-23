@@ -1,10 +1,10 @@
-package tubes.prak.pbo.components;
+package tubes.prak.pbo.components.panels;
 
 import tubes.prak.pbo.ENUM.StatusProduksi;
 import tubes.prak.pbo.controller.ItemController;
 import tubes.prak.pbo.controller.ProduksiController;
-import tubes.prak.pbo.models.Bom;
-import tubes.prak.pbo.models.Produk;
+import tubes.prak.pbo.models.productRelated.Bom;
+import tubes.prak.pbo.models.productRelated.Produk;
 import tubes.prak.pbo.models.Produksi;
 import tubes.prak.pbo.repositories.BomRepository;
 import tubes.prak.pbo.repositories.ProdukRepository;

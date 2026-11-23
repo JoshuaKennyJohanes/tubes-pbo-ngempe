@@ -9,13 +9,13 @@ import java.util.Map;
 import tubes.prak.pbo.ENUM.JenisPos;
 import tubes.prak.pbo.ENUM.StatusPembayaran;
 import tubes.prak.pbo.config.DatabaseConfig;
-import tubes.prak.pbo.models.Produk;
+import tubes.prak.pbo.models.productRelated.Produk;
 import tubes.prak.pbo.models.SalesOrder;
 import tubes.prak.pbo.models.SalesOrderDetail;
-import tubes.prak.pbo.models.User;
 import tubes.prak.pbo.repositories.FinanceRepository;
 import tubes.prak.pbo.repositories.ProdukRepository;
 import tubes.prak.pbo.repositories.SalesOrderRespository;
+import tubes.prak.pbo.models.users.UserBuyer;
 
 public class SalesOrderController {
 
@@ -61,7 +61,7 @@ public class SalesOrderController {
         return salesOrderRepository.findByUserIdWithDetails(idUser);
     }
 
-    public int checkoutKeranjang(User user) throws Exception {
+    public int checkoutKeranjang(UserBuyer user) throws Exception {
         if (user == null) {
             throw new Exception("Sesi user tidak ditemukan!");
         }

@@ -9,7 +9,7 @@ import tubes.prak.pbo.ENUM.JenisPos;
 import tubes.prak.pbo.ENUM.StatusPo;
 import tubes.prak.pbo.config.DatabaseConfig;
 import tubes.prak.pbo.models.PurchaseOrder;
-import tubes.prak.pbo.models.RawMaterial;
+import tubes.prak.pbo.models.productRelated.RawMaterial;
 import tubes.prak.pbo.models.Vendor;
 import tubes.prak.pbo.repositories.FinanceRepository;
 import tubes.prak.pbo.repositories.PurchaseOrderRepository;

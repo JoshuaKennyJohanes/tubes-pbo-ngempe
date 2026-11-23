@@ -11,17 +11,15 @@ import java.util.Map;
 
 import tubes.prak.pbo.ENUM.StatusPembayaran;
 import tubes.prak.pbo.config.DatabaseConfig;
-import tubes.prak.pbo.models.BarangKeranjang;
-import tubes.prak.pbo.models.SalesOrder;
-import tubes.prak.pbo.models.SalesOrderDetail;
-import tubes.prak.pbo.models.User;
+import tubes.prak.pbo.models.*;
+import tubes.prak.pbo.models.users.UserBuyer;
 
 public class SalesOrderRespository {
 
     private final ProdukRepository produkRepository = new ProdukRepository();
 
     // Checkout: simpan sales_order (PENDING), detail produk, dan kurangi stok produk
-    public int checkout(User user) throws Exception {
+    public int checkout(UserBuyer user) throws Exception {
         if (user == null || user.getBarangKeranjang() == null || user.getBarangKeranjang().isEmpty()) {
             throw new Exception("Keranjang masih kosong!");
         }

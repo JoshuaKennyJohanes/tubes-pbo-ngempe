@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 import tubes.prak.pbo.ENUM.Role;
 import tubes.prak.pbo.exception.InvalidCredentialsException;
-import tubes.prak.pbo.models.User;
+import tubes.prak.pbo.models.users.User;
 import tubes.prak.pbo.repositories.UserRepository;
 import tubes.prak.pbo.util.HashingPassword;
 

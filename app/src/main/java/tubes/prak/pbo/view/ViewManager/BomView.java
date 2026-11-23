@@ -6,10 +6,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,14 +25,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.Scrollable;
 import javax.swing.border.EmptyBorder;
 
-import tubes.prak.pbo.components.BomProductCard;
+import tubes.prak.pbo.components.base.CardListPanel;
+import tubes.prak.pbo.components.cards.BomProductCard;
 import tubes.prak.pbo.controller.ItemController;
-import tubes.prak.pbo.models.Bom;
-import tubes.prak.pbo.models.Produk;
-import tubes.prak.pbo.models.RawMaterial;
+import tubes.prak.pbo.models.productRelated.Bom;
+import tubes.prak.pbo.models.productRelated.Produk;
+import tubes.prak.pbo.models.productRelated.RawMaterial;
 import tubes.prak.pbo.util.Router;
 
 public class BomView extends JPanel {
@@ -46,7 +46,13 @@ public class BomView extends JPanel {
     private List<RawMaterial> masterRawMaterials = new ArrayList<>();
 
     // Komponen Halaman 1: Daftar BOM (CARD_LIST)
-    private ScrollableCardListPanel cardListContainer;
+    private final Map<Bom, Double> hppCache = new IdentityHashMap<>();
+    private final CardListPanel<Bom> bomList = new CardListPanel<>(bom ->
+            new BomProductCard(
+                    bom,
+                    hppCache.getOrDefault(bom, 0.0),
+                    this::openEditBomPanel,
+                    this::handleDeleteBom));
 
     // Komponen Halaman 2: Tambah BOM Baru (CARD_ADD)
     private JComboBox<Produk> cbAddProduk;
@@ -103,56 +109,33 @@ public class BomView extends JPanel {
         headerPanel.add(lblTitle, BorderLayout.WEST);
         headerPanel.add(btnOpenAddBom, BorderLayout.EAST);
 
-        // Container vertikal penampung BomProductCard
-        cardListContainer = new ScrollableCardListPanel();
-        cardListContainer.setLayout(new BoxLayout(cardListContainer, BoxLayout.Y_AXIS));
-        cardListContainer.setBorder(new EmptyBorder(4, 2, 4, 2));
-
-        JScrollPane scrollPane = new JScrollPane(cardListContainer);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        bomList.setEmptyMessage("Belum ada produk yang terdaftar di tabel BOM.");
 
         mainPanel.add(headerPanel, BorderLayout.NORTH);
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(bomList, BorderLayout.CENTER);
 
         return mainPanel;
     }
 
     public void refreshBomList() {
-        cardListContainer.removeAll();
+        hppCache.clear();
 
         try {
-            List<Bom> bomList = itemController.getAllBomGroupedByProduk();
+            List<Bom> boms = itemController.getAllBomGroupedByProduk();
 
-            if (bomList.isEmpty()) {
-                JLabel lblEmpty = new JLabel("Belum ada produk yang terdaftar di tabel BOM.");
-                lblEmpty.setFont(new Font("SansSerif", Font.ITALIC, 13));
-                lblEmpty.setForeground(Color.GRAY);
-                lblEmpty.setBorder(new EmptyBorder(20, 10, 20, 10));
-                cardListContainer.add(lblEmpty);
-            } else {
-                for (Bom bom : bomList) {
-                    double hppPerUnit = itemController.hitungTotalHpp(bom, 1);
-
-                    BomProductCard card = new BomProductCard(
-                            bom,
-                            hppPerUnit,
-                            this::openEditBomPanel,
-                            this::handleDeleteBom
-                    );
-
-                    cardListContainer.add(card);
-                    cardListContainer.add(Box.createVerticalStrut(10));
-                }
+            // HPP dihitung di sini karena hitungTotalHpp() bisa melempar SQLException,
+            // sedangkan factory card di CardListPanel tidak boleh melempar checked exception.
+            for (Bom bom : boms) {
+                hppCache.put(bom, itemController.hitungTotalHpp(bom, 1));
             }
+
+            bomList.setItems(boms);
         } catch (SQLException e) {
+            bomList.clear();
             JOptionPane.showMessageDialog(this,
                     "Gagal memuat daftar BOM: " + e.getMessage(),
                     "Database Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        cardListContainer.revalidate();
-        cardListContainer.repaint();
     }
 
     // =========================================================================
@@ -496,36 +479,6 @@ public class BomView extends JPanel {
             RawMaterial currentSelected = row.getSelectedMaterial();
             List<RawMaterial> available = getAvailableMaterials(rowList, currentSelected);
             row.updateComboBoxItems(available, currentSelected);
-        }
-    }
-
-    // =========================================================================
-    // HELPER PANEL: Memastikan lebar list card selalu mengikuti lebar JScrollPane
-    // =========================================================================
-    private static class ScrollableCardListPanel extends JPanel implements Scrollable {
-        @Override
-        public Dimension getPreferredScrollableViewportSize() {
-            return getPreferredSize();
-        }
-
-        @Override
-        public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
-            return 16;
-        }
-
-        @Override
-        public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
-            return 60;
-        }
-
-        @Override
-        public boolean getScrollableTracksViewportWidth() {
-            return true;
-        }
-
-        @Override
-        public boolean getScrollableTracksViewportHeight() {
-            return false;
         }
     }
 

@@ -1,31 +1,17 @@
 package tubes.prak.pbo.view.ViewManager;
 
-import com.sun.source.util.JavacTask;
-import tubes.prak.pbo.ENUM.StatusProduksi;
-import tubes.prak.pbo.components.DetailProduksiPanel;
-import tubes.prak.pbo.components.FormProduksiPanel;
-import tubes.prak.pbo.components.ProduksiScrollPane;
-import tubes.prak.pbo.controller.ItemController;
+import tubes.prak.pbo.components.base.CardListPanel;
+import tubes.prak.pbo.components.cards.ProduksiCard;
+import tubes.prak.pbo.components.panels.DetailProduksiPanel;
+import tubes.prak.pbo.components.panels.FormProduksiPanel;
 import tubes.prak.pbo.models.Produksi;
-import tubes.prak.pbo.models.RawMaterial;
-import tubes.prak.pbo.repositories.ProdukRepository;
 import tubes.prak.pbo.repositories.ProduksiRepository;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.Date;
-import java.util.List;
-
-import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
 import java.sql.SQLException;
-import java.util.List;
 
 public class ProduksiView extends JPanel {
 
@@ -34,11 +20,16 @@ public class ProduksiView extends JPanel {
     private static final String CARD_DETAIL = "DETAIL_VIEW";
 
     private final CardLayout cardLayout = new CardLayout();
-    private final ProduksiScrollPane scrollPane = new ProduksiScrollPane();
+    private final CardListPanel<Produksi> produksiList =
+            new CardListPanel<>(produksi -> new ProduksiCard(produksi, this::showDetail));
     private DetailProduksiPanel detailPanel;
 
     public ProduksiView() {
         setLayout(cardLayout);
+
+        produksiList.setListBackground(new Color(248, 250, 252));
+        produksiList.setContentInsets(new Insets(12, 12, 12, 12));
+        produksiList.setEmptyMessage("Belum ada jadwal produksi.");
 
         add(createListViewPanel(), CARD_LIST);
         add(createFormViewPanel(), CARD_FORM);
@@ -71,15 +62,15 @@ public class ProduksiView extends JPanel {
         header.add(lblTitle, BorderLayout.WEST);
         header.add(btnTambah, BorderLayout.EAST);
 
-        // Listener saat tombol "Detail" pada salah satu card ditekan
-        scrollPane.setOnDetailClickListener(produksi -> {
-            detailPanel.setProduksi(produksi);
-            cardLayout.show(this, CARD_DETAIL);
-        });
-
         panel.add(header, BorderLayout.NORTH);
-        panel.add(scrollPane, BorderLayout.CENTER);
+        panel.add(produksiList, BorderLayout.CENTER);
         return panel;
+    }
+
+    // Dipanggil saat tombol "Detail" pada salah satu card ditekan
+    private void showDetail(Produksi produksi) {
+        detailPanel.setProduksi(produksi);
+        cardLayout.show(this, CARD_DETAIL);
     }
 
     // --- HALAMAN 2: Form Penjadwalan Produksi ---
@@ -121,8 +112,9 @@ public class ProduksiView extends JPanel {
     public void loadDataProduksi() {
         try {
             List<Produksi> daftarProduksi = ProduksiRepository.findAll();
-            scrollPane.setData(daftarProduksi);
+            produksiList.setItems(daftarProduksi);
         } catch (SQLException e) {
+            produksiList.clear();
             JOptionPane.showMessageDialog(this,
                     "Gagal memuat data produksi: " + e.getMessage(),
                     "Database Error", JOptionPane.ERROR_MESSAGE);

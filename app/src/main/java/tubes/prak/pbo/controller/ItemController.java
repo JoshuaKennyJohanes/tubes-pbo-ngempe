@@ -9,9 +9,9 @@ import java.util.Map;
 import tubes.prak.pbo.ENUM.JenisPos;
 import tubes.prak.pbo.ENUM.Satuan;
 import tubes.prak.pbo.config.DatabaseConfig;
-import tubes.prak.pbo.models.Bom;
-import tubes.prak.pbo.models.Produk;
-import tubes.prak.pbo.models.RawMaterial;
+import tubes.prak.pbo.models.productRelated.Bom;
+import tubes.prak.pbo.models.productRelated.Produk;
+import tubes.prak.pbo.models.productRelated.RawMaterial;
 import tubes.prak.pbo.repositories.BomRepository;
 import tubes.prak.pbo.repositories.FinanceRepository;
 import tubes.prak.pbo.repositories.ProdukRepository;
@@ -24,28 +24,6 @@ public class ItemController {
     RawMaterialRepository rawMaterialRepo = new RawMaterialRepository();
     BomRepository bomRepository = new BomRepository();
     FinanceRepository financeRepo = new FinanceRepository();
-
-    public void registerProduk(String namaProduk, Satuan satuanProduk, double hargaJualProduk,
-                               int stokKritis, File gambar) throws Exception {
-
-        if (namaProduk == null || namaProduk.isBlank() || satuanProduk == null
-                || hargaJualProduk == 0 || stokKritis == 0) {
-            throw new Exception("Field Harus Lengkap!");
-        }
-        if (hargaJualProduk < 0) throw new Exception("Harga jual tidak valid!");
-        if (stokKritis < 0) throw new Exception("Stok tidak boleh di bawah 0!");
-
-        String imageUrl = ImageStorage.save(gambar, "produk");   // null kalau tidak ada gambar
-
-        try {
-            Produk newProduk = new Produk(0, namaProduk, satuanProduk.name(), 0,
-                    hargaJualProduk, imageUrl, " ", 0, stokKritis);
-            produkRepo.registerProduk(newProduk);
-        } catch (Exception e) {
-            ImageStorage.delete(imageUrl);   // rollback: jangan tinggalkan file yatim
-            throw e;
-        }
-    }
 
     public void registerRawMaterial(String namaMaterial, Satuan satuanMaterial, double hargaMaterial,
                                     double stokKritis, double stokMaterial, File gambar) throws Exception {
@@ -304,7 +282,7 @@ public class ItemController {
                     existingProduk.getIdProduk(),
                     namaBaru.trim(),
                     existingProduk.getSatuanProduk(),
-                    existingProduk.getHargaRata2Produk(),
+                    existingProduk.getHPP(),
                     hargaJualBaru,
                     finalImageUrl,
                     cleanDeskripsi,
@@ -315,7 +293,7 @@ public class ItemController {
             produkRepo.updateProduk(conn, updatedProduk);
 
             if (selisihBerkurang > 0) {
-                double nilaiKerugian = selisihBerkurang * existingProduk.getHargaRata2Produk();
+                double nilaiKerugian = selisihBerkurang * existingProduk.getHPP();
                 String deskripsiOpname = "OPNAME - Pengurangan stok produk " + existingProduk.getNamaProduk()
                         + " (-" + selisihBerkurang + " " + existingProduk.getSatuanProduk() + ")";
                 Integer userId = (Session.getSession() != null) ? Session.getSession().getId() : null;
@@ -395,52 +373,6 @@ public class ItemController {
                 } catch (SQLException ignored) {}
             }
         }
-    }
-
-
-
-    // =========================================================================
-// HOOK PENGEMBANGAN BERIKUTNYA: Integrasi Kerugian Produk ke Finance & Audit Log
-// =========================================================================
-    private void catatSelisihStockOpnameProduk(Produk produk, int stokLama, int stokBaru, int selisihBerkurang) {
-        double nilaiKerugian = selisihBerkurang * produk.getHargaRata2Produk();
-
-        // TODO [FINANCE INTEGRATION]:
-        // Catat sebagai variabel expense (kerugian produk rusak/hilang)
-        // sebesar `nilaiKerugian` ke tabel finance.
-
-        // TODO [AUDIT LOG INTEGRATION]:
-        // Simpan riwayat perubahan stok opname produk (id_produk, stokLama -> stokBaru, selisihBerkurang, user, timestamp)
-        // ke tabel audit_log.
-
-        System.out.println("[STOCK OPNAME PRODUK HOOK] Produk: " + produk.getNamaProduk()
-                + " | Stok: " + stokLama + " -> " + stokBaru
-                + " | Selisih: -" + selisihBerkurang + " " + produk.getSatuanProduk()
-                + " | Est. Expense (HPP): Rp " + nilaiKerugian);
-    }
-
-    // =========================================================================
-// HOOK PENGEMBANGAN BERIKUTNYA: Integrasi ke Tabel Finance & Audit Log
-// =========================================================================
-    private void catatSelisihStockOpname(RawMaterial material, double stokLama, double stokBaru, double selisihBerkurang) {
-        double nilaiKerugian = selisihBerkurang * material.getHargaRata2();
-
-        // TODO [FINANCE INTEGRATION]:
-        // Catat sebagai variabel expense (kerugian bahan baku rusak/hilang/busuk)
-        // sebesar `nilaiKerugian` ke tabel finance.
-
-        // TODO [AUDIT LOG INTEGRATION]:
-        // Simpan riwayat perubahan stok opname (id_raw_material, stokLama -> stokBaru, selisihBerkurang, user, timestamp)
-        // ke tabel audit_log.
-
-        System.out.println("[STOCK OPNAME HOOK] Material: " + material.getNama()
-                + " | Stok: " + stokLama + " -> " + stokBaru
-                + " | Selisih: -" + selisihBerkurang + " " + material.getSatuan()
-                + " | Est. Expense: Rp " + nilaiKerugian);
-    }
-
-    public void kurangiStokProduk(Connection conn, int idProduk, int qtyTerjual) throws SQLException {
-        produkRepo.kurangiStokProduk(conn, idProduk, qtyTerjual);
     }
 
     public void kembalikanStokProduk(Connection conn, int idProduk, int qtyKembali) throws SQLException {

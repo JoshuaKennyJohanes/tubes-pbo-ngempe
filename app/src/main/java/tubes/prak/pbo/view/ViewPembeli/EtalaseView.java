@@ -24,23 +24,23 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import tubes.prak.pbo.components.ProductCard;
-import tubes.prak.pbo.models.Produk;
-import tubes.prak.pbo.models.User;
+import tubes.prak.pbo.components.cards.ProductCard;
+import tubes.prak.pbo.models.productRelated.Produk;
+import tubes.prak.pbo.models.users.UserBuyer;
 import tubes.prak.pbo.repositories.ProdukRepository;
 
 public class EtalaseView extends JPanel {
 
     private final JPanel mainContentPanel;
     private final CardLayout cardLayout;
-    private final User user;
+    private final UserBuyer user;
     private final Keranjang panelKeranjang;
 
     private JTextField txtSearch;
     private JPanel gridPanel;
     private List<Produk> cachedProduk = new ArrayList<>();
 
-    public EtalaseView(JPanel mainContentPanel, CardLayout cardLayout, User user, Keranjang panelKeranjang) throws SQLException {
+    public EtalaseView(JPanel mainContentPanel, CardLayout cardLayout, UserBuyer user, Keranjang panelKeranjang) throws SQLException {
         this.mainContentPanel = mainContentPanel;
         this.cardLayout = cardLayout;
         this.user = user;

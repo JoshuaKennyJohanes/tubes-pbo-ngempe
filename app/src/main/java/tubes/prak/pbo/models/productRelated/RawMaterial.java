@@ -1,13 +1,13 @@
-package tubes.prak.pbo.models;
-
-import java.util.Arrays;
-import java.util.List;
+package tubes.prak.pbo.models.productRelated;
 
 import tubes.prak.pbo.ENUM.Satuan;
+import tubes.prak.pbo.Interfaces.PurchaseAble;
 
-public class RawMaterial extends Item{
+public class RawMaterial extends Item implements PurchaseAble {
     private double batasKritisMaterial;
     private double jumlahStok;
+    private double hargaPembelianTerbaru;
+
     private String imageUrl;
 
     public RawMaterial(int id_raw_material, String nama_material, Satuan satuan_material, double harga_rata2_material, double batas_kritis, double jumlahStok, String imageUrl){
@@ -25,22 +25,13 @@ public class RawMaterial extends Item{
         return this.jumlahStok;
     }
 
-
-
     public String getImageUrl(){
         return this.imageUrl;
     }
 
     @Override
-    public List<String> getTableHeader() {
-        return Arrays.asList("ID Material", "Nama Material", "Satuan Material", "Harga Material / Satuan", "Stok Material","Batas Kritis Material");
+    public void setHargaPembelianTerbaru(double hargaTerbaru) {
+        this.hargaPembelianTerbaru = hargaTerbaru;
     }
 
-    @Override
-    public Object[] toTableRow() {
-        return new Object[]{getId(), getNama(), getSatuan().name(), getHargaRata2(), getJumlahStok(),getBatasKritis()};
-    }
-
-    
-    
 }

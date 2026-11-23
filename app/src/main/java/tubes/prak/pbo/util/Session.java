@@ -1,9 +1,9 @@
 package tubes.prak.pbo.util;
 
-import tubes.prak.pbo.models.User;
+import tubes.prak.pbo.models.users.User;
 
 public class Session {
-    private static  User userLoggedIn;
+    private static User userLoggedIn;
 
     public static void setSession(User user){
         userLoggedIn = user;

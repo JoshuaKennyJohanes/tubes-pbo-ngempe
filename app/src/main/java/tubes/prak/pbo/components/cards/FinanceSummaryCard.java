@@ -1,4 +1,4 @@
-package tubes.prak.pbo.components;
+package tubes.prak.pbo.components.cards;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

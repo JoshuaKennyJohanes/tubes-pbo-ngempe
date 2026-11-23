@@ -1,4 +1,4 @@
-package tubes.prak.pbo.components;
+package tubes.prak.pbo.components.cards;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -22,7 +22,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import tubes.prak.pbo.models.Produk;
+import tubes.prak.pbo.models.productRelated.Produk;
 
 public class ProductCard extends JPanel {
 
@@ -75,7 +75,7 @@ public class ProductCard extends JPanel {
         lblTitle.setForeground(new Color(30, 41, 59));
         lblTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel lblPrice = new JLabel("Rp " + CURRENCY_FORMAT.format(produk.getHargaJualProduk()));
+        JLabel lblPrice = new JLabel("Rp " + CURRENCY_FORMAT.format(produk.getHargaJual()));
         lblPrice.setFont(new Font("SansSerif", Font.BOLD, 16));
         lblPrice.setForeground(new Color(15, 23, 42));
         lblPrice.setAlignmentX(Component.LEFT_ALIGNMENT);

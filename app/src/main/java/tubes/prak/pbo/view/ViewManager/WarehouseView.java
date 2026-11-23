@@ -10,7 +10,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -20,8 +19,6 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -33,16 +30,16 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import tubes.prak.pbo.components.WarehouseItemCard;
+import tubes.prak.pbo.components.base.CardListPanel;
+import tubes.prak.pbo.components.cards.WarehouseItemCard;
 import tubes.prak.pbo.controller.ItemController;
-import tubes.prak.pbo.models.Item;
-import tubes.prak.pbo.models.Produk;
-import tubes.prak.pbo.models.RawMaterial;
+import tubes.prak.pbo.models.productRelated.Item;
+import tubes.prak.pbo.models.productRelated.Produk;
+import tubes.prak.pbo.models.productRelated.RawMaterial;
 
 public class WarehouseView extends JPanel {
 
@@ -60,7 +57,8 @@ public class WarehouseView extends JPanel {
 
     // Komponen Halaman 1: Monitor Warehouse (Default)
     private JComboBox<String> cbKategori;
-    private ScrollableCardListPanel cardListContainer;
+    private final CardListPanel<Item> itemList =
+            new CardListPanel<>(item -> new WarehouseItemCard(item, this::handleEditItem));
 
     // Komponen Halaman 3: Edit Produk
     private Produk currentEditingProduk;
@@ -100,41 +98,23 @@ public class WarehouseView extends JPanel {
 
     // Dapat dipanggil dari MainShell saat tombol menu Warehouse diklik
     public void refreshData() {
-        cardListContainer.removeAll();
         String kategori = (String) cbKategori.getSelectedItem();
 
         try {
             if ("Raw Material".equals(kategori)) {
+                itemList.setEmptyMessage("Belum ada data bahan baku (Raw Material) di warehouse.");
                 List<RawMaterial> materials = itemController.getAllMaterials();
-                renderItemCards(materials, "Belum ada data bahan baku (Raw Material) di warehouse.");
+                itemList.setItems(materials);
             } else {
+                itemList.setEmptyMessage("Belum ada data produk di warehouse.");
                 List<Produk> produks = itemController.getAllProduk();
-                renderItemCards(produks, "Belum ada data produk di warehouse.");
+                itemList.setItems(produks);
             }
         } catch (SQLException e) {
+            itemList.clear();
             JOptionPane.showMessageDialog(this,
                     "Gagal memuat data warehouse: " + e.getMessage(),
                     "Database Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        cardListContainer.revalidate();
-        cardListContainer.repaint();
-    }
-
-    private void renderItemCards(List<? extends Item> items, String emptyMessage) {
-        if (items == null || items.isEmpty()) {
-            JLabel lblEmpty = new JLabel(emptyMessage);
-            lblEmpty.setFont(new Font("SansSerif", Font.ITALIC, 13));
-            lblEmpty.setForeground(Color.GRAY);
-            lblEmpty.setBorder(new EmptyBorder(20, 10, 20, 10));
-            cardListContainer.add(lblEmpty);
-            return;
-        }
-
-        for (Item item : items) {
-            WarehouseItemCard card = new WarehouseItemCard(item, this::handleEditItem);
-            cardListContainer.add(card);
-            cardListContainer.add(Box.createVerticalStrut(10));
         }
     }
 
@@ -176,17 +156,8 @@ public class WarehouseView extends JPanel {
         headerPanel.add(leftHeader, BorderLayout.WEST);
         headerPanel.add(btnOpenRegister, BorderLayout.EAST);
 
-        // List Card Container
-        cardListContainer = new ScrollableCardListPanel();
-        cardListContainer.setLayout(new BoxLayout(cardListContainer, BoxLayout.Y_AXIS));
-        cardListContainer.setBorder(new EmptyBorder(4, 2, 4, 2));
-
-        JScrollPane scrollPane = new JScrollPane(cardListContainer);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-
         panel.add(headerPanel, BorderLayout.NORTH);
-        panel.add(scrollPane, BorderLayout.CENTER);
+        panel.add(itemList, BorderLayout.CENTER);
 
         return panel;
     }
@@ -338,8 +309,8 @@ public class WarehouseView extends JPanel {
         lblEditProdukId.setText("Edit Data Produk — ID #" + produk.getIdProduk());
         txtEditProdukNama.setText(produk.getNamaProduk());
         txtEditProdukSatuan.setText(produk.getSatuanProduk());
-        txtEditProdukHpp.setText("Rp " + CURRENCY_FORMAT.format(produk.getHargaRata2Produk()));
-        txtEditProdukHargaJual.setText(String.valueOf((long) produk.getHargaJualProduk()));
+        txtEditProdukHpp.setText("Rp " + CURRENCY_FORMAT.format(produk.getHPP()));
+        txtEditProdukHargaJual.setText(String.valueOf((long) produk.getHargaJual()));
         txtEditProdukStok.setText(String.valueOf(produk.getStok()));
         txtEditProdukBatasKritis.setText(String.valueOf(produk.getBatasKritisProduk()));
         txtEditProdukDeskripsi.setText(produk.getDeskripsiProduk() != null ? produk.getDeskripsiProduk() : "");
@@ -526,32 +497,5 @@ public class WarehouseView extends JPanel {
         int h = Math.max(1, (int) (img.getHeight() * scale));
         label.setText("");
         label.setIcon(new ImageIcon(img.getScaledInstance(w, h, Image.SCALE_SMOOTH)));
-    }
-
-    private static class ScrollableCardListPanel extends JPanel implements Scrollable {
-        @Override
-        public Dimension getPreferredScrollableViewportSize() {
-            return getPreferredSize();
-        }
-
-        @Override
-        public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
-            return 16;
-        }
-
-        @Override
-        public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
-            return 60;
-        }
-
-        @Override
-        public boolean getScrollableTracksViewportWidth() {
-            return true;
-        }
-
-        @Override
-        public boolean getScrollableTracksViewportHeight() {
-            return false;
-        }
     }
 }

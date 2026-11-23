@@ -1,4 +1,4 @@
-package tubes.prak.pbo.components;
+package tubes.prak.pbo.components.panels;
 
 import tubes.prak.pbo.ENUM.StatusProduksi;
 import tubes.prak.pbo.controller.ProduksiController;

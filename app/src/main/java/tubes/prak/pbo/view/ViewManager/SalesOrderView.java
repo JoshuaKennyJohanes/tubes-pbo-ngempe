@@ -5,23 +5,20 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Rectangle;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.Scrollable;
 import javax.swing.border.EmptyBorder;
 
+import tubes.prak.pbo.components.base.CardListPanel;
+import tubes.prak.pbo.components.cards.SalesOrderCard;
 import tubes.prak.pbo.controller.SalesOrderController;
 import tubes.prak.pbo.models.SalesOrder;
 
@@ -33,17 +30,17 @@ public class SalesOrderView extends JPanel {
     };
 
     private final SalesOrderController salesOrderController = new SalesOrderController();
+    private final CardListPanel<SalesOrder> orderList = new CardListPanel<>(SalesOrderCard::new);
 
     private JComboBox<String> cbBulan;
     private JComboBox<Object> cbTahun;
-    private ScrollableCardListPanel cardListContainer;
 
     public SalesOrderView() {
         setLayout(new BorderLayout(10, 10));
         setBorder(new EmptyBorder(12, 12, 12, 12));
 
         add(buildHeaderPanel(), BorderLayout.NORTH);
-        add(buildContentPanel(), BorderLayout.CENTER);
+        add(orderList, BorderLayout.CENTER);
 
         refreshSalesOrders();
     }
@@ -94,17 +91,6 @@ public class SalesOrderView extends JPanel {
         return headerPanel;
     }
 
-    private JScrollPane buildContentPanel() {
-        cardListContainer = new ScrollableCardListPanel();
-        cardListContainer.setLayout(new BoxLayout(cardListContainer, BoxLayout.Y_AXIS));
-        cardListContainer.setBorder(new EmptyBorder(4, 2, 4, 2));
-
-        JScrollPane scrollPane = new JScrollPane(cardListContainer);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        return scrollPane;
-    }
-
     // Dapat dipanggil saat navbar menu Sales Order diklik untuk memuat data terbaru
     public void refreshSalesOrders() {
         reloadAvailableYears();
@@ -147,64 +133,23 @@ public class SalesOrderView extends JPanel {
     }
 
     private void loadOrders(Integer bulan, Integer tahun) {
-        cardListContainer.removeAll();
+        orderList.setEmptyMessage(buildEmptyMessage(bulan, tahun));
 
         try {
-            List<SalesOrder> orders = salesOrderController.getSalesOrdersByFilter(bulan, tahun);
-
-            if (orders.isEmpty()) {
-                String pesan = (bulan != null)
-                        ? "Tidak ada data sales order pada bulan " + NAMA_BULAN[bulan - 1]
-                        + (tahun != null ? " " + tahun : "") + "."
-                        : "Belum ada data sales order yang masuk.";
-
-                JLabel lblEmpty = new JLabel(pesan);
-                lblEmpty.setFont(new Font("SansSerif", Font.ITALIC, 13));
-                lblEmpty.setForeground(Color.GRAY);
-                lblEmpty.setBorder(new EmptyBorder(20, 10, 20, 10));
-                cardListContainer.add(lblEmpty);
-            } else {
-                for (SalesOrder order : orders) {
-                    SalesOrderCard card = new SalesOrderCard(order);
-                    cardListContainer.add(card);
-                    cardListContainer.add(Box.createVerticalStrut(10));
-                }
-            }
+            orderList.setItems(salesOrderController.getSalesOrdersByFilter(bulan, tahun));
         } catch (SQLException e) {
+            orderList.clear();
             JOptionPane.showMessageDialog(this,
                     "Gagal memuat data Sales Order: " + e.getMessage(),
                     "Database Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        cardListContainer.revalidate();
-        cardListContainer.repaint();
     }
 
-    // Memastikan card selalu melebar mengikuti frame aplikasi
-    private static class ScrollableCardListPanel extends JPanel implements Scrollable {
-        @Override
-        public Dimension getPreferredScrollableViewportSize() {
-            return getPreferredSize();
+    private String buildEmptyMessage(Integer bulan, Integer tahun) {
+        if (bulan == null) {
+            return "Belum ada data sales order yang masuk.";
         }
-
-        @Override
-        public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
-            return 16;
-        }
-
-        @Override
-        public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
-            return 60;
-        }
-
-        @Override
-        public boolean getScrollableTracksViewportWidth() {
-            return true;
-        }
-
-        @Override
-        public boolean getScrollableTracksViewportHeight() {
-            return false;
-        }
+        return "Tidak ada data sales order pada bulan " + NAMA_BULAN[bulan - 1]
+                + (tahun != null ? " " + tahun : "") + ".";
     }
 }
