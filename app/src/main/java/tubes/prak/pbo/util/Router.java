@@ -1,6 +1,7 @@
 package tubes.prak.pbo.util;
 
 public class Router {
+    public static final String PURCHASE_ORDER = "purchase_order";
     public static String KERANJANG_PAGE = "keranjang_page" ;
     public static String LOGIN_PAGE = "login_page";
     public static String REGISTER_PAGE = "register_page";

@@ -438,4 +438,12 @@ public class ItemController {
                 + " | Selisih: -" + selisihBerkurang + " " + material.getSatuan()
                 + " | Est. Expense: Rp " + nilaiKerugian);
     }
+
+    public void kurangiStokProduk(Connection conn, int idProduk, int qtyTerjual) throws SQLException {
+        produkRepo.kurangiStokProduk(conn, idProduk, qtyTerjual);
+    }
+
+    public void kembalikanStokProduk(Connection conn, int idProduk, int qtyKembali) throws SQLException {
+        produkRepo.tambahStokProduk(conn, idProduk, qtyKembali);
+    }
 }

@@ -245,4 +245,14 @@ public class FinanceRepository {
         }
         return years;
     }
+
+    public double getTotalCash() throws SQLException {
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            return queryTotalCash(conn);
+        }
+    }
+
+    public double getTotalCash(Connection conn) throws SQLException {
+        return queryTotalCash(conn);
+    }
 }
