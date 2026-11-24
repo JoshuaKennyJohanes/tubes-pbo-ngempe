@@ -38,7 +38,6 @@ public class ProduksiCard extends BaseCard {
 
         JPanel statusWrapper = row();
         StatusProduksi status = produksi.getStatusProduksi();
-        // TODO: petakan StatusProduksi ke BadgeStyle begitu konstanta enum-nya diketahui
         statusWrapper.add(badge(status.name(), status.getTextColor(), status.getBadgeColor()));
 
         info.add(label("ID Produksi: #" + produksi.getIdProduksi(), Font.BOLD, 14, TITLE));
@@ -59,9 +58,5 @@ public class ProduksiCard extends BaseCard {
         btnDetail.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnDetail.setPreferredSize(new Dimension(95, 34));
         return centered(btnDetail, 105);
-    }
-
-    public Produksi getProduksi() {
-        return produksi;
     }
 }

@@ -1,13 +1,13 @@
 package tubes.prak.pbo.components.panels;
 
 import tubes.prak.pbo.ENUM.StatusProduksi;
+import tubes.prak.pbo.Interfaces.ItemService;
+import tubes.prak.pbo.Interfaces.ProductionService;
 import tubes.prak.pbo.controller.ItemController;
 import tubes.prak.pbo.controller.ProduksiController;
 import tubes.prak.pbo.models.productRelated.Bom;
 import tubes.prak.pbo.models.productRelated.Produk;
 import tubes.prak.pbo.models.Produksi;
-import tubes.prak.pbo.repositories.BomRepository;
-import tubes.prak.pbo.repositories.ProdukRepository;
 import tubes.prak.pbo.util.Session;
 
 import javax.swing.*;
@@ -20,12 +20,13 @@ import java.text.NumberFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class FormProduksiPanel extends JPanel {
 
-    private final ItemController itemController = new ItemController();
-    private final ProduksiController produksiController = new ProduksiController();
+    private final ItemService itemService;
+    private final ProductionService productionService;
 
     private JComboBox<Produk> cmbProduk;
     private JSpinner spnTanggal;
@@ -39,7 +40,14 @@ public class FormProduksiPanel extends JPanel {
     private final Consumer<Produksi> onSuccessSave;
 
     public FormProduksiPanel(Consumer<Produksi> onSuccessSave) {
+        this(onSuccessSave, new ItemController(), new ProduksiController());
+    }
+
+    public FormProduksiPanel(Consumer<Produksi> onSuccessSave, ItemService itemService,
+                             ProductionService productionService) {
         this.onSuccessSave = onSuccessSave;
+        this.itemService = Objects.requireNonNull(itemService);
+        this.productionService = Objects.requireNonNull(productionService);
         initUI();
         loadDataProduk();
         setupListeners();
@@ -129,7 +137,7 @@ public class FormProduksiPanel extends JPanel {
 
     private void loadDataProduk() {
         try {
-            List<Produk> listProduk = ProdukRepository.findAllProduk();
+            List<Produk> listProduk = itemService.getAllProduk();
             for (Produk p : listProduk) {
                 cmbProduk.addItem(p);
             }
@@ -148,8 +156,7 @@ public class FormProduksiPanel extends JPanel {
         if (selected == null) return;
 
         try {
-            // Load BOM sekali saat produk dipilih
-            currentBom = BomRepository.findByProdukId(selected.getIdProduk());
+            currentBom = itemService.getBomByProdukId(selected.getIdProduk());
             updateHppReaktif();
         } catch (SQLException e) {
             currentBom = null;
@@ -181,9 +188,9 @@ public class FormProduksiPanel extends JPanel {
 
     private void updateHppReaktif() {
         double jumlah = parseJumlahProduksi();
-        currentTotalHpp = itemController.hitungTotalHpp(currentBom, jumlah);
+        currentTotalHpp = itemService.hitungTotalHpp(currentBom, jumlah);
 
-        NumberFormat rupiah = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+        NumberFormat rupiah = NumberFormat.getCurrencyInstance(Locale.of("id", "ID"));
         lblTotalHpp.setText(rupiah.format(currentTotalHpp));
     }
 
@@ -225,7 +232,7 @@ public class FormProduksiPanel extends JPanel {
         );
 
         try {
-            produksiController.buatJadwalProduksi(produksiBaru, currentBom);
+            productionService.buatJadwalProduksi(produksiBaru, currentBom);
             JOptionPane.showMessageDialog(this, "Jadwal produksi berhasil disimpan!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
 
             // Reset field & beri tahu parent view (ProduksiView) agar me-refresh list card

@@ -3,6 +3,7 @@ package tubes.prak.pbo.view;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.util.Objects;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -40,11 +41,18 @@ public class NavbarPanel extends JPanel {
         return navbar;
     }
 
-    public static NavbarPanel forStaff(UserStaff staff) {
+    public static NavbarPanel forStaff(UserStaff staff, Runnable refreshWarehouse) {
         NavbarPanel navbar = new NavbarPanel();
 
         if (staff.canAccessWarehouse()) {
-            navbar.addMenuButton("Warehouse", () -> NavigationController.showSubPage(Router.WAREHOUSE_PAGE));
+            Runnable refreshAction = Objects.requireNonNull(
+                    refreshWarehouse,
+                    "Warehouse refresh action is required for staff with warehouse access."
+            );
+            navbar.addMenuButton("Warehouse", () -> {
+                refreshAction.run();
+                NavigationController.showSubPage(Router.WAREHOUSE_PAGE);
+            });
         }
         if (staff.canAccessProduction()) {
             navbar.addMenuButton("Produksi", () -> NavigationController.showSubPage(Router.PRODUKSI_PAGE));

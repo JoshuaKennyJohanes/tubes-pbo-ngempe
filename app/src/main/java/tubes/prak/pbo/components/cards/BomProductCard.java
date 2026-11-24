@@ -1,13 +1,7 @@
 package tubes.prak.pbo.components.cards;
 
-import static tubes.prak.pbo.components.base.CardColors.BTN_DANGER;
-import static tubes.prak.pbo.components.base.CardColors.BTN_PRIMARY;
-import static tubes.prak.pbo.components.base.CardColors.MUTED;
-import static tubes.prak.pbo.components.base.CardColors.SUBTLE;
-import static tubes.prak.pbo.components.base.CardColors.SUCCESS_TEXT;
-import static tubes.prak.pbo.components.base.CardColors.TITLE;
-
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -20,9 +14,16 @@ import java.util.function.Consumer;
 import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
 import tubes.prak.pbo.components.base.BaseCard;
+import static tubes.prak.pbo.components.base.CardColors.BTN_DANGER;
+import static tubes.prak.pbo.components.base.CardColors.BTN_PRIMARY;
+import static tubes.prak.pbo.components.base.CardColors.MUTED;
+import static tubes.prak.pbo.components.base.CardColors.SUBTLE;
+import static tubes.prak.pbo.components.base.CardColors.SUCCESS_TEXT;
+import static tubes.prak.pbo.components.base.CardColors.TITLE;
 import tubes.prak.pbo.components.base.CardFormat;
 import tubes.prak.pbo.models.productRelated.Bom;
 import tubes.prak.pbo.models.productRelated.Produk;
@@ -56,8 +57,20 @@ public class BomProductCard extends BaseCard {
 
         panel.add(label("ID Produk: #" + bom.getIdProduk(), Font.BOLD, 11, MUTED));
         panel.add(Box.createVerticalStrut(4));
-        panel.add(label("<html><body style='width: 195px;'>" + namaProduk + "</body></html>",
-                Font.BOLD, 14, TITLE));
+        JTextArea txtDeskripsi = new JTextArea(namaProduk);
+    txtDeskripsi.setFont(new Font("SansSerif", Font.PLAIN, 12));
+    txtDeskripsi.setForeground(TITLE);
+    txtDeskripsi.setBackground(panel.getBackground());
+    txtDeskripsi.setLineWrap(true);
+    txtDeskripsi.setWrapStyleWord(true);
+    txtDeskripsi.setEditable(false);
+    txtDeskripsi.setFocusable(false);
+    txtDeskripsi.setOpaque(false);
+    txtDeskripsi.setBorder(null);
+
+txtDeskripsi.setPreferredSize(new Dimension(340, 50));
+
+panel.add(txtDeskripsi);
         panel.add(Box.createVerticalGlue());
         panel.add(label("Komposisi: " + bom.getKebutuhanMaterial().size() + " bahan baku",
                 Font.PLAIN, 12, SUBTLE));

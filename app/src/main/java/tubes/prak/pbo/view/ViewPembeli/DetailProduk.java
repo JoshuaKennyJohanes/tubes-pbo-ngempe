@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -119,11 +120,15 @@ public class DetailProduk extends JPanel {
         String deskripsi = (produk.getDeskripsiProduk() != null && !produk.getDeskripsiProduk().isBlank())
                 ? produk.getDeskripsiProduk()
                 : "Tidak ada deskripsi tambahan untuk produk ini.";
-        JLabel lblDesc = new JLabel("<html><body style='width: 340px;'>" + deskripsi + "</body></html>");
+        JTextArea lblDesc = new JTextArea(deskripsi);
+        lblDesc.setLineWrap(true);
+        lblDesc.setWrapStyleWord(true);
+        lblDesc.setEditable(false);
+        lblDesc.setOpaque(false);
+
         lblDesc.setFont(new Font("SansSerif", Font.PLAIN, 13));
         lblDesc.setForeground(new Color(71, 85, 105));
         lblDesc.setAlignmentX(Component.LEFT_ALIGNMENT);
-
         JSeparator separator = new JSeparator();
         separator.setMaximumSize(new Dimension(Integer.MAX_VALUE, 10));
         separator.setAlignmentX(Component.LEFT_ALIGNMENT);

@@ -2,9 +2,7 @@ package tubes.prak.pbo;
 
 import java.awt.Color;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -22,13 +20,5 @@ public class TestApp {
     mainPanel.setBackground(new Color(245, 247, 250));
     mainPanel.setLayout(new GridBagLayout());
 
-    // Memuat dan melakukan scaling pada gambar "sawit_wowo.jpg" agar pas di card
-    ImageIcon rawIcon = new ImageIcon("app\\sawit_wowo.jpg");
-    Image scaledImage = rawIcon.getImage().getScaledInstance(250, 160, Image.SCALE_SMOOTH);
-    ImageIcon img = new ImageIcon(scaledImage);
-
-
-
-    
     }
 }

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import tubes.prak.pbo.ENUM.JenisPos;
 import tubes.prak.pbo.ENUM.Satuan;
+import tubes.prak.pbo.Interfaces.ItemService;
 import tubes.prak.pbo.config.DatabaseConfig;
 import tubes.prak.pbo.models.productRelated.Bom;
 import tubes.prak.pbo.models.productRelated.Produk;
@@ -19,7 +20,7 @@ import tubes.prak.pbo.repositories.RawMaterialRepository;
 import tubes.prak.pbo.util.ImageStorage;
 import tubes.prak.pbo.util.Session;
 
-public class ItemController {
+public class ItemController implements ItemService {
     ProdukRepository produkRepo = new ProdukRepository();
     RawMaterialRepository rawMaterialRepo = new RawMaterialRepository();
     BomRepository bomRepository = new BomRepository();
@@ -70,7 +71,7 @@ public class ItemController {
         return rawMaterialRepo.findAllRawMaterial();
     }
 
-    // 1. Kalkulasi reaktif di memori (tanpa query database berulang)
+    @Override
     public double hitungTotalHpp(Bom bom, double jumlahProduksi) {
         if (bom == null || jumlahProduksi <= 0) {
             return 0.0;
@@ -86,7 +87,7 @@ public class ItemController {
         return totalHpp;
     }
 
-    // 2. Validasi kecukupan stok raw material dengan try-catch
+    @Override
     public void validasiStokMaterial(Bom bom, double jumlahProduksi) throws Exception {
         if (bom == null || bom.getKebutuhanMaterial().isEmpty()) {
             throw new Exception("BOM untuk produk ini belum diatur.");
@@ -103,7 +104,6 @@ public class ItemController {
             RawMaterial materialDibutuhkan = entry.getKey();
             double totalKebutuhan = entry.getValue() * jumlahProduksi;
 
-            // Sesuaikan getter ID di bawah (misal getId() / getIdItem()) dengan class Item Anda
             RawMaterial stokAktual = cariMaterialById(stokTersediaList, materialDibutuhkan.getId());
 
             if (stokAktual == null || stokAktual.getJumlahStok() < totalKebutuhan) {
@@ -118,7 +118,7 @@ public class ItemController {
 
     private RawMaterial cariMaterialById(List<RawMaterial> list, int idMaterial) {
         for (RawMaterial rm : list) {
-            if (rm.getId() == idMaterial) { // Sesuaikan jika nama getter di Item berbeda
+            if (rm.getId() == idMaterial) {
                 return rm;
             }
         }
@@ -127,7 +127,7 @@ public class ItemController {
 
     public List<Bom> getAllBomGroupedByProduk() throws SQLException {
         List<Bom> rawBomList = bomRepository.findAllGroupedByProduk();
-        List<Produk> allProduk = produkRepo.findAllProduk();
+        List<Produk> allProduk = ProdukRepository.findAllProduk();
         List<RawMaterial> allMaterials = rawMaterialRepo.findAllRawMaterial();
 
         Map<Integer, Produk> produkMap = new java.util.HashMap<>();
@@ -155,9 +155,14 @@ public class ItemController {
         return enrichedList;
     }
 
+    @Override
+    public Bom getBomByProdukId(int idProduk) throws SQLException {
+        return BomRepository.findByProdukId(idProduk);
+    }
+
     // Mengambil daftar produk yang BELUM memiliki BOM (siap dipakai di menu Tambah BOM)
     public List<Produk> getProdukTanpaBom() throws SQLException {
-        List<Produk> allProduk = produkRepo.findAllProduk();
+        List<Produk> allProduk = ProdukRepository.findAllProduk();
         java.util.Set<Integer> registeredIds = bomRepository.findAllRegisteredProdukIds();
 
         List<Produk> availableProduk = new java.util.ArrayList<>();
@@ -194,10 +199,9 @@ public class ItemController {
         bomRepository.deleteByProdukId(idProduk);
     }
 
-// Ganti/tambahkan method-method berikut di dalam class ItemController (method BOM & validasi stok tetap dipertahankan)
-
+    @Override
     public List<Produk> getAllProduk() throws SQLException {
-        return produkRepo.findAllProduk();
+        return ProdukRepository.findAllProduk();
     }
 
     public void registerProduk(String namaProduk, Satuan satuanProduk, double hargaJualProduk,

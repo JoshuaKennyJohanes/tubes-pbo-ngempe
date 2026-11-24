@@ -9,6 +9,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -18,10 +19,10 @@ public class FinanceSummaryCard extends JPanel {
 
     public static final int CARD_HEIGHT = 145;
 
-    private JLabel lblTitle;
-    private JLabel lblMainValue;
-    private JLabel lblSubDetail;
-    private JPanel accentBar;
+    private final JLabel lblTitle;
+    private final JLabel lblMainValue;
+    private final JTextArea lblSubDetail;
+    private final JPanel accentBar;
 
     public FinanceSummaryCard(String title, Color accentColor) {
         setLayout(new BorderLayout());
@@ -54,10 +55,16 @@ public class FinanceSummaryCard extends JPanel {
         lblMainValue.setFont(new Font("SansSerif", Font.BOLD, 20));
         lblMainValue.setForeground(new Color(15, 23, 42));
 
-        lblSubDetail = new JLabel("<html>-</html>");
-        lblSubDetail.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        lblSubDetail = new JTextArea("-");
+        lblSubDetail.setLineWrap(true);
+        lblSubDetail.setWrapStyleWord(true);
+        lblSubDetail.setEditable(false);
+        lblSubDetail.setFocusable(false);
+        lblSubDetail.setOpaque(false);
         lblSubDetail.setForeground(new Color(71, 85, 105));
+        lblSubDetail.setFont(new Font("SansSerif", Font.PLAIN, 11));
         lblSubDetail.setBorder(new MatteBorder(1, 0, 0, 0, new Color(235, 239, 245)));
+
 
         content.add(lblTitle);
         content.add(Box.createVerticalStrut(10));
@@ -68,11 +75,11 @@ public class FinanceSummaryCard extends JPanel {
         add(content, BorderLayout.CENTER);
     }
 
-    public void updateData(String title, String mainValue, Color valueColor, Color accentColor, String subDetailHtml) {
+    public void updateData(String title, String mainValue, Color valueColor, Color accentColor, String subDetail) {
         lblTitle.setText(title);
         lblMainValue.setText(mainValue);
         lblMainValue.setForeground(valueColor);
         accentBar.setBackground(accentColor);
-        lblSubDetail.setText("<html><div style='padding-top:6px;'>" + subDetailHtml + "</div></html>");
+        lblSubDetail.setText(subDetail);
     }
 }

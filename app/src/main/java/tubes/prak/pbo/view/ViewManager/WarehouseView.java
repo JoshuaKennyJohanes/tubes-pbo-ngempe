@@ -43,9 +43,9 @@ import tubes.prak.pbo.models.productRelated.RawMaterial;
 
 public class WarehouseView extends JPanel {
 
-    private static final String CARD_MONITOR           = "CARD_MONITOR";
-    private static final String CARD_REGISTER          = "CARD_REGISTER";
-    private static final String CARD_EDIT_PRODUK       = "CARD_EDIT_PRODUK";
+    private static final String CARD_MONITOR = "CARD_MONITOR";
+    private static final String CARD_REGISTER = "CARD_REGISTER";
+    private static final String CARD_EDIT_PRODUK = "CARD_EDIT_PRODUK";
     private static final String CARD_EDIT_RAW_MATERIAL = "CARD_EDIT_RAW_MATERIAL";
 
     private static final int PREVIEW_SIZE = 85;
@@ -57,13 +57,12 @@ public class WarehouseView extends JPanel {
 
     // Komponen Halaman 1: Monitor Warehouse (Default)
     private JComboBox<String> cbKategori;
-    private final CardListPanel<Item> itemList =
-            new CardListPanel<>(item -> new WarehouseItemCard(item, this::handleEditItem));
+    private final CardListPanel<Item> itemList = new CardListPanel<>(
+            item -> new WarehouseItemCard(item, this::handleEditItem));
 
     // Komponen Halaman 3: Edit Produk
     private Produk currentEditingProduk;
     private JLabel lblEditProdukId;
-    private JTextField txtEditProdukStokLama;
     private JTextField txtEditProdukNama;
     private JTextField txtEditProdukSatuan;
     private JTextField txtEditProdukHpp;
@@ -93,11 +92,10 @@ public class WarehouseView extends JPanel {
         add(buildEditRawMaterialPanel(), CARD_EDIT_RAW_MATERIAL);
 
         refreshData();
-        cardLayout.show(this, CARD_MONITOR);
     }
 
     // Dapat dipanggil dari MainShell saat tombol menu Warehouse diklik
-    public void refreshData() {
+    public final void refreshData() {
         String kategori = (String) cbKategori.getSelectedItem();
 
         try {
@@ -129,8 +127,7 @@ public class WarehouseView extends JPanel {
         JPanel headerPanel = new JPanel(new BorderLayout(10, 0));
         headerPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(210, 215, 222)),
-                new EmptyBorder(0, 0, 10, 0)
-        ));
+                new EmptyBorder(0, 0, 10, 0)));
 
         JPanel leftHeader = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         leftHeader.setOpaque(false);
@@ -138,7 +135,7 @@ public class WarehouseView extends JPanel {
         JLabel lblTitle = new JLabel("Warehouse Monitor");
         lblTitle.setFont(new Font("SansSerif", Font.BOLD, 16));
 
-        cbKategori = new JComboBox<>(new String[]{"Produk", "Raw Material"});
+        cbKategori = new JComboBox<>(new String[] { "Produk", "Raw Material" });
         cbKategori.setPreferredSize(new Dimension(150, 28));
         cbKategori.addActionListener(e -> refreshData());
 
@@ -172,8 +169,7 @@ public class WarehouseView extends JPanel {
         JPanel header = new JPanel(new BorderLayout());
         header.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(210, 215, 222)),
-                new EmptyBorder(0, 0, 10, 0)
-        ));
+                new EmptyBorder(0, 0, 10, 0)));
 
         JLabel lblTitle = new JLabel("Register Item Baru");
         lblTitle.setFont(new Font("SansSerif", Font.BOLD, 16));
@@ -217,8 +213,7 @@ public class WarehouseView extends JPanel {
         JPanel header = new JPanel(new BorderLayout());
         header.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(210, 215, 222)),
-                new EmptyBorder(0, 0, 10, 0)
-        ));
+                new EmptyBorder(0, 0, 10, 0)));
 
         lblEditProdukId = new JLabel("Edit Data Produk");
         lblEditProdukId.setFont(new Font("SansSerif", Font.BOLD, 16));
@@ -254,13 +249,15 @@ public class WarehouseView extends JPanel {
                 try {
                     BufferedImage img = ImageIO.read(file);
                     if (img == null) {
-                        JOptionPane.showMessageDialog(this, "File bukan gambar yang valid!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "File bukan gambar yang valid!", "Peringatan",
+                                JOptionPane.WARNING_MESSAGE);
                         return;
                     }
                     selectedNewProdukImage = file;
                     displayScaledImage(lblEditProdukImagePreview, img);
                 } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(this, "Gagal membaca gambar: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Gagal membaca gambar: " + ex.getMessage(), "Error",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -335,7 +332,8 @@ public class WarehouseView extends JPanel {
     }
 
     private void saveEditedProduk() {
-        if (currentEditingProduk == null) return;
+        if (currentEditingProduk == null)
+            return;
 
         try {
             String namaBaru = txtEditProdukNama.getText().trim();
@@ -351,10 +349,10 @@ public class WarehouseView extends JPanel {
                     stokBaru,
                     batasKritisBaru,
                     deskripsiBaru,
-                    selectedNewProdukImage
-            );
+                    selectedNewProdukImage);
 
-            JOptionPane.showMessageDialog(this, "Data produk berhasil diperbarui!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Data produk berhasil diperbarui!", "Sukses",
+                    JOptionPane.INFORMATION_MESSAGE);
             refreshData();
             cardLayout.show(this, CARD_MONITOR);
 
@@ -377,8 +375,7 @@ public class WarehouseView extends JPanel {
         JPanel header = new JPanel(new BorderLayout());
         header.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(210, 215, 222)),
-                new EmptyBorder(0, 0, 10, 0)
-        ));
+                new EmptyBorder(0, 0, 10, 0)));
 
         lblEditRawId = new JLabel("Stock Opname Bahan Baku");
         lblEditRawId.setFont(new Font("SansSerif", Font.BOLD, 16));
@@ -394,9 +391,18 @@ public class WarehouseView extends JPanel {
         txtEditRawStokLama = createReadOnlyField();
         txtEditRawStokBaru = new JTextField();
 
-        JLabel lblNote = new JLabel("<html><i>Catatan: Hanya penyesuaian pengurangan stok (rusak/hilang/busuk) yang diizinkan. "
-                + "Penambahan stok harus dilakukan melalui menu Purchase Order.</i></html>");
-        lblNote.setForeground(new Color(146, 64, 14));
+        JTextArea txtNote = new JTextArea(
+                "Catatan: Hanya penyesuaian pengurangan stok (rusak/hilang/busuk) yang diizinkan. "
+                        + "Penambahan stok harus dilakukan melalui menu Purchase Order.");
+
+        txtNote.setLineWrap(true);
+        txtNote.setWrapStyleWord(true);
+        txtNote.setEditable(false);
+        txtNote.setFocusable(false);
+        txtNote.setOpaque(false); // transparan seperti JLabel
+        txtNote.setForeground(new Color(146, 64, 14));
+        txtNote.setFont(new Font("SansSerif", Font.ITALIC, 12));
+        txtNote.setBorder(null);
 
         addFormRow(formPanel, 0, "Nama Bahan Baku:", txtEditRawNama);
         addFormRow(formPanel, 1, "Satuan:", txtEditRawSatuan);
@@ -404,7 +410,7 @@ public class WarehouseView extends JPanel {
         addFormRow(formPanel, 3, "Batas Kritis:", txtEditRawBatasKritis);
         addFormRow(formPanel, 4, "Stok Tercatat Saat Ini:", txtEditRawStokLama);
         addFormRow(formPanel, 5, "Stok Aktual Baru:", txtEditRawStokBaru);
-        addFormRow(formPanel, 6, "", lblNote);
+        addFormRow(formPanel, 6, "", txtNote);
 
         JPanel topWrapper = new JPanel(new BorderLayout());
         topWrapper.add(formPanel, BorderLayout.NORTH);
@@ -444,13 +450,15 @@ public class WarehouseView extends JPanel {
     }
 
     private void saveEditedRawMaterial() {
-        if (currentEditingRawMaterial == null) return;
+        if (currentEditingRawMaterial == null)
+            return;
 
         try {
             double stokBaru = Double.parseDouble(txtEditRawStokBaru.getText().trim());
             itemController.updateStokRawMaterial(currentEditingRawMaterial, stokBaru);
 
-            JOptionPane.showMessageDialog(this, "Stok bahan baku berhasil diperbarui!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Stok bahan baku berhasil diperbarui!", "Sukses",
+                    JOptionPane.INFORMATION_MESSAGE);
             refreshData();
             cardLayout.show(this, CARD_MONITOR);
 

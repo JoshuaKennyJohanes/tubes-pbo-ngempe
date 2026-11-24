@@ -11,6 +11,7 @@ import java.awt.Rectangle;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -24,13 +25,15 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import tubes.prak.pbo.Interfaces.ItemService;
 import tubes.prak.pbo.components.cards.ProductCard;
+import tubes.prak.pbo.controller.ItemController;
 import tubes.prak.pbo.models.productRelated.Produk;
 import tubes.prak.pbo.models.users.UserBuyer;
-import tubes.prak.pbo.repositories.ProdukRepository;
 
 public class EtalaseView extends JPanel {
 
+    private final ItemService itemService;
     private final JPanel mainContentPanel;
     private final CardLayout cardLayout;
     private final UserBuyer user;
@@ -41,10 +44,16 @@ public class EtalaseView extends JPanel {
     private List<Produk> cachedProduk = new ArrayList<>();
 
     public EtalaseView(JPanel mainContentPanel, CardLayout cardLayout, UserBuyer user, Keranjang panelKeranjang) throws SQLException {
+        this(mainContentPanel, cardLayout, user, panelKeranjang, new ItemController());
+    }
+
+    public EtalaseView(JPanel mainContentPanel, CardLayout cardLayout, UserBuyer user, Keranjang panelKeranjang,
+                       ItemService itemService) throws SQLException {
         this.mainContentPanel = mainContentPanel;
         this.cardLayout = cardLayout;
         this.user = user;
         this.panelKeranjang = panelKeranjang;
+        this.itemService = Objects.requireNonNull(itemService);
 
         setLayout(new BorderLayout(10, 12));
         setBackground(new Color(245, 247, 250));
@@ -118,10 +127,11 @@ public class EtalaseView extends JPanel {
         return scrollPane;
     }
 
-    public void refreshEtalase() {
+    public final void refreshEtalase() {
         try {
-            cachedProduk = ProdukRepository.findAllProduk();
+            cachedProduk = itemService.getAllProduk();
             renderFilteredCards();
+
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(
                     this,

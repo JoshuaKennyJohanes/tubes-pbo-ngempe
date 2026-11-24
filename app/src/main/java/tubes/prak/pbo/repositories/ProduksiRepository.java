@@ -1,6 +1,7 @@
 package tubes.prak.pbo.repositories;
 
 import tubes.prak.pbo.ENUM.StatusProduksi;
+import tubes.prak.pbo.Interfaces.ProductionDataSource;
 import tubes.prak.pbo.config.DatabaseConfig;
 import tubes.prak.pbo.models.productRelated.Bom;
 import tubes.prak.pbo.models.DetailProduksi;
@@ -12,10 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ProduksiRepository {
+public class ProduksiRepository implements ProductionDataSource {
 
     // 1. Insert Header Produksi + Snapshot Detail Produksi secara atomik
-    public static void insert(Produksi produksi, Bom bom) throws SQLException {
+    @Override
+    public void insert(Produksi produksi, Bom bom) throws SQLException {
         String sqlProduksi = """
             INSERT INTO public.produksi
             (id_produk, created_by, tanggal_produksi, status_produksi, jumlah_produksi, total_hpp_produksi)
@@ -93,7 +95,8 @@ public class ProduksiRepository {
     }
 
     // 2. Ambil data historis dari detail_produksi (bukan dari tabel bom lagi)
-    public static List<DetailProduksi> findDetailsByProduksiId(int idProduksi) throws SQLException {
+    @Override
+    public List<DetailProduksi> findDetailsByProduksiId(int idProduksi) throws SQLException {
         List<DetailProduksi> details = new ArrayList<>();
         String sql = """
             SELECT id_detail_produksi, id_produksi, id_raw_material, nama_material,
@@ -125,7 +128,8 @@ public class ProduksiRepository {
         return details;
     }
 
-    public static List<Produksi> findAll() throws SQLException {
+    @Override
+    public List<Produksi> findAll() throws SQLException {
         List<Produksi> list = new ArrayList<>();
         String sql = """
         SELECT id_produksi, id_produk, created_by, tanggal_produksi,
@@ -159,7 +163,8 @@ public class ProduksiRepository {
         return list;
     }
 
-    public static void mulaiProduksi(int idProduksi, List<DetailProduksi> daftarDetail) throws SQLException {
+    @Override
+    public void mulaiProduksi(int idProduksi, List<DetailProduksi> daftarDetail) throws SQLException {
         String sqlUpdateStatus = """
         UPDATE public.produksi
         SET status_produksi = ?
@@ -202,7 +207,8 @@ public class ProduksiRepository {
         }
     }
 
-    public static void selesaikanProduksi(Produksi produksi, List<DetailProduksi> daftarDetail) throws SQLException {
+    @Override
+    public void selesaikanProduksi(Produksi produksi, List<DetailProduksi> daftarDetail) throws SQLException {
         String sqlUpdateStatus = """
         UPDATE public.produksi
         SET status_produksi = ?

@@ -1,11 +1,5 @@
 package tubes.prak.pbo.components.cards;
 
-import static tubes.prak.pbo.components.base.CardColors.BTN_PRIMARY;
-import static tubes.prak.pbo.components.base.CardColors.MUTED;
-import static tubes.prak.pbo.components.base.CardColors.STRONG;
-import static tubes.prak.pbo.components.base.CardColors.SUBTLE;
-import static tubes.prak.pbo.components.base.CardColors.TITLE;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -17,10 +11,16 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
 import tubes.prak.pbo.components.base.BadgeStyle;
 import tubes.prak.pbo.components.base.BaseCard;
+import static tubes.prak.pbo.components.base.CardColors.BTN_PRIMARY;
+import static tubes.prak.pbo.components.base.CardColors.MUTED;
+import static tubes.prak.pbo.components.base.CardColors.STRONG;
+import static tubes.prak.pbo.components.base.CardColors.SUBTLE;
+import static tubes.prak.pbo.components.base.CardColors.TITLE;
 import tubes.prak.pbo.components.base.CardFormat;
 import tubes.prak.pbo.models.productRelated.Item;
 import tubes.prak.pbo.models.productRelated.Produk;
@@ -48,8 +48,16 @@ public class WarehouseItemCard extends BaseCard {
                 : "RAW MATERIAL #" + item.getId();
 
         JLabel lblId = label(tipeLabel, Font.BOLD, 11, MUTED);
-        JLabel lblNama = label("<html><body style='width: 245px;'>" + item.getNama() + "</body></html>",
-                Font.BOLD, 14, TITLE);
+        JTextArea txtNama = new JTextArea(item.getNama());
+
+        txtNama.setLineWrap(true);
+        txtNama.setWrapStyleWord(true);
+        txtNama.setEditable(false);
+        txtNama.setFocusable(false);
+        txtNama.setOpaque(false);
+        txtNama.setForeground(TITLE);
+        txtNama.setFont(new Font("SansSerif", Font.BOLD, 14));
+        txtNama.setBorder(null);
 
         String satuanStr = (item.getSatuan() != null) ? item.getSatuan().name() : "-";
         boolean kritis = isStokKritis();
@@ -61,7 +69,7 @@ public class WarehouseItemCard extends BaseCard {
 
         panel.add(lblId);
         panel.add(Box.createVerticalStrut(4));
-        panel.add(lblNama);
+        panel.add(txtNama);
         panel.add(Box.createVerticalGlue());
         panel.add(bottomRow);
         return panel;

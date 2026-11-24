@@ -5,10 +5,14 @@ import java.awt.CardLayout;
 import java.sql.SQLException;
 import javax.swing.JPanel;
 
+import tubes.prak.pbo.Interfaces.ItemService;
+import tubes.prak.pbo.Interfaces.ProductionService;
+import tubes.prak.pbo.Interfaces.UserPanelVisitor;
+import tubes.prak.pbo.controller.ItemController;
 import tubes.prak.pbo.controller.NavigationController;
+import tubes.prak.pbo.controller.ProduksiController;
 import tubes.prak.pbo.models.users.User;
 import tubes.prak.pbo.models.users.UserBuyer;
-import tubes.prak.pbo.Interfaces.UserPanelVisitor;
 import tubes.prak.pbo.models.users.UserStaff;
 import tubes.prak.pbo.util.Router;
 import tubes.prak.pbo.view.ViewManager.*;
@@ -39,7 +43,13 @@ public class MainShell extends JPanel implements UserPanelVisitor {
         Keranjang panelKeranjang = new Keranjang(buyer);
         RiwayatTransaksiView dataRiwayat = new RiwayatTransaksiView(buyer);
 
-        mainContentPanel.add(new EtalaseView(mainContentPanel, contentCardLayout, buyer, panelKeranjang), Router.ETALASE_PAGE);
+        mainContentPanel.add(new EtalaseView(
+                mainContentPanel,
+                contentCardLayout,
+                buyer,
+                panelKeranjang,
+                new ItemController()
+        ), Router.ETALASE_PAGE);
         mainContentPanel.add(panelKeranjang, Router.KERANJANG_PAGE);
         mainContentPanel.add(dataRiwayat, Router.RIWAYAT_TRANSAKSI);
 
@@ -48,11 +58,18 @@ public class MainShell extends JPanel implements UserPanelVisitor {
 
     @Override
     public void buildForStaff(UserStaff staff) throws SQLException {
+        WarehouseView warehouseView = null;
         if (staff.canAccessWarehouse()) {
-            mainContentPanel.add(new WarehouseView(), Router.WAREHOUSE_PAGE);
+            warehouseView = new WarehouseView();
+            mainContentPanel.add(warehouseView, Router.WAREHOUSE_PAGE);
         }
         if (staff.canAccessProduction()) {
-            mainContentPanel.add(new ProduksiView(), Router.PRODUKSI_PAGE);
+            ItemService itemService = new ItemController();
+            ProductionService productionService = new ProduksiController(itemService);
+            mainContentPanel.add(
+                    new ProduksiView(itemService, productionService),
+                    Router.PRODUKSI_PAGE
+            );
         }
         if (staff.canAccessBom()) {
             mainContentPanel.add(new BomView(), Router.BOM_PAGE);
@@ -67,7 +84,10 @@ public class MainShell extends JPanel implements UserPanelVisitor {
             mainContentPanel.add(new PurchaseOrderView(), Router.PURCHASE_ORDER);
         }
 
-        this.navbarPanel = NavbarPanel.forStaff(staff);
+        this.navbarPanel = NavbarPanel.forStaff(
+                staff,
+                warehouseView == null ? null : warehouseView::refreshData
+        );
     }
 
     public void buildNavbarAndDefaultPanel(User user) {

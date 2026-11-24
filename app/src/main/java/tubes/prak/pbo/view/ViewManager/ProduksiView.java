@@ -4,12 +4,16 @@ import tubes.prak.pbo.components.base.CardListPanel;
 import tubes.prak.pbo.components.cards.ProduksiCard;
 import tubes.prak.pbo.components.panels.DetailProduksiPanel;
 import tubes.prak.pbo.components.panels.FormProduksiPanel;
+import tubes.prak.pbo.Interfaces.ItemService;
+import tubes.prak.pbo.Interfaces.ProductionService;
+import tubes.prak.pbo.controller.ItemController;
+import tubes.prak.pbo.controller.ProduksiController;
 import tubes.prak.pbo.models.Produksi;
-import tubes.prak.pbo.repositories.ProduksiRepository;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import java.util.Objects;
 import javax.swing.border.EmptyBorder;
 import java.sql.SQLException;
 
@@ -19,12 +23,20 @@ public class ProduksiView extends JPanel {
     private static final String CARD_FORM = "FORM_VIEW";
     private static final String CARD_DETAIL = "DETAIL_VIEW";
 
+    private final ItemService itemService;
+    private final ProductionService productionService;
     private final CardLayout cardLayout = new CardLayout();
     private final CardListPanel<Produksi> produksiList =
             new CardListPanel<>(produksi -> new ProduksiCard(produksi, this::showDetail));
     private DetailProduksiPanel detailPanel;
 
     public ProduksiView() {
+        this(new ItemController(), new ProduksiController());
+    }
+
+    public ProduksiView(ItemService itemService, ProductionService productionService) {
+        this.itemService = Objects.requireNonNull(itemService);
+        this.productionService = Objects.requireNonNull(productionService);
         setLayout(cardLayout);
 
         produksiList.setListBackground(new Color(248, 250, 252));
@@ -37,7 +49,6 @@ public class ProduksiView extends JPanel {
 
         // Muat data awal dari database
         loadDataProduksi();
-        cardLayout.show(this, CARD_LIST);
     }
 
     // --- HALAMAN 1: Daftar Card Produksi ---
@@ -92,7 +103,7 @@ public class ProduksiView extends JPanel {
         FormProduksiPanel formPanel = new FormProduksiPanel(produksiBaru -> {
             loadDataProduksi();
             cardLayout.show(this, CARD_LIST);
-        });
+        }, itemService, productionService);
 
         wrapper.add(topBar, BorderLayout.NORTH);
         wrapper.add(formPanel, BorderLayout.CENTER);
@@ -103,15 +114,16 @@ public class ProduksiView extends JPanel {
     private JPanel createDetailViewPanel() {
         detailPanel = new DetailProduksiPanel(
                 () -> cardLayout.show(this, CARD_LIST),
-                this::loadDataProduksi
+                this::loadDataProduksi,
+                productionService
         );
         return detailPanel;
     }
 
     // --- Helper Reload Data ke Card ---
-    public void loadDataProduksi() {
+    public final void loadDataProduksi() {
         try {
-            List<Produksi> daftarProduksi = ProduksiRepository.findAll();
+            List<Produksi> daftarProduksi = productionService.getAllProduksi();
             produksiList.setItems(daftarProduksi);
         } catch (SQLException e) {
             produksiList.clear();

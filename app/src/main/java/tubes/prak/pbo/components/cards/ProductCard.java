@@ -17,6 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -70,8 +71,14 @@ public class ProductCard extends JPanel {
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         infoPanel.setOpaque(false);
 
-        JLabel lblTitle = new JLabel("<html><body style='width: 185px;'>" + produk.getNamaProduk() + "</body></html>");
+        JTextArea lblTitle = new JTextArea("Produk" + produk.getNamaProduk());
+        lblTitle.setLineWrap(true);
+        lblTitle.setWrapStyleWord(true);
+        lblTitle.setEditable(false);
+        lblTitle.setFocusable(false);
+        lblTitle.setOpaque(false);
         lblTitle.setFont(new Font("SansSerif", Font.BOLD, 14));
+        lblTitle.setBorder(null);
         lblTitle.setForeground(new Color(30, 41, 59));
         lblTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 

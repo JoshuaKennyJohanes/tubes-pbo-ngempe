@@ -11,7 +11,6 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import tubes.prak.pbo.ENUM.Role;
 import tubes.prak.pbo.components.DefaultButtonOrange;
 import tubes.prak.pbo.controller.LoginController;
 import tubes.prak.pbo.controller.NavigationController;
@@ -28,7 +27,6 @@ public class LoginView extends JPanel {
     private final JPasswordField txtpassword = new JPasswordField(20);
     private final JButton loginButton = new DefaultButtonOrange("Login");
     private final JButton signUpButton = new DefaultButtonOrange("Sign Up");
-    private final JLabel messageLabel = new JLabel(" ");
 
 
 
@@ -42,17 +40,16 @@ public class LoginView extends JPanel {
         form.add(txtpassword);
         form.add(loginButton);
         form.add(signUpButton);
-        form.add(messageLabel);
         add(form);
 
-        handleLoginButton(loginButton, mainPanel, cardLayout);
+        handleLoginButton(loginButton, mainPanel);
 
         signUpButton.addActionListener(e->{
             cardLayout.show(mainPanel, Router.REGISTER_PAGE);
         });
     }
 
-    public void handleLoginButton(JButton loginButton, JPanel mainPanel, CardLayout cardLayout){
+    private void handleLoginButton(JButton loginButton, JPanel mainPanel){
 
         loginButton.addActionListener(e -> {
             String username = txtusername.getText();
@@ -64,8 +61,6 @@ public class LoginView extends JPanel {
 
                 txtusername.setText("");
                 txtpassword.setText("");
-                Role userRole = Session.getSession().getRole();
-
                 // 1. Buat instance MainShell baru
                 MainShell newMainShell = new MainShell(user);
 
@@ -84,7 +79,6 @@ public class LoginView extends JPanel {
 
             }
             catch (IllegalArgumentException ex) {
-                ex.printStackTrace();
                 JOptionPane.showMessageDialog(LoginView.this, ex.getMessage(), "Input Tidak Valid", JOptionPane.WARNING_MESSAGE);
             }
             catch (InvalidCredentialsException invd){
@@ -92,23 +86,10 @@ public class LoginView extends JPanel {
             }
             catch (Exception ex){
                 JOptionPane.showMessageDialog(LoginView.this, "Terjadi Kesalahan: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                ex.printStackTrace();
             }
         });
     }
 
 
 
-    public JButton getLoginButton() {
-        return loginButton;
-    }
-
-    public void showMessage(String message) {
-        messageLabel.setText(message);
-    }
-
-
-    public void setLoginEnabled(boolean enabled) {
-        loginButton.setEnabled(enabled);
-    }
 }

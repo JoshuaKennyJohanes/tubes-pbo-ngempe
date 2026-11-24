@@ -1,10 +1,10 @@
 package tubes.prak.pbo.components.panels;
 
 import tubes.prak.pbo.ENUM.StatusProduksi;
+import tubes.prak.pbo.Interfaces.ProductionService;
 import tubes.prak.pbo.controller.ProduksiController;
 import tubes.prak.pbo.models.DetailProduksi;
 import tubes.prak.pbo.models.Produksi;
-import tubes.prak.pbo.repositories.ProduksiRepository;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -18,11 +18,12 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.Objects;
 
 
 public class DetailProduksiPanel extends JPanel {
 
-    private final ProduksiController produksiController = new ProduksiController();
+    private final ProductionService productionService;
     private final Runnable onBack;
     private final Runnable onStatusUpdated;
 
@@ -34,16 +35,21 @@ public class DetailProduksiPanel extends JPanel {
     private JButton btnUbahStatus;
     private DefaultTableModel bomTableModel;
 
-    private final NumberFormat rupiahFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+    private final NumberFormat rupiahFormat = NumberFormat.getCurrencyInstance(Locale.of("id", "ID"));
     private final DecimalFormat qtyFormat = new DecimalFormat("#,##0.##");
 
     public DetailProduksiPanel(Runnable onBack) {
-        this(onBack, null);
+        this(onBack, null, new ProduksiController());
     }
 
     public DetailProduksiPanel(Runnable onBack, Runnable onStatusUpdated) {
+        this(onBack, onStatusUpdated, new ProduksiController());
+    }
+
+    public DetailProduksiPanel(Runnable onBack, Runnable onStatusUpdated, ProductionService productionService) {
         this.onBack = onBack;
         this.onStatusUpdated = onStatusUpdated;
+        this.productionService = Objects.requireNonNull(productionService);
         initUI();
     }
 
@@ -230,7 +236,7 @@ public class DetailProduksiPanel extends JPanel {
         try {
             // Membaca snapshot historis dari tabel detail_produksi
             java.util.List<DetailProduksi> daftarDetail =
-                    ProduksiRepository.findDetailsByProduksiId(p.getIdProduksi());
+                    productionService.getDetailsProduksi(p.getIdProduksi());
 
             for (DetailProduksi detail : daftarDetail) {
                 bomTableModel.addRow(new Object[]{
@@ -270,7 +276,7 @@ public class DetailProduksiPanel extends JPanel {
         if (konfirmasi != JOptionPane.YES_OPTION) return;
 
         try {
-            produksiController.ubahStatusProduksi(currentProduksi, statusBerikutnya);
+            productionService.ubahStatusProduksi(currentProduksi, statusBerikutnya);
             updateStatusUI(statusBerikutnya);
 
             // Beri tahu ProduksiView agar daftar card ikut diperbarui

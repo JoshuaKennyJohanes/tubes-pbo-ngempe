@@ -1,11 +1,5 @@
 package tubes.prak.pbo.components.cards;
 
-import static tubes.prak.pbo.components.base.CardColors.BODY;
-import static tubes.prak.pbo.components.base.CardColors.MUTED;
-import static tubes.prak.pbo.components.base.CardColors.SUBTLE;
-import static tubes.prak.pbo.components.base.CardColors.SUCCESS_TEXT;
-import static tubes.prak.pbo.components.base.CardColors.TITLE;
-
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +8,16 @@ import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
 import tubes.prak.pbo.components.base.BadgeStyle;
 import tubes.prak.pbo.components.base.BaseCard;
+import static tubes.prak.pbo.components.base.CardColors.BODY;
+import static tubes.prak.pbo.components.base.CardColors.MUTED;
+import static tubes.prak.pbo.components.base.CardColors.SUBTLE;
+import static tubes.prak.pbo.components.base.CardColors.SUCCESS_TEXT;
+import static tubes.prak.pbo.components.base.CardColors.TITLE;
 import tubes.prak.pbo.components.base.CardFormat;
 import tubes.prak.pbo.models.SalesOrder;
 import tubes.prak.pbo.models.SalesOrderDetail;
@@ -48,9 +48,16 @@ public class SalesOrderCard extends BaseCard {
         String alamat = (salesOrder.getAlamatUser() != null && !salesOrder.getAlamatUser().isBlank())
                 ? salesOrder.getAlamatUser()
                 : "-";
-        JLabel lblAlamat = label("<html><body style='width: 275px;'>Alamat: " + alamat + "</body></html>",
-                Font.PLAIN, 11, MUTED);
+       JTextArea txtAlamat = new JTextArea("Alamat: " + alamat);
 
+        txtAlamat.setLineWrap(true);
+        txtAlamat.setWrapStyleWord(true);
+        txtAlamat.setEditable(false);
+        txtAlamat.setFocusable(false);
+        txtAlamat.setOpaque(false);
+        txtAlamat.setForeground(MUTED);
+        txtAlamat.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        txtAlamat.setBorder(null);
         String caraBayar = (salesOrder.getCaraBayar() != null) ? salesOrder.getCaraBayar() : "-";
         String statusText = (salesOrder.getStatusPembayaran() != null) ? salesOrder.getStatusPembayaran() : "Pending";
 
@@ -65,7 +72,7 @@ public class SalesOrderCard extends BaseCard {
         panel.add(Box.createVerticalStrut(5));
         panel.add(lblPembeli);
         panel.add(Box.createVerticalStrut(3));
-        panel.add(lblAlamat);
+        panel.add(txtAlamat);
         panel.add(Box.createVerticalGlue());
         panel.add(paymentRow);
         panel.add(Box.createVerticalStrut(5));

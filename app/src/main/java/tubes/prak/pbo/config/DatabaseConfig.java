@@ -21,16 +21,6 @@ public final class DatabaseConfig {
     }
 
     public static Connection getConnection() throws SQLException {
-    if (URL == null || USER == null || PASSWORD == null) {
-        System.err.println("DB_URL tersedia: " + (URL != null));
-        System.err.println("DB_USER tersedia: " + (USER != null));
-        System.err.println("DB_PASSWORD tersedia: " + (PASSWORD != null));
-
-        throw new IllegalStateException(
-            "Environment variable database belum diatur."
-        );
+        return DriverManager.getConnection(URL, USER, PASSWORD);
     }
-
-    return DriverManager.getConnection(URL, USER, PASSWORD);
-}
 }

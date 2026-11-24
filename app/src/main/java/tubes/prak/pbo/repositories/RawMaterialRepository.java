@@ -6,12 +6,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import tubes.prak.pbo.ENUM.Satuan;
 import tubes.prak.pbo.config.DatabaseConfig;
 import tubes.prak.pbo.models.productRelated.RawMaterial;
 
 public class RawMaterialRepository {
+    private static final Logger LOGGER = Logger.getLogger(RawMaterialRepository.class.getName());
 
     public void registerItem(RawMaterial rawMaterial) throws SQLException {
         String sql = """
@@ -55,7 +58,7 @@ public class RawMaterialRepository {
             }
 
         } catch (SQLException e){
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Gagal memuat raw material.", e);
         }
 
         return listRawMaterial;
@@ -99,7 +102,6 @@ public class RawMaterialRepository {
         }
     }
 
-    // Tambahkan method ini di dalam class RawMaterialRepository
     public void updateStokMaterial(int idRawMaterial, double stokBaru) throws SQLException {
         String sql = """
         UPDATE public.raw_material

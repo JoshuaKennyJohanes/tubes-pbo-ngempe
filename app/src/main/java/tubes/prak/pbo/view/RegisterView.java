@@ -28,8 +28,6 @@ public class RegisterView extends JPanel {
     private final JPasswordField txtPassword = new JPasswordField();
     private final JButton registerButton = new DefaultButtonOrange("Register");
     private final JLabel   messagelabel = new JLabel(" ");
-    // private final JComboBox<Role> roleDropdown = new JComboBox<>(Role.values());
-    // private final Role managerRole = Role.MANAGER;
 
     public RegisterView(JPanel mainPanel, CardLayout cardLayout){
         
@@ -46,11 +44,6 @@ public class RegisterView extends JPanel {
         form.add(new JLabel("Password"));
 
 
-        // //fitur dropdown hanya ketika session aktif dengan user ber role manager
-        // if(Session.getSession().getRole().equals(managerRole)){
-        //     form.add(roleDropdown);
-        // }
-
         form.add(txtPassword);
         form.add(registerButton);
         form.add(messagelabel);
@@ -63,7 +56,7 @@ public class RegisterView extends JPanel {
 
     }
 
-    public void handleRegisterButton(JButton registerButton, JPanel mainPanel, CardLayout cardLayout){
+    private void handleRegisterButton(JButton registerButton, JPanel mainPanel, CardLayout cardLayout){
 
         registerButton.addActionListener(e->{
             String namaLengkap = txtNamaLengkap.getText();
@@ -79,8 +72,6 @@ public class RegisterView extends JPanel {
 
                 txtUserName.setText("");
                 txtPassword.setText("");
-
-                //ALIHKAN KE LOGIN PAGE LAGI, TAPI KALAU BERHASIL TUNJUKAN JOPTION PANE
 
                 JOptionPane.showMessageDialog(RegisterView.this, "Anda sudah berhasil sign up","Registrasi Sukses",javax.swing.JOptionPane.INFORMATION_MESSAGE);
                 cardLayout.show(mainPanel, Router.LOGIN_PAGE);

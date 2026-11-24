@@ -12,7 +12,6 @@ import tubes.prak.pbo.models.productRelated.Produk;
 import tubes.prak.pbo.models.productRelated.RawMaterial;
 
 public class BomRepository {
-    // Tambahkan method ini di dalam class BomRepository
     public void registerBomForProduk(Produk produk, Map<RawMaterial, Double> kebutuhanMaterial) throws SQLException {
         String sql = "INSERT INTO public.bom (id_produk, id_raw_material, jumlah_kebutuhan) VALUES (?, ?, ?)";
 

@@ -61,6 +61,12 @@ public class PurchaseOrderView extends JPanel {
     private JLabel lblSubtotalValue;
     private JLabel lblHargaSatuanValue;
     private JLabel lblVendorWarning;
+    private final JPanel vendorFormPanel;
+    private JTextField txtNamaVendor;
+    private JTextField txtNoTelpVendor;
+    private JTextArea txtAlamatVendor;
+    private JLabel lblVendorFormFeedback;
+    private JButton btnToggleVendorForm;
 
     // History Container
     private final CardListPanel<PurchaseOrder> historyList =
@@ -74,6 +80,9 @@ public class PurchaseOrderView extends JPanel {
         topSection.setOpaque(false);
         topSection.add(buildHeaderPanel(), BorderLayout.NORTH);
         topSection.add(buildFormPoPanel(), BorderLayout.CENTER);
+        vendorFormPanel = buildVendorFormPanel();
+        vendorFormPanel.setVisible(false);
+        topSection.add(vendorFormPanel, BorderLayout.SOUTH);
 
         add(topSection, BorderLayout.NORTH);
         add(buildHistorySectionPanel(), BorderLayout.CENTER);
@@ -104,12 +113,12 @@ public class PurchaseOrderView extends JPanel {
                 new EmptyBorder(5, 10, 5, 10)
         ));
 
-        JButton btnTambahVendor = new JButton("+ Tambah Vendor");
-        btnTambahVendor.setFont(new Font("SansSerif", Font.BOLD, 12));
-        btnTambahVendor.setBackground(new Color(37, 99, 235));
-        btnTambahVendor.setForeground(Color.WHITE);
-        btnTambahVendor.setFocusPainted(false);
-        btnTambahVendor.addActionListener(e -> openTambahVendorDialog());
+        btnToggleVendorForm = new JButton("+ Tambah Vendor");
+        btnToggleVendorForm.setFont(new Font("SansSerif", Font.BOLD, 12));
+        btnToggleVendorForm.setBackground(new Color(37, 99, 235));
+        btnToggleVendorForm.setForeground(Color.WHITE);
+        btnToggleVendorForm.setFocusPainted(false);
+        btnToggleVendorForm.addActionListener(e -> toggleVendorForm());
 
         JButton btnRefresh = new JButton("Refresh");
         btnRefresh.setFont(new Font("SansSerif", Font.PLAIN, 12));
@@ -117,7 +126,7 @@ public class PurchaseOrderView extends JPanel {
         btnRefresh.addActionListener(e -> refreshPurchaseOrderData());
 
         rightControls.add(lblCashTersedia);
-        rightControls.add(btnTambahVendor);
+        rightControls.add(btnToggleVendorForm);
         rightControls.add(btnRefresh);
 
         headerPanel.add(lblTitle, BorderLayout.WEST);
@@ -289,6 +298,65 @@ public class PurchaseOrderView extends JPanel {
         return cardPanel;
     }
 
+    private JPanel buildVendorFormPanel() {
+        JPanel panel = new JPanel(new BorderLayout(8, 8));
+        panel.setBackground(Color.WHITE);
+        panel.setBorder(new CompoundBorder(
+                new LineBorder(new Color(210, 215, 222), 1, true),
+                new EmptyBorder(10, 12, 10, 12)
+        ));
+
+        JLabel title = new JLabel("Tambah Vendor Baru");
+        title.setFont(new Font("SansSerif", Font.BOLD, 14));
+
+        JPanel fields = new JPanel(new GridLayout(0, 2, 8, 6));
+        fields.setOpaque(false);
+        txtNamaVendor = new JTextField();
+        txtNoTelpVendor = new JTextField();
+        txtAlamatVendor = new JTextArea(3, 22);
+        txtAlamatVendor.setLineWrap(true);
+        txtAlamatVendor.setWrapStyleWord(true);
+
+        fields.add(new JLabel("Nama Vendor:"));
+        fields.add(txtNamaVendor);
+        fields.add(new JLabel("No. Telepon:"));
+        fields.add(txtNoTelpVendor);
+        fields.add(new JLabel("Alamat Vendor:"));
+        fields.add(new JScrollPane(txtAlamatVendor));
+
+        lblVendorFormFeedback = new JLabel(" ");
+        lblVendorFormFeedback.setForeground(new Color(185, 28, 28));
+
+        JButton btnSimpan = new JButton("Simpan Vendor");
+        btnSimpan.addActionListener(e -> saveVendor());
+        JButton btnBatal = new JButton("Batal");
+        btnBatal.addActionListener(e -> toggleVendorForm());
+
+        JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        actions.setOpaque(false);
+        actions.add(btnBatal);
+        actions.add(btnSimpan);
+
+        JPanel footer = new JPanel(new BorderLayout(8, 0));
+        footer.setOpaque(false);
+        footer.add(lblVendorFormFeedback, BorderLayout.CENTER);
+        footer.add(actions, BorderLayout.EAST);
+
+        panel.add(title, BorderLayout.NORTH);
+        panel.add(fields, BorderLayout.CENTER);
+        panel.add(footer, BorderLayout.SOUTH);
+        return panel;
+    }
+
+    private void toggleVendorForm() {
+        boolean visible = !vendorFormPanel.isVisible();
+        vendorFormPanel.setVisible(visible);
+        btnToggleVendorForm.setText(visible ? "Tutup Form Vendor" : "+ Tambah Vendor");
+        lblVendorFormFeedback.setText(" ");
+        revalidate();
+        repaint();
+    }
+
     private JPanel buildHistorySectionPanel() {
         JPanel section = new JPanel(new BorderLayout(0, 8));
         section.setOpaque(false);
@@ -323,7 +391,7 @@ public class PurchaseOrderView extends JPanel {
     }
 
     // Dapat dipanggil dari MainShell saat tab/menu Purchase Order dibuka
-    public void refreshPurchaseOrderData() {
+    public final void refreshPurchaseOrderData() {
         loadCashInfo();
         loadRawMaterialCombo();
         loadVendorCombo();
@@ -384,9 +452,7 @@ public class PurchaseOrderView extends JPanel {
                 }
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this,
-                    "Gagal memuat daftar vendor: " + e.getMessage(),
-                    "Database Error", JOptionPane.ERROR_MESSAGE);
+            lblVendorWarning.setText("Gagal memuat vendor: " + e.getMessage());
         }
     }
 
@@ -510,45 +576,24 @@ public class PurchaseOrderView extends JPanel {
         };
     }
 
-    private void openTambahVendorDialog() {
-        JPanel formPanel = new JPanel(new GridLayout(0, 1, 6, 6));
-        JTextField txtNamaVendor = new JTextField();
-        JTextField txtNoTelp = new JTextField();
-        JTextArea txtAlamat = new JTextArea(3, 22);
-        txtAlamat.setLineWrap(true);
-        txtAlamat.setWrapStyleWord(true);
-
-        formPanel.add(new JLabel("Nama Vendor:"));
-        formPanel.add(txtNamaVendor);
-        formPanel.add(new JLabel("No. Telepon:"));
-        formPanel.add(txtNoTelp);
-        formPanel.add(new JLabel("Alamat Vendor:"));
-        formPanel.add(new JScrollPane(txtAlamat));
-
-        int result = JOptionPane.showConfirmDialog(
-                this,
-                formPanel,
-                "Tambah Vendor Baru",
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE
-        );
-
-        if (result == JOptionPane.OK_OPTION) {
-            try {
-                poController.tambahVendor(
-                        txtNamaVendor.getText(),
-                        txtNoTelp.getText(),
-                        txtAlamat.getText()
-                );
-                JOptionPane.showMessageDialog(this,
-                        "Vendor \"" + txtNamaVendor.getText().trim() + "\" berhasil ditambahkan!",
-                        "Sukses", JOptionPane.INFORMATION_MESSAGE);
-                loadVendorCombo();
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this,
-                        ex.getMessage(),
-                        "Gagal Menambah Vendor", JOptionPane.WARNING_MESSAGE);
-            }
+    private void saveVendor() {
+        try {
+            poController.tambahVendor(
+                    txtNamaVendor.getText(),
+                    txtNoTelpVendor.getText(),
+                    txtAlamatVendor.getText()
+            );
+            loadVendorCombo();
+            lblVendorFormFeedback.setForeground(new Color(22, 101, 52));
+            lblVendorFormFeedback.setText(
+                    "Vendor \"" + txtNamaVendor.getText().trim() + "\" berhasil ditambahkan."
+            );
+            txtNamaVendor.setText("");
+            txtNoTelpVendor.setText("");
+            txtAlamatVendor.setText("");
+        } catch (Exception ex) {
+            lblVendorFormFeedback.setForeground(new Color(185, 28, 28));
+            lblVendorFormFeedback.setText(ex.getMessage());
         }
     }
 
