@@ -4,10 +4,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Format angka dan tanggal bersama. DecimalFormat/SimpleDateFormat tidak thread-safe,
- * jadi disimpan per-thread supaya aman dipakai dari mana saja.
- */
+
 public final class CardFormat {
 
     private static final ThreadLocal<DecimalFormat> CURRENCY =

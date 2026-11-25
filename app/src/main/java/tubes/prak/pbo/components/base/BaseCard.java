@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -13,6 +12,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -28,17 +28,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-/**
- * Kerangka card standar: border rounded, background putih, lalu tiga zona
- * (WEST / CENTER / EAST) yang diisi subclass lewat {@link #buildLeft()},
- * {@link #buildCenter()}, {@link #buildRight()} (boleh return null jika zona tidak dipakai).
- *
- * <p><b>Aturan pakai:</b> subclass menyimpan field-nya dulu, lalu memanggil {@link #build()}
- * di baris terakhir constructor. Ini disengaja: memanggil method overridable langsung dari
- * constructor BaseCard akan membuat subclass membaca field yang masih null.
- *
- * <p>Tinggi card tetap (parameter constructor) atau dinamis (override {@link #cardHeight()}).
- */
 public abstract class BaseCard extends JPanel {
 
     private static final int H_GAP = 16;
@@ -71,7 +60,7 @@ public abstract class BaseCard extends JPanel {
         ));
 
         int height = cardHeight();
-        setPreferredSize(new Dimension(0, height));
+        setPreferredSize(new Dimension(minWidth, height));
         setMinimumSize(new Dimension(minWidth, height));
 
         addZone(buildLeft(), BorderLayout.WEST);
@@ -91,19 +80,16 @@ public abstract class BaseCard extends JPanel {
         return null;
     }
 
-    /** Override untuk tinggi dinamis (mis. tergantung jumlah item). */
     protected int cardHeight() {
         return fixedHeight;
     }
 
-    /** Tinggi area konten setelah dikurangi padding atas-bawah. */
     protected final int contentHeight() {
         return cardHeight() - padding.top - padding.bottom;
     }
 
     @Override
     public Dimension getMaximumSize() {
-        // Tinggi konstan di BoxLayout vertikal, lebar mengikuti parent
         return new Dimension(Integer.MAX_VALUE, cardHeight());
     }
 
@@ -117,7 +103,6 @@ public abstract class BaseCard extends JPanel {
     // HELPER PANEL
     // =========================================================================
 
-    /** Panel vertikal transparan tanpa ukuran tetap (cocok untuk zona CENTER). */
     protected JPanel column() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -125,26 +110,31 @@ public abstract class BaseCard extends JPanel {
         return panel;
     }
 
-    /** Panel vertikal transparan dengan lebar tetap (cocok untuk zona WEST/EAST). */
     protected JPanel column(int width) {
         JPanel panel = column();
-        panel.setPreferredSize(new Dimension(width, contentHeight()));
+        Dimension fixed = new Dimension(width, contentHeight());
+        panel.setPreferredSize(fixed);
+        panel.setMinimumSize(fixed);
+        panel.setMaximumSize(fixed);
         return panel;
     }
 
-    /** Baris horizontal rata kiri tanpa gap (untuk label + badge). */
+    /** Baris horizontal stabil menggunakan BoxLayout X_AXIS agar tidak terkompresi di dalam column(). */
     protected static JPanel row() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         panel.setOpaque(false);
         panel.setAlignmentX(Component.LEFT_ALIGNMENT);
         return panel;
     }
 
-    /** Menaruh satu komponen (mis. tombol) tepat di tengah zona dengan lebar tertentu. */
     protected JPanel centered(JComponent component, int width) {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setOpaque(false);
-        panel.setPreferredSize(new Dimension(width, contentHeight()));
+        Dimension fixed = new Dimension(width, contentHeight());
+        panel.setPreferredSize(fixed);
+        panel.setMinimumSize(fixed);
+        panel.setMaximumSize(fixed);
         panel.add(component, new GridBagConstraints());
         return panel;
     }
@@ -173,7 +163,6 @@ public abstract class BaseCard extends JPanel {
         return badge(text, style.getForeground(), style.getBackground(), style.getBorder());
     }
 
-    /** Badge dengan warna kustom (border diturunkan dari background). */
     protected static JLabel badge(String text, Color foreground, Color background) {
         return badge(text, foreground, background, background.darker());
     }
@@ -185,6 +174,11 @@ public abstract class BaseCard extends JPanel {
         badge.setForeground(foreground);
         badge.setBackground(background);
         badge.setBorder(new LineBorder(border, 1, true));
+        badge.setAlignmentY(Component.CENTER_ALIGNMENT);
+        // Cegah badge mengecil atau terpotong di BoxLayout X_AXIS
+        Dimension pref = badge.getPreferredSize();
+        badge.setMinimumSize(pref);
+        badge.setMaximumSize(pref);
         return badge;
     }
 
@@ -202,7 +196,6 @@ public abstract class BaseCard extends JPanel {
         return button;
     }
 
-    /** Membungkus Consumer (boleh null) menjadi Runnable untuk dipasang ke tombol. */
     protected static <T> Runnable invoke(Consumer<T> handler, T value) {
         return () -> {
             if (handler != null) {
@@ -245,7 +238,6 @@ public abstract class BaseCard extends JPanel {
         return scrollPane;
     }
 
-    /** maxWidth <= 0 berarti tanpa batas maksimum. */
     protected static void columnWidth(JTable table, int column, int preferredWidth, int maxWidth) {
         TableColumn tableColumn = table.getColumnModel().getColumn(column);
         tableColumn.setPreferredWidth(preferredWidth);
@@ -254,7 +246,6 @@ public abstract class BaseCard extends JPanel {
         }
     }
 
-    /** alignment: SwingConstants.LEFT / CENTER / RIGHT */
     protected static void alignColumn(JTable table, int column, int alignment) {
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setHorizontalAlignment(alignment);

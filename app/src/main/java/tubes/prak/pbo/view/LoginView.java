@@ -29,8 +29,6 @@ public class LoginView extends JPanel {
     private final JButton signUpButton = new DefaultButtonOrange("Sign Up");
 
 
-
-
     public LoginView(JPanel mainPanel, CardLayout cardLayout) {
         setLayout(new GridBagLayout());
         JPanel form = new JPanel(new GridLayout(0, 1, 8, 8));

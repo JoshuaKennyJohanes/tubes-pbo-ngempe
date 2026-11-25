@@ -29,11 +29,8 @@ public class App extends JFrame {
         //set mainPanel jadi panelRoot
         NavigationController.init(mainPanel, cardLayout);
 
-
         LoginView loginPanel = new LoginView(mainPanel,cardLayout);
         RegisterView registerPanel = new RegisterView(mainPanel, cardLayout);
-        
-        
 
         //masukin semua page (manager / pembeli) ke dalam cardyoutnya
         mainPanel.add(loginPanel, Router.LOGIN_PAGE);

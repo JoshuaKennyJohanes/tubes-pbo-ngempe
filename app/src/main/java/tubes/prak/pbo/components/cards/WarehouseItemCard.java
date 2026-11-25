@@ -1,6 +1,7 @@
 package tubes.prak.pbo.components.cards;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -48,8 +49,8 @@ public class WarehouseItemCard extends BaseCard {
                 : "RAW MATERIAL #" + item.getId();
 
         JLabel lblId = label(tipeLabel, Font.BOLD, 11, MUTED);
-        JTextArea txtNama = new JTextArea(item.getNama());
 
+        JTextArea txtNama = new JTextArea(item.getNama());
         txtNama.setLineWrap(true);
         txtNama.setWrapStyleWord(true);
         txtNama.setEditable(false);
@@ -58,14 +59,25 @@ public class WarehouseItemCard extends BaseCard {
         txtNama.setForeground(TITLE);
         txtNama.setFont(new Font("SansSerif", Font.BOLD, 14));
         txtNama.setBorder(null);
+        txtNama.setAlignmentX(Component.LEFT_ALIGNMENT);
+        // Batasi tinggi maksimal teks nama (2 baris) agar badge di bawah tidak terdorong keluar
+        txtNama.setMaximumSize(new Dimension(260, 42));
 
         String satuanStr = (item.getSatuan() != null) ? item.getSatuan().name() : "-";
         boolean kritis = isStokKritis();
 
+        JLabel lblSatuan = label("Satuan: " + satuanStr, Font.PLAIN, 12, SUBTLE);
+        lblSatuan.setAlignmentY(Component.CENTER_ALIGNMENT);
+
+        JLabel lblBadge = badge(kritis ? "Stok Kritis" : "Stok Aman",
+                kritis ? BadgeStyle.DANGER : BadgeStyle.SUCCESS);
+
         JPanel bottomRow = row();
-        bottomRow.add(label("Satuan: " + satuanStr + "   ", Font.PLAIN, 12, SUBTLE));
-        bottomRow.add(badge(kritis ? "Stok Kritis" : "Stok Aman",
-                kritis ? BadgeStyle.DANGER : BadgeStyle.SUCCESS));
+        bottomRow.setMaximumSize(new Dimension(260, 24));
+        bottomRow.add(lblSatuan);
+        bottomRow.add(Box.createHorizontalStrut(10));
+        bottomRow.add(lblBadge);
+        bottomRow.add(Box.createHorizontalGlue());
 
         panel.add(lblId);
         panel.add(Box.createVerticalStrut(4));

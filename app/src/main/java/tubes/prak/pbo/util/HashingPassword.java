@@ -7,4 +7,6 @@ public class HashingPassword {
         String salt = BCrypt.gensalt(12);
         return BCrypt.hashpw(password, salt);
     }
+
+
 }

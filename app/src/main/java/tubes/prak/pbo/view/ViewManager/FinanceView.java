@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Rectangle;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
@@ -14,17 +13,15 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.Scrollable;
 import javax.swing.border.EmptyBorder;
 
+import tubes.prak.pbo.components.base.CardListPanel;
 import tubes.prak.pbo.components.cards.FinanceLedgerCard;
 import tubes.prak.pbo.components.cards.FinanceSummaryCard;
 import tubes.prak.pbo.controller.FinanceController;
@@ -50,12 +47,14 @@ public class FinanceView extends JPanel {
     private FinanceSummaryCard cardTotalRevenue;
     private FinanceSummaryCard cardNetProfitLoss;
 
-    // List Kartu Ledger
-    private ScrollableCardListPanel ledgerListContainer;
+    // List Kartu Ledger menggunakan komponen standar CardListPanel
+    private final CardListPanel<FinanceLedger> ledgerList = new CardListPanel<>(FinanceLedgerCard::new);
 
     public FinanceView() {
         setLayout(new BorderLayout(10, 12));
         setBorder(new EmptyBorder(12, 12, 12, 12));
+
+        ledgerList.setGap(8);
 
         JPanel topSection = new JPanel(new BorderLayout(0, 12));
         topSection.setOpaque(false);
@@ -142,16 +141,8 @@ public class FinanceView extends JPanel {
         lblSectionTitle.setForeground(new Color(30, 41, 59));
         lblSectionTitle.setBorder(new EmptyBorder(4, 2, 2, 2));
 
-        ledgerListContainer = new ScrollableCardListPanel();
-        ledgerListContainer.setLayout(new BoxLayout(ledgerListContainer, BoxLayout.Y_AXIS));
-        ledgerListContainer.setBorder(new EmptyBorder(4, 2, 4, 2));
-
-        JScrollPane scrollPane = new JScrollPane(ledgerListContainer);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-
         section.add(lblSectionTitle, BorderLayout.NORTH);
-        section.add(scrollPane, BorderLayout.CENTER);
+        section.add(ledgerList, BorderLayout.CENTER);
 
         return section;
     }
@@ -194,8 +185,10 @@ public class FinanceView extends JPanel {
             updateSummaryCards(summary);
 
             List<FinanceLedger> ledgers = financeController.getLedgerByMonthYear(bulan, tahun);
-            renderLedgerCards(ledgers, bulan, tahun);
+            ledgerList.setEmptyMessage("Belum ada transaksi keuangan pada " + NAMA_BULAN[bulan - 1] + " " + tahun + ".");
+            ledgerList.setItems(ledgers);
         } catch (SQLException e) {
+            ledgerList.clear();
             JOptionPane.showMessageDialog(this,
                     "Gagal memuat data Finance: " + e.getMessage(),
                     "Database Error", JOptionPane.ERROR_MESSAGE);
@@ -203,9 +196,9 @@ public class FinanceView extends JPanel {
     }
 
     private void updateSummaryCards(FinanceSummary s) {
-        // 1. Total Assets
+        // 1. Total Assets (menggunakan \n sebagai pengganti <br>)
         String assetsDetail = "Cash: Rp " + CURRENCY_FORMAT.format(s.getTotalCash())
-                + "<br>RM: Rp " + CURRENCY_FORMAT.format(s.getNilaiRawMaterial())
+                + "\nRM: Rp " + CURRENCY_FORMAT.format(s.getNilaiRawMaterial())
                 + " | FG: Rp " + CURRENCY_FORMAT.format(s.getNilaiFinishedGoods());
         cardTotalAssets.updateData(
                 "Total Assets",
@@ -217,7 +210,7 @@ public class FinanceView extends JPanel {
 
         // 2. Total Expenses
         String expensesDetail = "PO Bahan Baku: Rp " + CURRENCY_FORMAT.format(s.getTotalPembelianBulanan())
-                + "<br>Kerugian Opname: Rp " + CURRENCY_FORMAT.format(s.getTotalOpnameBulanan());
+                + "\nKerugian Opname: Rp " + CURRENCY_FORMAT.format(s.getTotalOpnameBulanan());
         cardTotalExpenses.updateData(
                 "Total Expenses",
                 "Rp " + CURRENCY_FORMAT.format(s.getTotalExpensesBulanan()),
@@ -227,7 +220,7 @@ public class FinanceView extends JPanel {
         );
 
         // 3. Total Revenue
-        String revenueDetail = "Total Penjualan Bersih<br>Periode " + NAMA_BULAN[cbBulan.getSelectedIndex()] + " " + cbTahun.getSelectedItem();
+        String revenueDetail = "Total Penjualan Bersih\nPeriode " + NAMA_BULAN[cbBulan.getSelectedIndex()] + " " + cbTahun.getSelectedItem();
         cardTotalRevenue.updateData(
                 "Total Revenue",
                 "Rp " + CURRENCY_FORMAT.format(s.getTotalRevenueBulanan()),
@@ -243,29 +236,9 @@ public class FinanceView extends JPanel {
         String netValueStr = (isProfit ? "Rp " : "- Rp ") + CURRENCY_FORMAT.format(Math.abs(net));
         Color netColor = isProfit ? new Color(22, 101, 52) : new Color(185, 28, 28);
         String netDetail = "COGS: Rp " + CURRENCY_FORMAT.format(s.getTotalCogsBulanan())
-                + "<br>Opname: Rp " + CURRENCY_FORMAT.format(s.getTotalOpnameBulanan());
+                + "\nOpname: Rp " + CURRENCY_FORMAT.format(s.getTotalOpnameBulanan());
 
         cardNetProfitLoss.updateData(netTitle, netValueStr, netColor, netColor, netDetail);
-    }
-
-    private void renderLedgerCards(List<FinanceLedger> ledgers, int bulan, int tahun) {
-        ledgerListContainer.removeAll();
-
-        if (ledgers.isEmpty()) {
-            JLabel lblEmpty = new JLabel("Belum ada transaksi keuangan pada " + NAMA_BULAN[bulan - 1] + " " + tahun + ".");
-            lblEmpty.setFont(new Font("SansSerif", Font.ITALIC, 13));
-            lblEmpty.setForeground(Color.GRAY);
-            lblEmpty.setBorder(new EmptyBorder(20, 10, 20, 10));
-            ledgerListContainer.add(lblEmpty);
-        } else {
-            for (FinanceLedger ledger : ledgers) {
-                ledgerListContainer.add(new FinanceLedgerCard(ledger));
-                ledgerListContainer.add(Box.createVerticalStrut(8));
-            }
-        }
-
-        ledgerListContainer.revalidate();
-        ledgerListContainer.repaint();
     }
 
     private void openDepositCashDialog() {
@@ -303,33 +276,6 @@ public class FinanceView extends JPanel {
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Gagal Menyimpan", JOptionPane.ERROR_MESSAGE);
             }
-        }
-    }
-
-    private static class ScrollableCardListPanel extends JPanel implements Scrollable {
-        @Override
-        public Dimension getPreferredScrollableViewportSize() {
-            return getPreferredSize();
-        }
-
-        @Override
-        public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
-            return 16;
-        }
-
-        @Override
-        public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
-            return 60;
-        }
-
-        @Override
-        public boolean getScrollableTracksViewportWidth() {
-            return true;
-        }
-
-        @Override
-        public boolean getScrollableTracksViewportHeight() {
-            return false;
         }
     }
 }
